@@ -1,0 +1,213 @@
+title: Solar Manager
+icon: mdi:solar-power-variant
+views:
+  - title: Übersicht
+    path: uebersicht
+    icon: mdi:home-lightning-bolt
+    badges: []
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: PV aktuell
+            secondary: "{{ states('sensor.energy_manager_pv_aktuell_w') | int }} W"
+            icon: mdi:solar-power-variant
+            icon_color: amber
+            layout: vertical
+            tap_action:
+              action: navigate
+              navigation_path: /solar-manager/pv
+            card_mod:
+              style: "ha-card { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: Hausverbrauch
+            secondary: "{{ states('sensor.energy_manager_hausverbrauch_aktuell_w') | int }} W"
+            icon: mdi:home-lightning-bolt
+            icon_color: green
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: Netz
+            secondary: >
+              {% set netz = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+              {% if netz < 0 %}▲ {{ (netz * -1) | int }} W Einspeisung
+              {% elif netz > 0 %}▼ {{ netz | int }} W Bezug
+              {% else %}≈ 0 W{% endif %}
+            icon: mdi:transmission-tower
+            icon_color: >
+              {% if states('sensor.energy_manager_netz_aktuell_w') | float(0) < 0 %}green{% else %}red{% endif %}
+            layout: vertical
+            tap_action:
+              action: navigate
+              navigation_path: /solar-manager/netz
+            card_mod:
+              style: "ha-card { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: Boiler
+            secondary: "{{ states('sensor.boiler_temperatur_oben') }} °C"
+            icon: mdi:water-boiler
+            icon_color: orange
+            layout: vertical
+            tap_action:
+              action: navigate
+              navigation_path: /solar-manager/boiler
+            card_mod:
+              style: "ha-card { background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: Heizung
+            secondary: "{{ states('sensor.energy_manager_wp_aktuell_w') | int }} W"
+            icon: mdi:heat-pump
+            icon_color: cyan
+            layout: vertical
+            tap_action:
+              action: navigate
+              navigation_path: /solar-manager/wp
+            card_mod:
+              style: "ha-card { background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.3); border-radius: 16px; }\n"
+
+      - type: custom:power-flow-card-plus
+        entities:
+          grid:
+            entity: sensor.netz_leistung_invertiert
+            name: Netz
+          solar:
+            entity: sensor.energy_manager_pv_aktuell_w
+            name: PV
+            display_zero_state: true
+          home:
+            entity: sensor.energy_manager_hausverbrauch_aktuell_w
+            name: Haus
+          individual1:
+            entity: sensor.energy_manager_wp_aktuell_w
+            name: Heizung
+            icon: mdi:heat-pump
+            color: cyan
+            display_zero_state: true
+          individual2:
+            entity: sensor.boiler_pv_ladeleistung
+            name: Boiler
+            icon: mdi:water-boiler
+            color: orange
+            display_zero_state: true
+        watt_threshold: 10
+        min_flow_rate: 0.75
+        max_flow_rate: 6
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Autarkie heute
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(1) }} %"
+            icon: mdi:shield-sun
+            icon_color: >
+              {% set v = states('sensor.energy_manager_autarkiegrad_heute') | float(0) %}
+              {% if v >= 80 %}green{% elif v >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(1) }} %"
+            icon: mdi:home-percent
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: PV heute
+            secondary: "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:solar-power
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Einspeisung
+            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:transmission-tower-export
+            icon_color: orange
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Netzbezug
+            secondary: "{{ states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) | round(3) }} kWh"
+            icon: mdi:transmission-tower-import
+            icon_color: red
+            layout: vertical
+
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: PV & Hausverbrauch – heute
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        span:
+          start: day
+        series:
+          - entity: sensor.energy_manager_pv_aktuell_w
+            name: PV Leistung
+            color: "#f59e0b"
+            type: area
+            fill_raw: zero
+            stroke_width: 2
+          - entity: sensor.energy_manager_hausverbrauch_aktuell_w
+            name: Hausverbrauch
+            color: "#10b981"
+            type: line
+            stroke_width: 2
+          - entity: sensor.netzeinspeisung_leistung_w
+            name: Einspeisung W
+            color: "#22c55e"
+            type: line
+            stroke_width: 1.5
+          - entity: sensor.energy_manager_pv_ueberschuss_aktuell_w
+            name: PV Überschuss
+            color: "#f97316"
+            type: area
+            fill_raw: zero
+            stroke_width: 1.5
+
+      - type: custom:mushroom-template-card
+        primary: Energie-Assistent
+        multiline_secondary: true
+        icon: mdi:robot-happy
+        icon_color: >
+          {% set ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | int %}
+          {% set netz = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+          {% if ueberschuss > 1500 %}green{% elif netz > 2000 %}red{% else %}blue{% endif %}
+        secondary: >
+          {% set pv = states('sensor.energy_manager_pv_aktuell_w') | int %}
+          {% set ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | int %}
+          {% set netz = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+          {% set boiler_temp = states('sensor.boiler_temperatur_oben') | float(0) %}
+          {% if ueberschuss > 3000 %}
+          ⚡ Hoher PV-Überschuss ({{ ueberschuss }} W) — Waschmaschine oder Geschirrspüler starten!
+          {% elif ueberschuss > 1500 %}
+          ☀️ PV-Überschuss ({{ ueberschuss }} W) — Boiler laden empfohlen.
+          {% elif netz > 2000 %}
+          ⚠️ Hoher Netzbezug ({{ netz | int }} W) — Grosse Verbraucher vermeiden.
+          {% elif boiler_temp < 48 %}
+          🌡️ Boiler Temperatur niedrig ({{ boiler_temp }} °C) — Bitte prüfen.
+          {% else %}
+          ✅ Alles im grünen Bereich. Autarkie: {{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(0) }}%
+          {% endif %}
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Prognose heute
+            secondary: "{{ states('sensor.energy_production_today') | float(0) | round(2) }} kWh"
+            icon: mdi:weather-sunny
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Resttag heute
+            secondary: "{{ states('sensor.energy_production_today_remaining') | float(0) | round(2) }} kWh"
+            icon: mdi:clock-end
+            icon_color: orange
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Prognose morgen
+            secondary: "{{ states('sensor.energy_production_tomorrow') | float(0) | round(2) }} kWh"
+            icon: mdi:weather-partly-cloudy
+            icon_color: >
+              {% set v = states('sensor.energy_production_tomorrow') | float(0) %}
+              {% if v > 12 %}amber{% elif v > 6 %}orange{% else %}blue{% endif %}
+            layout: vertical

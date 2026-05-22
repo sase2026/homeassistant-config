@@ -1,0 +1,193 @@
+title: Boiler PV-Überschuss laden
+views:
+  - icon: mdi:water-boiler-auto
+    badges: []
+    path: boiler-pv
+    type: masonry
+    title: Boiler PV-Überschuss laden
+    cards:
+      - content: "## Übersicht"
+        type: markdown
+
+      - title: Sicherheitsuebersicht
+        type: markdown
+        content: >
+          {% set netz_w = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+          {% set pv_ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %}
+          {% set ein_grenze = (states('input_number.boiler_leistung') | float(2300) + states('input_number.boiler_reserveleistung') | float(70)) %}
+          {% set temp = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %}
+          {% set restart = states('input_number.boiler_wiedereinschalttemperatur') | float(60) %}
+          {% set max_temp = states('input_number.boiler_maximaltemperatur') | float(63) %}
+          {% set grid_schutz = states('input_number.boiler_max_netzbezug') | float(200) %}
+          {% set start_ok = is_state('input_boolean.boiler_pv_automatik','on') and is_state('switch.haus_verbauch','off') and pv_ueberschuss >= ein_grenze and temp < restart %}
+
+          {% if is_state('switch.haus_verbauch','on') %}
+          ## 🟢 Boilerladung aktiv
+          {% elif start_ok %}
+          ## 🟠 Einschaltverzögerung aktiv
+          {% else %}
+          ## 🔴 Boilerladung aus
+          {% endif %}
+
+          **Automatik:** {{ 'aktiv' if is_state('input_boolean.boiler_pv_automatik','on') else 'aus' }}
+          **Relais:** {{ 'ein' if is_state('switch.haus_verbauch','on') else 'aus' }}
+          **PV Überschuss:** {{ pv_ueberschuss | round(0) }} W (Einschaltgrenze: {{ ein_grenze | round(0) }} W)
+          **PV Start ok:** {{ 'ja ✅' if pv_ueberschuss >= ein_grenze else 'nein ❌' }}
+          **Temp Start ok:** {{ 'ja ✅' if temp < restart else 'nein ❌' }}
+          **Max Temp ok:** {{ 'ja ✅' if temp < max_temp else 'nein ❌' }}
+          **Netzbezug aktuell:** {{ netz_w | round(0) }} W (Schutz ab {{ grid_schutz | round(0) }} W Bezug)
+
+      - title: Status
+        type: markdown
+        content: >
+          {% set pv_ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %}
+          {% set leistung = states('input_number.boiler_leistung') | float(2300) %}
+          {% set reserve = states('input_number.boiler_reserveleistung') | float(70) %}
+          {% set ein_grenze = leistung + reserve %}
+          {% set temp = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %}
+          {% set max_temp = states('input_number.boiler_maximaltemperatur') | float(63) %}
+
+          {% if is_state('switch.haus_verbauch', 'on') %}
+          **Boiler laedt gerade.**
+          Eingeschaltet seit {{ relative_time(states.switch.haus_verbauch.last_changed) }}.
+          Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min.
+          {% else %}
+          **Boiler ist aus.**
+          Letzter Wechsel vor {{ relative_time(states.switch.haus_verbauch.last_changed) }}.
+          Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min.
+          {% endif %}
+
+          WW-Oben: **{{ temp | round(1) }} °C** von **{{ max_temp | round(1) }} °C**
+          PV Überschuss aktuell: **{{ pv_ueberschuss | round(0) }} W**
+          Einschaltgrenze: **{{ ein_grenze | round(0) }} W**
+          Heute: **{{ states('input_number.boiler_kapazitaet_heute') | float(0) | round(2) }} kWh**
+          Monat: **{{ states('input_number.boiler_kapazitaet_monat') | float(0) | round(2) }} kWh**
+          Total: **{{ states('input_number.boiler_ladezeit_total') | float(0) | round(2) }} h**, **{{ states('input_number.boiler_kapazitaet_total') | float(0) | round(2) }} kWh**
+
+      - hours_to_show: 48
+        title: Tagesverlauf 48 Stunden
+        refresh_interval: 60
+        entities:
+          - switch.haus_verbauch
+          - sensor.energy_manager_pv_ueberschuss_aktuell_w
+          - sensor.energy_manager_netz_aktuell_w
+          - sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+          - input_number.boiler_ladezeit_heute
+          - input_number.boiler_kapazitaet_heute
+        type: history-graph
+
+      - title: PV Prognose
+        type: entities
+        show_header_toggle: false
+        entities:
+          - name: Prognose heute
+            entity: sensor.energy_production_today
+          - name: Rest heute
+            entity: sensor.energy_production_today_remaining
+          - name: Prognose morgen
+            entity: sensor.energy_production_tomorrow
+          - name: Aktuelle Stunde
+            entity: sensor.energy_current_hour
+          - name: Naechste Stunde
+            entity: sensor.energy_next_hour
+          - name: Prognose Leistung jetzt
+            entity: sensor.power_production_now
+          - name: Peak heute
+            entity: sensor.power_highest_peak_time_today
+          - name: Peak morgen
+            entity: sensor.power_highest_peak_time_tomorrow
+
+      - content: "## Steuerung"
+        type: markdown
+
+      - name: WW-Oben Temperatur
+        needle: true
+        entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+        min: 20
+        type: gauge
+        max: 75
+        severity:
+          green: 20
+          yellow: 48
+          red: 62
+
+      - name: PV Überschuss aktuell W
+        needle: true
+        entity: sensor.energy_manager_pv_ueberschuss_aktuell_w
+        min: 0
+        type: gauge
+        max: 5000
+        severity:
+          green: 2500
+          yellow: 1000
+          red: 0
+
+      - title: Boiler PV Steuerung
+        type: entities
+        show_header_toggle: false
+        entities:
+          - name: Automatik aktiv
+            entity: input_boolean.boiler_pv_automatik
+          - secondary_info: last-changed
+            name: Boiler Relais
+            entity: switch.haus_verbauch
+          - name: WW-Oben
+            entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+          - name: Max. Warmwassertemperatur
+            entity: input_number.boiler_maximaltemperatur
+          - name: Wiedereinschalttemperatur
+            entity: input_number.boiler_wiedereinschalttemperatur
+          - name: Max. Netzbezug Schutz
+            entity: input_number.boiler_max_netzbezug
+          - name: Boilerleistung
+            entity: input_number.boiler_leistung
+          - name: Reserveleistung
+            entity: input_number.boiler_reserveleistung
+          - name: Mindestlaufzeit
+            entity: input_number.boiler_mindestlaufzeit
+          - name: Statistik ab
+            entity: input_datetime.boiler_statistik_start
+
+      - content: "## Statistik"
+        type: markdown
+
+      - title: Boiler Statistik
+        type: entities
+        show_header_toggle: false
+        entities:
+          - name: Ladezeit heute
+            entity: input_number.boiler_ladezeit_heute
+          - name: Kapazitaet heute
+            entity: input_number.boiler_kapazitaet_heute
+          - name: Ladezeit Monat
+            entity: input_number.boiler_ladezeit_monat
+          - name: Kapazitaet Monat
+            entity: input_number.boiler_kapazitaet_monat
+          - name: Ladestunden Total
+            entity: input_number.boiler_ladezeit_total
+          - name: Kapazitaet Total
+            entity: input_number.boiler_kapazitaet_total
+          - name: Durchschnitt Ladezeit pro Tag
+            entity: input_number.boiler_durchschnitt_ladezeit_pro_tag
+          - name: Durchschnitt Kapazitaet pro Tag
+            entity: input_number.boiler_durchschnitt_kapazitaet_pro_tag
+
+      - hours_to_show: 720
+        title: Historie Tageswerte 30 Tage
+        refresh_interval: 300
+        entities:
+          - input_number.boiler_ladezeit_heute
+          - input_number.boiler_kapazitaet_heute
+          - input_number.boiler_ladezeit_monat
+          - input_number.boiler_kapazitaet_monat
+        type: history-graph
+
+      - hours_to_show: 720
+        title: Total und Durchschnitt 30 Tage
+        refresh_interval: 300
+        entities:
+          - input_number.boiler_ladezeit_total
+          - input_number.boiler_kapazitaet_total
+          - input_number.boiler_durchschnitt_ladezeit_pro_tag
+          - input_number.boiler_durchschnitt_kapazitaet_pro_tag
+        type: history-graph

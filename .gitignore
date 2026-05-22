@@ -1,0 +1,8 @@
+# Git-ignorierte Dateien für HA-Projekt
+*.tmp
+*.log
+~$*
+Thumbs.db
+.DS_Store
+secrets.yaml
+.storage/
