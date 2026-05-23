@@ -207,6 +207,7 @@ views:
             tickformat: "d"
             tick0: 0
             dtick: 1000
+            title: ""
             zeroline: true
             zerolinecolor: "#444444"
             zerolinewidth: 1
