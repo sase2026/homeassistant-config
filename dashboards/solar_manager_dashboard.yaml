@@ -342,6 +342,38 @@ views:
             theme: dark
             x:
               format: "HH:mm"
+        apex_config_extra:
+          stroke:
+            width:
+              - 0.5
+              - 1.0
+              - 1.0
+              - 0.5
+            dashArray:
+              - 0
+              - 6
+              - 6
+              - 0
+          fill:
+            type:
+              - gradient
+              - gradient
+              - gradient
+              - gradient
+            opacity:
+              - 1
+              - 1
+              - 1
+              - 1
+            gradient:
+              shade: dark
+              type: vertical
+              opacityFrom:
+                - 0.15
+                - 0.35
+                - 0.20
+                - 0.15
+              opacityTo: 0.0
         series:
           - entity: sensor.energy_manager_pv_aktuell_w
             name: PV Produktion
@@ -349,90 +381,22 @@ views:
             type: area
             extend_to: now
           - entity: sensor.energy_manager_hausverbrauch_aktuell_w
-            name: Haus + WP Verbrauch
-            color: "#1565c0"
-            type: line
+            name: Hausverbrauch
+            color: "#ffffff"
+            type: area
+            extend_to: now
+          - entity: sensor.energy_manager_wp_aktuell_w
+            name: WP-Verbrauch
+            color: "#9e9e9e"
+            type: area
             extend_to: now
           - entity: sensor.netzeinspeisung_leistung_w
             name: PV Rückspeisung
-            color: "#ff9800"
+            color: "#7b1fa2"
             type: area
             transform: "return -x;"
             extend_to: now
 
-      # ── Grafik: PV Produktion 3-phasig ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: PV Produktion - 3-phasig heute
-          show_states: true
-          colorize_states: true
-        graph_span: 1d
-        span:
-          start: day
-        now:
-          show: true
-          label: Jetzt
-          color: "#ffffff"
-        update_interval: 60s
-        apex_config:
-          chart:
-            type: line
-            height: 250
-            toolbar:
-              show: false
-            animations:
-              enabled: false
-          stroke:
-            curve: smooth
-            width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-              formatter: |
-                EVAL:function(val) {
-                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
-                  return val.toFixed(0) + ' W';
-                }
-          xaxis:
-            type: datetime
-            labels:
-              datetimeUTC: false
-              style:
-                colors: "#9e9e9e"
-          legend:
-            show: true
-            position: bottom
-            labels:
-              colors: "#9e9e9e"
-          grid:
-            borderColor: "#333333"
-            strokeDashArray: 2
-          tooltip:
-            theme: dark
-            x:
-              format: "HH:mm"
-        series:
-          - entity: sensor.pva_produktion_phase_a_leistung
-            name: Phase A
-            color: "#ff9800"
-            type: line
-            extend_to: now
-          - entity: sensor.pva_produktion_phase_b_leistung
-            name: Phase B
-            color: "#ffb74d"
-            type: line
-            extend_to: now
-          - entity: sensor.pva_produktion_phase_c_leistung
-            name: Phase C
-            color: "#ffe0b2"
-            type: line
-            extend_to: now
 
       # ── Autarkie & Eigenverbrauch (2 Reihen für Mobile) ──
       - type: horizontal-stack
@@ -548,17 +512,20 @@ views:
             theme: dark
             x:
               format: "HH:mm"
+        apex_config_extra:
+          stroke:
+            width:
+              - 1.0
+              - 0
+            dashArray:
+              - 6
+              - 0
         series:
           - entity: sensor.energy_production_today
             name: Prognose heute
             color: "#ff9800"
             type: line
-            stroke_width: 1.5
-          - entity: sensor.energy_production_tomorrow
-            name: Prognose morgen
-            color: "#ffb74d"
-            type: line
-            stroke_width: 1.5
+            stroke_width: 1.0
           - entity: sensor.power_production_now
             name: Leistung jetzt
             color: "#ff6f00"
