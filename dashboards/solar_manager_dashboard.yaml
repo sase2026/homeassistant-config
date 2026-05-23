@@ -207,14 +207,14 @@ views:
           stroke:
             curve: smooth
             width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
+              - 1.5
+              - 0.8
+              - 0.8
+              - 1.5
             dashArray:
               - 0
-              - 8
-              - 8
+              - 4
+              - 4
               - 0
           fill:
             type:
@@ -223,15 +223,15 @@ views:
               - solid
               - gradient
             opacity:
-              - 0.8
+              - 0.6
               - 0
               - 0
-              - 0.7
+              - 0.5
             gradient:
               shade: dark
               type: vertical
-              opacityFrom: 0.8
-              opacityTo: 0.05
+              opacityFrom: 0.55
+              opacityTo: 0.02
           yaxis:
             min: -4000
             max: 7000
