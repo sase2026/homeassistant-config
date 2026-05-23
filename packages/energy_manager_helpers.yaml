@@ -226,3 +226,18 @@ template:
         device_class: power
         state_class: measurement
         state: "{{ (states('sensor.leistung_saldierung') | float(0) * -1) | round(0) }}"
+      - name: Netzbezug Gesamt kWh
+        unique_id: netzbezug_gesamt_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total_increasing
+        # Shelly 3EM Pro: Summe der 3 Phasen Bezugszaehler (MWh->kWh, Gesamtzaehler seit 2022)
+        state: >
+          {% set a = states('sensor.haus_verbauch_phase_a_energie') | float(0) %}
+          {% set b = states('sensor.haus_verbauch_phase_b_energie') | float(0) %}
+          {% set c = states('sensor.haus_verbauch_phase_c_energie') | float(0) %}
+          {% if a > 0 and b > 0 and c > 0 %}
+            {{ ((a + b + c) * 1000) | round(2) }}
+          {% else %}
+            {{ this.state | float(0) }}
+          {% endif %}
