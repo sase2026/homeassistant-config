@@ -207,10 +207,10 @@ views:
           stroke:
             curve: smooth
             width:
-              - 0.8
-              - 0.8
-              - 0.8
-              - 0.8
+              - 0.4
+              - 0.4
+              - 0.4
+              - 0.4
             dashArray:
               - 0
               - 6
@@ -224,8 +224,8 @@ views:
               - gradient
             opacity:
               - 0.8
-              - 0.5
-              - 0.4
+              - 0.75
+              - 0.70
               - 0.7
             gradient:
               shade: dark
