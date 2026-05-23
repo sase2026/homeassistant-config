@@ -223,18 +223,15 @@ views:
               - gradient
               - gradient
             opacity:
-              - 1
-              - 1
-              - 1
-              - 1
+              - 0.15
+              - 0.20
+              - 0.12
+              - 0.15
             gradient:
               shade: dark
               type: vertical
-              opacityFrom: 0.15
+              opacityFrom: 1.0
               opacityTo: 0.0
-              stops:
-                - 0
-                - 100
           yaxis:
             labels:
               style:
