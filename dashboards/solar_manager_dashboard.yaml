@@ -338,21 +338,17 @@ views:
           grid:
             borderColor: "#333333"
             strokeDashArray: 2
-          tooltip:
-            theme: dark
-            x:
-              format: "HH:mm"
-        apex_config_extra:
           stroke:
+            curve: smooth
             width:
               - 0.5
-              - 1.0
-              - 1.0
+              - 0.8
+              - 0.8
               - 0.5
             dashArray:
               - 0
-              - 6
-              - 6
+              - 5
+              - 5
               - 0
           fill:
             type:
@@ -368,12 +364,12 @@ views:
             gradient:
               shade: dark
               type: vertical
-              opacityFrom:
-                - 0.15
-                - 0.35
-                - 0.20
-                - 0.15
+              opacityFrom: 0.15
               opacityTo: 0.0
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
         series:
           - entity: sensor.energy_manager_pv_aktuell_w
             name: PV Produktion
@@ -382,12 +378,12 @@ views:
             extend_to: now
           - entity: sensor.energy_manager_hausverbrauch_aktuell_w
             name: Hausverbrauch
-            color: "#ffffff"
+            color: "#5b9bd5"
             type: area
             extend_to: now
           - entity: sensor.energy_manager_wp_aktuell_w
             name: WP-Verbrauch
-            color: "#9e9e9e"
+            color: "#4dd0e1"
             type: area
             extend_to: now
           - entity: sensor.netzeinspeisung_leistung_w
@@ -508,24 +504,24 @@ views:
           grid:
             borderColor: "#333333"
             strokeDashArray: 2
+          stroke:
+            curve: smooth
+            width:
+              - 0.8
+              - 0
+            dashArray:
+              - 5
+              - 0
           tooltip:
             theme: dark
             x:
               format: "HH:mm"
-        apex_config_extra:
-          stroke:
-            width:
-              - 1.0
-              - 0
-            dashArray:
-              - 6
-              - 0
         series:
           - entity: sensor.energy_production_today
             name: Prognose heute
             color: "#ff9800"
             type: line
-            stroke_width: 1.0
+            extend_to: now
           - entity: sensor.power_production_now
             name: Leistung jetzt
             color: "#ff6f00"
