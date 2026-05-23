@@ -241,3 +241,143 @@ template:
           {% else %}
             {{ this.state | float(0) }}
           {% endif %}
+      - name: Solcast Prognose 07h kW
+        unique_id: solcast_prognose_07h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 7 %}
+            {{ (data[7].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 08h kW
+        unique_id: solcast_prognose_08h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 8 %}
+            {{ (data[8].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 09h kW
+        unique_id: solcast_prognose_09h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 9 %}
+            {{ (data[9].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 10h kW
+        unique_id: solcast_prognose_10h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 10 %}
+            {{ (data[10].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 11h kW
+        unique_id: solcast_prognose_11h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 11 %}
+            {{ (data[11].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 12h kW
+        unique_id: solcast_prognose_12h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 12 %}
+            {{ (data[12].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 13h kW
+        unique_id: solcast_prognose_13h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 13 %}
+            {{ (data[13].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 14h kW
+        unique_id: solcast_prognose_14h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 14 %}
+            {{ (data[14].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 15h kW
+        unique_id: solcast_prognose_15h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 15 %}
+            {{ (data[15].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 16h kW
+        unique_id: solcast_prognose_16h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 16 %}
+            {{ (data[16].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 17h kW
+        unique_id: solcast_prognose_17h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 17 %}
+            {{ (data[17].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 18h kW
+        unique_id: solcast_prognose_18h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 18 %}
+            {{ (data[18].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 19h kW
+        unique_id: solcast_prognose_19h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 19 %}
+            {{ (data[19].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
+      - name: Solcast Prognose 20h kW
+        unique_id: solcast_prognose_20h_kw
+        unit_of_measurement: kW
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set data = state_attr('sensor.solcast_pv_forecast_prognose_heute', 'detailedHourly') %}
+          {% if data and data | length > 20 %}
+            {{ (data[20].pv_estimate) | round(2) }}
+          {% else %}0{% endif %}
