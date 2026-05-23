@@ -21,13 +21,13 @@ utility_meter:
     cycle: yearly
   # Netzbezug: utility_meter auf Gesamtzaehler
   energy_manager_netzbezug_heute_kwh:
-    source: sensor.netzbezug_saldiert
+    source: sensor.netzbezug_gesamt_kwh
     cycle: daily
   energy_manager_netzbezug_monat_kwh:
-    source: sensor.netzbezug_saldiert
+    source: sensor.netzbezug_gesamt_kwh
     cycle: monthly
   energy_manager_netzbezug_jahr_kwh:
-    source: sensor.netzbezug_saldiert
+    source: sensor.netzbezug_gesamt_kwh
     cycle: yearly
   energy_manager_hausverbrauch_heute_meter_kwh:
     source: sensor.verbrauch_haus_kwh
