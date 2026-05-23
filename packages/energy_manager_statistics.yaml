@@ -1,0 +1,145 @@
+###############################################################################
+# Energy Manager Statistik und Utility Meter
+###############################################################################
+
+utility_meter:
+  energy_manager_pv_produktion_monat_kwh:
+    source: sensor.stp4_0_3av_40_930_total_yield
+    cycle: monthly
+  energy_manager_pv_produktion_jahr_kwh:
+    source: sensor.stp4_0_3av_40_930_total_yield
+    cycle: yearly
+  # Einspeisung: utility_meter auf Gesamtzaehler (konsistent mit Netzbezug)
+  energy_manager_einspeisung_heute_kwh:
+    source: sensor.netz_ruckspeisung_kwh
+    cycle: daily
+  energy_manager_einspeisung_monat_kwh:
+    source: sensor.netz_ruckspeisung_kwh
+    cycle: monthly
+  energy_manager_einspeisung_jahr_kwh:
+    source: sensor.netz_ruckspeisung_kwh
+    cycle: yearly
+  # Netzbezug: utility_meter auf Gesamtzaehler
+  energy_manager_netzbezug_heute_kwh:
+    source: sensor.netzbezug_saldiert
+    cycle: daily
+  energy_manager_netzbezug_monat_kwh:
+    source: sensor.netzbezug_saldiert
+    cycle: monthly
+  energy_manager_netzbezug_jahr_kwh:
+    source: sensor.netzbezug_saldiert
+    cycle: yearly
+  energy_manager_hausverbrauch_heute_meter_kwh:
+    source: sensor.verbrauch_haus_kwh
+    cycle: daily
+  energy_manager_hausverbrauch_monat_kwh:
+    source: sensor.verbrauch_haus_kwh
+    cycle: monthly
+  energy_manager_hausverbrauch_jahr_kwh:
+    source: sensor.verbrauch_haus_kwh
+    cycle: yearly
+  energy_manager_wp_heute_kwh:
+    source: sensor.verbrauch_wp_heizung_kwh
+    cycle: daily
+  energy_manager_wp_monat_kwh:
+    source: sensor.verbrauch_wp_heizung_kwh
+    cycle: monthly
+  energy_manager_wp_jahr_kwh:
+    source: sensor.verbrauch_wp_heizung_kwh
+    cycle: yearly
+  energy_manager_wama_heute_kwh:
+    source: sensor.shelly1pm_84cca8b15caf_energie
+    cycle: daily
+  energy_manager_wama_monat_kwh:
+    source: sensor.shelly1pm_84cca8b15caf_energie
+    cycle: monthly
+
+sensor:
+  - platform: history_stats
+    name: Energy Manager WP Laufzeit heute h
+    entity_id: binary_sensor.energy_manager_wp_laeuft
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+  - platform: history_stats
+    name: Energy Manager WP Laufzeit Monat h
+    entity_id: binary_sensor.energy_manager_wp_laeuft
+    state: "on"
+    type: time
+    start: "{{ now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) }}"
+    end: "{{ now() }}"
+  - platform: history_stats
+    name: Energy Manager WaMa Laufzeit heute h
+    entity_id: binary_sensor.energy_manager_wama_laeuft
+    state: "on"
+    type: time
+    start: "{{ today_at('00:00') }}"
+    end: "{{ now() }}"
+
+template:
+  - sensor:
+      - name: Energy Manager Eigenverbrauch Monat kWh
+        unique_id: energy_manager_eigenverbrauch_monat_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: >
+          {% set pv = states('sensor.energy_manager_pv_produktion_monat_kwh') | float(0) %}
+          {% set export = states('sensor.energy_manager_einspeisung_monat_kwh') | float(0) %}
+          {{ [pv - export, 0] | max | round(3) }}
+      - name: Energy Manager Eigenverbrauch Jahr kWh
+        unique_id: energy_manager_eigenverbrauch_jahr_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: >
+          {% set pv = states('sensor.energy_manager_pv_produktion_jahr_kwh') | float(0) %}
+          {% set export = states('sensor.energy_manager_einspeisung_jahr_kwh') | float(0) %}
+          {{ [pv - export, 0] | max | round(3) }}
+      - name: Energy Manager Autarkiegrad Monat
+        unique_id: energy_manager_autarkiegrad_monat
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: >
+          {% set eigen = states('sensor.energy_manager_eigenverbrauch_monat_kwh') | float(0) %}
+          {% set haus = states('sensor.energy_manager_hausverbrauch_monat_kwh') | float(0) %}
+          {{ (100 * eigen / haus) | round(1) if haus > 0 else 0 }}
+      - name: Energy Manager Autarkiegrad Jahr
+        unique_id: energy_manager_autarkiegrad_jahr
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: >
+          {% set eigen = states('sensor.energy_manager_eigenverbrauch_jahr_kwh') | float(0) %}
+          {% set haus = states('sensor.energy_manager_hausverbrauch_jahr_kwh') | float(0) %}
+          {{ (100 * eigen / haus) | round(1) if haus > 0 else 0 }}
+      - name: Energy Manager Eigenverbrauchsquote Monat
+        unique_id: energy_manager_eigenverbrauchsquote_monat
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: >
+          {% set eigen = states('sensor.energy_manager_eigenverbrauch_monat_kwh') | float(0) %}
+          {% set pv = states('sensor.energy_manager_pv_produktion_monat_kwh') | float(0) %}
+          {{ (100 * eigen / pv) | round(1) if pv > 0 else 0 }}
+      - name: Energy Manager Eigenverbrauchsquote Jahr
+        unique_id: energy_manager_eigenverbrauchsquote_jahr
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: >
+          {% set eigen = states('sensor.energy_manager_eigenverbrauch_jahr_kwh') | float(0) %}
+          {% set pv = states('sensor.energy_manager_pv_produktion_jahr_kwh') | float(0) %}
+          {{ (100 * eigen / pv) | round(1) if pv > 0 else 0 }}
+      - name: Energy Manager WP Anteil Hausverbrauch heute
+        unique_id: energy_manager_wp_anteil_hausverbrauch_heute
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: >
+          {% set wp = states('sensor.energy_manager_wp_heute_kwh') | float(0) %}
+          {% set haus = states('sensor.energy_manager_hausverbrauch_heute_kwh') | float(0) %}
+          {{ (100 * wp / haus) | round(1) if haus > 0 else 0 }}
+      - name: Energy Manager Boiler Verbrauch Jahr kWh
+        unique_id: energy_manager_boiler_verbrauch_jahr_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: "{{ states('sensor.boiler_energie_jahr_total') | float(0) | round(3) }}"

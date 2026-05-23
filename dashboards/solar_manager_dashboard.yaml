@@ -1,0 +1,1606 @@
+title: Solar Manager
+icon: mdi:solar-power-variant
+views:
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 1: ÜBERSICHT
+  # ═══════════════════════════════════════════════════════════
+  - title: Übersicht
+    path: uebersicht
+    icon: mdi:home-lightning-bolt
+    badges: []
+    cards:
+      # ── EBENE 1: PV Produktion | Hausverbrauch | WP-Verbrauch ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: PV Produktion
+            secondary: "{{ states('sensor.energy_manager_pv_aktuell_w') | int }} W"
+            icon: mdi:solar-power-variant
+            icon_color: amber
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: Hausverbrauch
+            secondary: "{{ states('sensor.energy_manager_hausverbrauch_aktuell_w') | int }} W"
+            icon: mdi:home-lightning-bolt
+            icon_color: blue
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: WP-Verbrauch
+            secondary: "{{ states('sensor.energy_manager_wp_aktuell_w') | int }} W"
+            icon: mdi:heat-pump
+            icon_color: cyan
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.3); border-radius: 16px; }\n"
+
+      # ── EBENE 2: Netz | Einspeisung kWh | Netzbezug kWh ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Netz
+            secondary: >
+              {% set netz = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+              {% if netz < 0 %}▲ {{ (netz * -1) | int }} W Einspeisung
+              {% elif netz > 0 %}▼ {{ netz | int }} W Bezug
+              {% else %}≈ 0 W{% endif %}
+            icon: mdi:transmission-tower
+            icon_color: >
+              {% if states('sensor.energy_manager_netz_aktuell_w') | float(0) < 0 %}green{% else %}red{% endif %}
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: Einspeisung heute
+            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:transmission-tower-export
+            icon_color: green
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: Netzbezug heute
+            secondary: "{{ states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:transmission-tower-import
+            icon_color: red
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: 16px; }\n"
+
+      # ── EBENE 3: Autarkie % | Eigenverbrauch % | PV heute kWh ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Autarkie
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(1) }} %"
+            icon: mdi:shield-sun
+            icon_color: >
+              {% set a = states('sensor.energy_manager_autarkiegrad_heute') | float(0) %}
+              {% if a >= 80 %}green{% elif a >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(1) }} %"
+            icon: mdi:home-percent
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: PV heute
+            secondary: "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:solar-power
+            icon_color: amber
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 16px; }\n"
+
+      # ── EBENE 4: Boilertemperatur ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Boilertemperatur °C
+            secondary: "{{ states('sensor.boiler_temperatur_oben') | float(0) | round(1) }} °C"
+            icon: mdi:water-thermometer
+            icon_color: >
+              {% set t = states('sensor.boiler_temperatur_oben') | float(0) %}
+              {% if t >= 60 %}red{% elif t >= 48 %}orange{% else %}blue{% endif %}
+            layout: vertical
+            card_mod:
+      - type: custom:mushroom-template-card
+        primary: Autarkie
+        icon: mdi:shield-sun
+        multiline_secondary: true
+        icon_color: >
+          {% set v = states('sensor.energy_manager_autarkiegrad_heute') | float(0) %}
+          {% if v >= 80 %}green{% elif v >= 50 %}amber{% else %}red{% endif %}
+        secondary: >
+          {% set v = states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(0) | int %}
+          {% set g = (v / 5) | int %}{% set r2 = ((100 - v) / 5) | int %}
+          {{ v }} %
+          {% for i in range(g) %}🟨{% endfor %}{% for i in range(r2) %}🟦{% endfor %}
+      - type: custom:mushroom-template-card
+        primary: Eigenverbrauch
+        icon: mdi:home-percent
+        multiline_secondary: true
+        icon_color: >
+          {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
+          {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+        secondary: >
+          {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(0) | int %}
+          {% set g = (v / 5) | int %}{% set w = ((100 - v) / 5) | int %}
+          {{ v }} %
+          {% for i in range(g) %}🟨{% endfor %}{% for i in range(w) %}🟥{% endfor %}
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Stromquellen Uebersicht
+          show_states: true
+          colorize_states: true
+        graph_span: 1d
+        span:
+          start: day
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: area
+            height: 300
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          dataLabels:
+            enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+            dashArray:
+              - 0
+              - 8
+              - 8
+              - 0
+          fill:
+            type:
+              - gradient
+              - solid
+              - solid
+              - gradient
+            opacity:
+              - 0.8
+              - 0
+              - 0
+              - 0.7
+            gradient:
+              shade: dark
+              type: vertical
+              opacityFrom: 0.8
+              opacityTo: 0.05
+          yaxis:
+            min: -4000
+            max: 7000
+            tickAmount: 10
+            decimalsInFloat: 0
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) {
+                  if (val === 0) return '0 W';
+                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
+                  return val.toFixed(0) + ' W';
+                }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+          annotations:
+            yaxis:
+              - y: 1000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "1 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+              - y: 2000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "2 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+              - y: 3000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "3 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+              - y: 4000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "4 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+              - y: 5000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "5 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+              - y: 6000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "6 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+              - y: -1000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "-1 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+              - y: -2000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "-2 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+              - y: -4000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "-4 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+              - y: -3000
+                borderColor: "#444444"
+                strokeDashArray: 4
+                borderWidth: 1
+                label:
+                  text: "-3 kW"
+                  position: right
+                  style:
+                    color: "#666666"
+                    fontSize: "10px"
+                    background: transparent
+            show: true
+            position: bottom
+            horizontalAlign: center
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.energy_manager_pv_aktuell_w
+            name: PV Produktion
+            color: "#ff9800"
+            type: area
+            extend_to: now
+          - entity: sensor.energy_manager_hausverbrauch_aktuell_w
+            name: Hausverbrauch
+            color: "#1565c0"
+            type: line
+            extend_to: now
+          - entity: sensor.energy_manager_wp_aktuell_w
+            name: WP-Verbrauch
+            color: "#4dd0e1"
+            type: line
+            extend_to: now
+          - entity: sensor.netzeinspeisung_leistung_w
+            name: PV Rueckspeisung
+            color: "#7b1fa2"
+            type: area
+            transform: "return -x;"
+            extend_to: now
+
+      # ── Energie Assistent ──
+      - type: custom:mushroom-template-card
+        primary: Energie-Assistent
+        multiline_secondary: true
+        icon: mdi:robot-happy
+        icon_color: >
+          {% set ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | int %}
+          {% set netz = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+          {% if ueberschuss > 1500 %}green{% elif netz > 2000 %}red{% else %}blue{% endif %}
+        secondary: "{{ states('sensor.energy_manager_empfehlung') }}"
+
+      # ── Prognose ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Prognose heute
+            secondary: "{{ states('sensor.energy_production_today') | float(0) | round(2) }} kWh"
+            icon: mdi:weather-sunny
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Resttag heute
+            secondary: "{{ states('sensor.energy_production_today_remaining') | float(0) | round(2) }} kWh"
+            icon: mdi:clock-end
+            icon_color: orange
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Prognose morgen
+            secondary: "{{ states('sensor.energy_production_tomorrow') | float(0) | round(2) }} kWh"
+            icon: mdi:weather-partly-cloudy
+            icon_color: >
+              {% set v = states('sensor.energy_production_tomorrow') | float(0) %}
+              {% if v > 12 %}amber{% elif v > 6 %}orange{% else %}blue{% endif %}
+            layout: vertical
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 2: PV
+  # ═══════════════════════════════════════════════════════════
+  - title: PV
+    path: pv
+    icon: mdi:solar-power-variant
+    cards:
+      # ── Reihe 1: PV Produktion | Heute | Gesamtertrag | Einspeisung heute ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: PV Produktion
+            secondary: "{{ states('sensor.energy_manager_pv_aktuell_w') | int }} W"
+            icon: mdi:solar-power-variant
+            icon_color: amber
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: Heute
+            secondary: "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:calendar-today
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Gesamtertrag
+            secondary: "{{ (states('sensor.stp4_0_3av_40_930_total_yield') | float(0) / 1000) | round(1) }} kWh"
+            icon: mdi:counter
+            icon_color: orange
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Einspeisung heute
+            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:transmission-tower-export
+            icon_color: green
+            layout: vertical
+
+      # ── Grafik: PV Produktion - letzte 24h ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: PV Produktion - letzte 24 Stunden
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: area
+            height: 300
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+              - 0
+              - 8
+              - 0
+          fill:
+            type:
+              - gradient
+              - solid
+              - gradient
+            opacity:
+              - 0.8
+              - 0
+              - 0.6
+          yaxis:
+            min: 0
+            max: 5000
+            tickAmount: 5
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) {
+                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
+                  return val.toFixed(0) + ' W';
+                }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.energy_manager_pv_aktuell_w
+            name: PV Produktion
+            color: "#ff9800"
+            type: area
+            extend_to: now
+          - entity: sensor.energy_manager_hausverbrauch_aktuell_w
+            name: Haus + WP Verbrauch
+            color: "#1565c0"
+            type: line
+            extend_to: now
+          - entity: sensor.netzeinspeisung_leistung_w
+            name: PV Rückspeisung
+            color: "#ff9800"
+            type: area
+            transform: "return -x;"
+            extend_to: now
+
+      # ── Grafik: PV Produktion 3-phasig ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: PV Produktion - 3-phasig heute
+          show_states: true
+          colorize_states: true
+        graph_span: 1d
+        span:
+          start: day
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: line
+            height: 250
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) {
+                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
+                  return val.toFixed(0) + ' W';
+                }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.pva_produktion_phase_a_leistung
+            name: Phase A
+            color: "#ff9800"
+            type: line
+            extend_to: now
+          - entity: sensor.pva_produktion_phase_b_leistung
+            name: Phase B
+            color: "#ffb74d"
+            type: line
+            extend_to: now
+          - entity: sensor.pva_produktion_phase_c_leistung
+            name: Phase C
+            color: "#ffe0b2"
+            type: line
+            extend_to: now
+
+      # ── Autarkie & Eigenverbrauch (2 Reihen für Mobile) ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Autarkie heute
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(1) }} %"
+            icon: mdi:shield-sun
+            icon_color: >
+              {% set a = states('sensor.energy_manager_autarkiegrad_heute') | float(0) %}
+              {% if a >= 80 %}green{% elif a >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Autarkie Monat
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_monat') | float(0) | round(1) }} %"
+            icon: mdi:shield-sun-outline
+            icon_color: >
+              {% set a = states('sensor.energy_manager_autarkiegrad_monat') | float(0) %}
+              {% if a >= 80 %}green{% elif a >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Autarkie Jahr
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_jahr') | float(0) | round(1) }} %"
+            icon: mdi:shield-check
+            icon_color: >
+              {% set a = states('sensor.energy_manager_autarkiegrad_jahr') | float(0) %}
+              {% if a >= 80 %}green{% elif a >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch heute
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(1) }} %"
+            icon: mdi:home-percent
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch Monat
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) | round(1) }} %"
+            icon: mdi:home-percent-outline
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch Jahr
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) | round(1) }} %"
+            icon: mdi:home-check
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+
+      # ── Grafik: PV Prognose Solcast ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: PV Prognose - Solcast
+          show_states: true
+          colorize_states: true
+        graph_span: 48h
+        span:
+          start: day
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 3600s
+        apex_config:
+          chart:
+            type: bar
+            height: 280
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+            bar:
+              columnWidth: 80%
+          yaxis:
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) {
+                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
+                  return val.toFixed(0) + ' W';
+                }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.energy_production_today
+            name: Prognose heute
+            color: "#ff9800"
+            type: line
+            stroke_width: 1.5
+          - entity: sensor.energy_production_tomorrow
+            name: Prognose morgen
+            color: "#ffb74d"
+            type: line
+            stroke_width: 1.5
+          - entity: sensor.power_production_now
+            name: Leistung jetzt
+            color: "#ff6f00"
+            type: column
+            extend_to: now
+
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 3: WP (Wärmepumpe)
+  # ═══════════════════════════════════════════════════════════
+  - title: WP
+    path: wp
+    icon: mdi:heat-pump
+    cards:
+      # ── Reihe 1: WP aktuell | WP heute | WP Monat | WP Jahr ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: WP aktuell
+            secondary: "{{ states('sensor.energy_manager_wp_aktuell_w') | int }} W"
+            icon: mdi:heat-pump
+            icon_color: cyan
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: WP heute kWh
+            secondary: "{{ states('sensor.energy_manager_wp_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:calendar-today
+            icon_color: cyan
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: WP Monat kWh
+            secondary: "{{ states('sensor.energy_manager_wp_monat_kwh') | float(0) | round(1) }} kWh"
+            icon: mdi:calendar-month
+            icon_color: cyan
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: WP Jahr kWh
+            secondary: "{{ states('sensor.energy_manager_wp_jahr_kwh') | float(0) | round(1) }} kWh"
+            icon: mdi:calendar
+            icon_color: cyan
+            layout: vertical
+
+      # ── Reihe 2: WW-oben | Vorlauf HK-II | Rücklauf HK-II ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: WW-oben °C
+            secondary: "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:water-thermometer
+            icon_color: red
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Vorlauf HK-II °C
+            secondary: "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer-chevron-up
+            icon_color: orange
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Rücklauf HK-II °C
+            secondary: "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer-chevron-down
+            icon_color: blue
+            layout: vertical
+
+      # ── Grafik: Heizung Leistung 3-phasig ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Heizung Leistung - letzte 24h
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: area
+            height: 280
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+            dashArray:
+              - 8
+              - 0
+              - 0
+              - 0
+          fill:
+            type:
+              - gradient
+              - solid
+              - solid
+              - solid
+            opacity:
+              - 0.4
+              - 0
+              - 0
+              - 0
+          yaxis:
+            min: 0
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) {
+                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
+                  return val.toFixed(0) + ' W';
+                }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.heizung_verbrauch_w
+            name: Gesamt
+            color: "#b3e5fc"
+            type: area
+            extend_to: now
+          - entity: sensor.heizung_phase_a_leistung
+            name: Phase A
+            color: "#0288d1"
+            type: line
+            extend_to: now
+          - entity: sensor.heizung_phase_b_leistung
+            name: Phase B
+            color: "#4fc3f7"
+            type: line
+            extend_to: now
+          - entity: sensor.heizung_phase_c_leistung
+            name: Phase C
+            color: "#81d4fa"
+            type: line
+            extend_to: now
+
+      # ── Grafik: Temperaturen WW-oben / Vorlauf / Rücklauf HK-II ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Temperaturen - letzte 24h
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: area
+            height: 300
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+              - 8
+              - 0
+              - 0
+          fill:
+            type:
+              - gradient
+              - solid
+              - solid
+            opacity:
+              - 0.4
+              - 0
+              - 0
+          yaxis:
+            - seriesName: WW-oben
+              min: 45
+              max: 65
+              tickAmount: 4
+              title:
+                text: "WW-oben °C"
+                style:
+                  color: "#ef5350"
+                  fontSize: "11px"
+              labels:
+                style:
+                  colors: "#ef5350"
+                  fontSize: "11px"
+                formatter: |
+                  EVAL:function(val) { return val.toFixed(1) + ' °C'; }
+            - seriesName: Vorlauf HK-II
+              opposite: true
+              min: 18
+              max: 50
+              tickAmount: 4
+              title:
+                text: "HK-II °C"
+                style:
+                  color: "#9e9e9e"
+                  fontSize: "11px"
+              labels:
+                style:
+                  colors: "#9e9e9e"
+                  fontSize: "11px"
+                formatter: |
+                  EVAL:function(val) { return val.toFixed(1) + ' °C'; }
+            - seriesName: Rücklauf HK-II
+              opposite: true
+              show: false
+              min: 18
+              max: 50
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+            name: WW-oben
+            color: "#ef5350"
+            type: area
+            extend_to: now
+          - entity: sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3
+            name: Vorlauf HK-II
+            color: "#ff9800"
+            type: line
+            extend_to: now
+          - entity: sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2
+            name: Rücklauf HK-II
+            color: "#42a5f5"
+            type: line
+            extend_to: now
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 4: BOILER PV-Überschuss
+  # ═══════════════════════════════════════════════════════════
+  - title: Boiler
+    path: boiler
+    icon: mdi:water-boiler
+    cards:
+      # ── Reihe 1: WW-oben | PV-Laden W | Netz-Laden W ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: WW-oben °C
+            secondary: "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:water-thermometer
+            icon_color: >
+              {% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %}
+              {% if t >= 60 %}red{% elif t >= 48 %}orange{% else %}blue{% endif %}
+            layout: vertical
+            card_mod:
+              style: "ha-card { background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.3); border-radius: 16px; }\n"
+          - type: custom:mushroom-template-card
+            primary: PV-Laden W
+            secondary: "{{ states('sensor.boiler_pv_ladeleistung') | int }} W"
+            icon: mdi:solar-power
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Netz-Laden W
+            secondary: "{{ states('sensor.boiler_netz_ladeleistung') | int }} W"
+            icon: mdi:transmission-tower
+            icon_color: red
+            layout: vertical
+
+      # ── Reihe 2: Boiler Relais ──
+      - type: custom:mushroom-entity-card
+        entity: switch.boiler_relais
+        name: Boiler Relais
+
+      # ── Reihe 3: Tages-Energie kWh | PV-Energie kWh | Netz-Energie kWh ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Tages-Energie kWh
+            secondary: "{{ states('sensor.boiler_energie_heute_total') | float(0) | round(2) }} kWh"
+            icon: mdi:calendar-today
+            icon_color: orange
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: PV-Energie kWh
+            secondary: "{{ states('sensor.boiler_pv_energie_heute') | float(0) | round(2) }} kWh"
+            icon: mdi:solar-power
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Netz-Energie kWh
+            secondary: "{{ states('sensor.boiler_netz_energie_heute') | float(0) | round(2) }} kWh"
+            icon: mdi:transmission-tower-import
+            icon_color: red
+            layout: vertical
+
+      # ── Reihe 4: Energie Monat | PV-Energie Monat | Netz Monat ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Energie Monat kWh
+            secondary: "{{ states('sensor.boiler_energie_monat_total') | float(0) | round(1) }} kWh"
+            icon: mdi:calendar-month
+            icon_color: orange
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: PV-Energie Monat kWh
+            secondary: "{{ states('sensor.boiler_pv_energie_monat') | float(0) | round(1) }} kWh"
+            icon: mdi:solar-power
+            icon_color: amber
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Netz Monat kWh
+            secondary: "{{ states('sensor.boiler_netz_energie_monat') | float(0) | round(1) }} kWh"
+            icon: mdi:transmission-tower-import
+            icon_color: red
+            layout: vertical
+
+      # ── Grafik: Boiler Temperatur ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Boiler Temperatur - letzte 24h
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: area
+            height: 250
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+            type:
+              - gradient
+            opacity:
+              - 0.5
+          yaxis:
+            min: 30
+            max: 80
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) { return val.toFixed(0) + ' °C'; }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+            name: WW-oben °C
+            color: "#ef5350"
+            type: area
+            extend_to: now
+
+      # ── Grafik: Boiler PV Laden vs Netz Laden ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Boiler Ladeleistung - PV vs Netz
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: area
+            height: 250
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+              - gradient
+              - gradient
+            opacity:
+              - 0.7
+              - 0.7
+          yaxis:
+            min: 0
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) {
+                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
+                  return val.toFixed(0) + ' W';
+                }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.boiler_pv_ladeleistung
+            name: PV Laden W
+            color: "#ff9800"
+            type: area
+            extend_to: now
+          - entity: sensor.boiler_netz_ladeleistung
+            name: Netz Laden W
+            color: "#ef5350"
+            type: area
+            extend_to: now
+
+      # ── Boiler Steuerparameter ──
+      - type: entities
+        title: Boiler Steuerparameter
+        entities:
+          - entity: input_number.boiler_nacht_starttemperatur
+          - entity: input_number.boiler_pv_starttemperatur
+          - entity: input_number.boiler_pv_stopptemperatur
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 5: NETZ
+  # ═══════════════════════════════════════════════════════════
+  - title: Netz
+    path: netz
+    icon: mdi:transmission-tower
+    cards:
+      # ── Reihe 1 ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Netz aktuell
+            secondary: >
+              {% set netz = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+              {% if netz < 0 %}▲ {{ (netz * -1) | int }} W
+              {% elif netz > 0 %}▼ {{ netz | int }} W
+              {% else %}≈ 0 W{% endif %}
+            icon: mdi:transmission-tower
+            icon_color: >
+              {% if states('sensor.energy_manager_netz_aktuell_w') | float(0) < 0 %}green{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Bezug heute
+            secondary: "{{ states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:transmission-tower-import
+            icon_color: red
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Einspeisung heute
+            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:transmission-tower-export
+            icon_color: green
+            layout: vertical
+
+      # ── Reihe 2 ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Netzbezug (saldiert)
+            secondary: "{{ states('sensor.netzbezug_saldiert') | float(0) | round(1) }} kWh"
+            icon: mdi:gauge
+            icon_color: red
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Rückspeisung gesamt
+            secondary: "{{ states('sensor.netz_ruckspeisung_kwh') | float(0) | round(1) }} kWh"
+            icon: mdi:gauge
+            icon_color: green
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Saldierung
+            secondary: "{{ states('sensor.leistung_saldierung') | int }} W"
+            icon: mdi:scale-balance
+            icon_color: blue
+            layout: vertical
+
+      # ── Grafik: Netzleistung saldiert ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Netzleistung - letzte 24h (saldiert)
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: area
+            height: 250
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+            opacity:
+              - 0.7
+          yaxis:
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) {
+                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
+                  return val.toFixed(0) + ' W';
+                }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.leistung_saldierung
+            name: Saldiert
+            color: "#7b1fa2"
+            type: area
+            extend_to: now
+
+      # ── Grafik: Netzleistung 3-phasig ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Netzleistung - 3-phasig heute
+          show_states: true
+          colorize_states: true
+        graph_span: 1d
+        span:
+          start: day
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: area
+            height: 250
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+            type:
+              - gradient
+              - gradient
+              - gradient
+            opacity:
+              - 0.6
+              - 0.6
+              - 0.6
+          yaxis:
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) {
+                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
+                  return val.toFixed(0) + ' W';
+                }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.leistung
+            name: Phase A
+            color: "#e53935"
+            type: area
+            extend_to: now
+          - entity: sensor.leistung_2
+            name: Phase B
+            color: "#fb8c00"
+            type: area
+            extend_to: now
+          - entity: sensor.leistung_3
+            name: Phase C
+            color: "#43a047"
+            type: area
+            extend_to: now
+
+      # ── Grafik: Hausverbrauch 3-phasig ──
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Hausverbrauch - 3-phasig heute
+          show_states: true
+          colorize_states: true
+        graph_span: 1d
+        span:
+          start: day
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: area
+            height: 250
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.0
+              - 1.0
+              - 1.0
+              - 1.0
+            type:
+              - gradient
+              - gradient
+              - gradient
+            opacity:
+              - 0.6
+              - 0.6
+              - 0.6
+          yaxis:
+            min: 0
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) {
+                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
+                  return val.toFixed(0) + ' W';
+                }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.haus_verbauch_phase_a_leistung
+            name: Phase A
+            color: "#e53935"
+            type: area
+            extend_to: now
+          - entity: sensor.haus_verbauch_phase_b_leistung
+            name: Phase B
+            color: "#fb8c00"
+            type: area
+            extend_to: now
+          - entity: sensor.haus_verbauch_phase_c_leistung
+            name: Phase C
+            color: "#43a047"
+            type: area
+            extend_to: now
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 6: TABELLE (Reports)
+  # ═══════════════════════════════════════════════════════════
+  - title: Tabelle
+    path: reports
+    icon: mdi:table
+    cards:
+      # ── Reihe 1: Autarkie ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Autarkie heute
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(1) }} %"
+            icon: mdi:shield-sun
+            icon_color: >
+              {% set a = states('sensor.energy_manager_autarkiegrad_heute') | float(0) %}
+              {% if a >= 80 %}green{% elif a >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Autarkie Monat
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_monat') | float(0) | round(1) }} %"
+            icon: mdi:shield-sun-outline
+            icon_color: >
+              {% set a = states('sensor.energy_manager_autarkiegrad_monat') | float(0) %}
+              {% if a >= 80 %}green{% elif a >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Autarkie Jahr
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_jahr') | float(0) | round(1) }} %"
+            icon: mdi:shield-check
+            icon_color: >
+              {% set a = states('sensor.energy_manager_autarkiegrad_jahr') | float(0) %}
+              {% if a >= 80 %}green{% elif a >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+
+      # ── Reihe 2: Eigenverbrauch ──
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch heute
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(1) }} %"
+            icon: mdi:home-percent
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch Monat
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) | round(1) }} %"
+            icon: mdi:home-percent-outline
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch Jahr
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) | round(1) }} %"
+            icon: mdi:home-check
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+
+      # ── Reihe 3: PV-Produktion Grafik (kumuliert) ──
+      - type: statistics-graph
+        title: PV-Produktion Monatsübersicht
+        entities:
+          - entity: sensor.energy_manager_pv_produktion_monat_kwh
+            name: PV Produktion
+          - entity: sensor.energy_manager_einspeisung_monat_kwh
+            name: Netz Rückspeisung
+          - entity: sensor.energy_manager_eigenverbrauch_monat_kwh
+            name: Eigenverbrauch
+        days_to_show: 365
+        chart_type: bar
+        stat_types:
+          - max
+
+      # ── Reihe 4: Verbrauch Grafik ──
+      - type: statistics-graph
+        title: Verbrauch Monatsübersicht
+        entities:
+          - entity: sensor.energy_manager_hausverbrauch_monat_kwh
+            name: Hausverbrauch
+          - entity: sensor.energy_manager_wp_monat_kwh
+            name: WP-Verbrauch
+          - entity: sensor.boiler_energie_monat_total
+            name: Boiler Verbrauch
+        days_to_show: 365
+        chart_type: bar
+        stat_types:
+          - max
+
