@@ -207,10 +207,10 @@ views:
           stroke:
             curve: smooth
             width:
-              - 0.5
-              - 0.5
-              - 0.5
-              - 0.5
+              - 0.3
+              - 0.3
+              - 0.3
+              - 0.3
             dashArray:
               - 0
               - 0
