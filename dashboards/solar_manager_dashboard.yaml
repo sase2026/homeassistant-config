@@ -127,7 +127,7 @@ views:
             - border-radius: 12px
           name:
             - font-size: 13px
-            - color: "#555555"
+            - color: "#000000"
             - margin-bottom: 8px
             - text-align: left
           label:
@@ -159,7 +159,7 @@ views:
             - border-radius: 12px
           name:
             - font-size: 13px
-            - color: "#555555"
+            - color: "#000000"
             - margin-bottom: 8px
             - text-align: left
           label:
