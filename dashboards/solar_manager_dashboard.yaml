@@ -123,11 +123,11 @@ views:
         styles:
           card:
             - padding: 12px 16px
-            - background: "rgba(30,30,30,0.6)"
+            - background: "white"
             - border-radius: 12px
           name:
             - font-size: 13px
-            - color: "#9e9e9e"
+            - color: "#555555"
             - margin-bottom: 8px
             - text-align: left
           label:
@@ -155,11 +155,11 @@ views:
         styles:
           card:
             - padding: 12px 16px
-            - background: "rgba(30,30,30,0.6)"
+            - background: "white"
             - border-radius: 12px
           name:
             - font-size: 13px
-            - color: "#9e9e9e"
+            - color: "#555555"
             - margin-bottom: 8px
             - text-align: left
           label:
@@ -179,18 +179,7 @@ views:
               </div>
             `;
           ]]]
-      - type: custom:mushroom-template-card
-        primary: Eigenverbrauch
-        icon: mdi:home-percent
-        multiline_secondary: true
-        icon_color: >
-          {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
-          {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
-        secondary: >
-          {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(0) | int %}
-          {% set g = (v / 5) | int %}{% set w = ((100 - v) / 5) | int %}
-          {{ v }} %
-          {% for i in range(g) %}🟨{% endfor %}{% for i in range(w) %}🟥{% endfor %}
+
       - type: custom:apexcharts-card
         header:
           show: true
