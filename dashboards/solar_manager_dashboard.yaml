@@ -123,11 +123,11 @@ views:
         styles:
           card:
             - padding: 12px 16px
-            - background: "white"
+            - background: "var(--ha-card-background, var(--card-background-color, #fff))"
             - border-radius: 12px
           name:
             - font-size: 13px
-            - color: "#000000"
+            - color: "var(--primary-text-color)"
             - margin-bottom: 8px
             - text-align: left
           label:
@@ -155,11 +155,11 @@ views:
         styles:
           card:
             - padding: 12px 16px
-            - background: "white"
+            - background: "var(--ha-card-background, var(--card-background-color, #fff))"
             - border-radius: 12px
           name:
             - font-size: 13px
-            - color: "#000000"
+            - color: "var(--primary-text-color)"
             - margin-bottom: 8px
             - text-align: left
           label:
