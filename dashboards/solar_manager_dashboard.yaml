@@ -250,8 +250,8 @@ views:
               color: "#7b1fa2"
               width: 0.5
               shape: spline
-            lambda: |
-              (ys) => ys.map(y => -y)
+            filters:
+              - multiply: -1
 
 
       # ── Autarkie & Eigenverbrauch (2 Reihen für Mobile) ──
