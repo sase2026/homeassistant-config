@@ -1,0 +1,494 @@
+title: FBH Heizungsraum
+icon: mdi:thermometer-lines
+views:
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 1: ÜBERSICHT FBH
+  # ═══════════════════════════════════════════════════════════
+  - title: FBH Übersicht
+    path: fbh-uebersicht
+    icon: mdi:thermometer-lines
+    cards:
+
+      # ── Heizkreis Status oben ──────────────────────────────
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: WW Oben
+            secondary: "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:water-thermometer
+            icon_color: >
+              {% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %}
+              {% if t >= 55 %}red{% elif t >= 45 %}orange{% else %}blue{% endif %}
+            layout: vertical
+            card_mod:
+              style: "ha-card { border-left: 3px solid #ef4444; }"
+          - type: custom:mushroom-template-card
+            primary: WW Mitte
+            secondary: "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer-water
+            icon_color: >
+              {% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur') | float(0) %}
+              {% if t >= 50 %}red{% elif t >= 40 %}orange{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: RL Ist
+            secondary: "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_2') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer-chevron-down
+            icon_color: blue
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: VL HK-II
+            secondary: "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer-chevron-up
+            icon_color: orange
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: RL HK-II
+            secondary: "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer-chevron-down
+            icon_color: cyan
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: WaKü
+            secondary: "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur') | float(0) | round(1) }} °C"
+            icon: mdi:water-pump
+            icon_color: blue
+            layout: vertical
+
+      # ── FBH Räume Grid ────────────────────────────────────
+      # Erdgeschoss
+      - type: markdown
+        content: "### Erdgeschoss"
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Küche
+            secondary: "{{ states('sensor.shelly1_8caab55d7ecf_temperatur') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab55d7ecf_temperatur') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Wohnen 1
+            secondary: "{{ states('sensor.shelly1_8caab561c0b7_temperatur_2') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab561c0b7_temperatur_2') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Wohnen 2
+            secondary: "{{ states('sensor.shelly1_8caab55d7ecf_temperatur_2') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab55d7ecf_temperatur_2') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Wohnen 3
+            secondary: "{{ states('sensor.shelly1_8caab55d7ecf_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab55d7ecf_temperatur_3') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Essen
+            secondary: "{{ states('sensor.shelly1_8caab56147d3_temperatur') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab56147d3_temperatur') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Spielen
+            secondary: "{{ states('sensor.shelly1_8caab56147d3_temperatur_2') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab56147d3_temperatur_2') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Gäste WC
+            secondary: "{{ states('sensor.shelly1_8caab56147d3_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab56147d3_temperatur_3') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Entrée
+            secondary: "{{ states('sensor.shelly1_8caab561c0b7_temperatur') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab561c0b7_temperatur') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Galerie
+            secondary: "{{ states('sensor.shelly1_8caab561c0b7_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab561c0b7_temperatur_3') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: " "
+            secondary: " "
+            icon: mdi:minus
+            icon_color: disabled
+            layout: vertical
+
+      # Obergeschoss
+      - type: markdown
+        content: "### Obergeschoss"
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Eltern
+            secondary: "{{ states('sensor.shelly1_c45bbe570c30_temperatur') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_c45bbe570c30_temperatur') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Dusche
+            secondary: "{{ states('sensor.shelly1_c45bbe570c30_temperatur_2') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_c45bbe570c30_temperatur_2') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Hobby
+            secondary: "{{ states('sensor.shelly1_c45bbe570c30_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_c45bbe570c30_temperatur_3') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Yanik
+            secondary: "{{ states('sensor.shelly1_8caab55d7177_temperatur') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab55d7177_temperatur') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Bad
+            secondary: "{{ states('sensor.shelly1_8caab55d7177_temperatur_2') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab55d7177_temperatur_2') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Mael
+            secondary: "{{ states('sensor.shelly1_8caab55d7177_temperatur_3') | float(0) | round(1) }} °C"
+            icon: mdi:thermometer
+            icon_color: >
+              {% set t = states('sensor.shelly1_8caab55d7177_temperatur_3') | float(0) %}
+              {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: " "
+            secondary: " "
+            icon: mdi:minus
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: " "
+            secondary: " "
+            icon: mdi:minus
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: " "
+            secondary: " "
+            icon: mdi:minus
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: " "
+            secondary: " "
+            icon: mdi:minus
+            layout: vertical
+
+      # ── Grafik Heizkreis Temperaturen 24h ─────────────────
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Heizkreis Temperaturen - 24h
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 60s
+        apex_config:
+          chart:
+            type: line
+            height: 280
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 2.0
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+          dataLabels:
+            enabled: false
+          yaxis:
+            min: 15
+            max: 65
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) { return val.toFixed(0) + ' °C'; }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+            name: WW Oben
+            color: "#ef4444"
+            extend_to: now
+          - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur
+            name: WW Mitte
+            color: "#f97316"
+            extend_to: now
+          - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur_2
+            name: RL Ist
+            color: "#3b82f6"
+            extend_to: now
+          - entity: sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3
+            name: VL HK-II
+            color: "#f59e0b"
+            extend_to: now
+          - entity: sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2
+            name: RL HK-II
+            color: "#06b6d4"
+            extend_to: now
+          - entity: sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur
+            name: WaKü
+            color: "#8b5cf6"
+            extend_to: now
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 2: RAUMTEMPERATUREN VERLAUF
+  # ═══════════════════════════════════════════════════════════
+  - title: Räume 24h
+    path: fbh-raeume
+    icon: mdi:chart-line
+    cards:
+
+      # EG Verlauf
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Erdgeschoss - letzte 24h
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 300s
+        apex_config:
+          chart:
+            type: line
+            height: 300
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+          yaxis:
+            min: 18
+            max: 28
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) { return val.toFixed(0) + ' °C'; }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.shelly1_8caab55d7ecf_temperatur
+            name: Küche
+            color: "#ef4444"
+            extend_to: now
+          - entity: sensor.shelly1_8caab561c0b7_temperatur_2
+            name: Wohnen 1
+            color: "#f97316"
+            extend_to: now
+          - entity: sensor.shelly1_8caab55d7ecf_temperatur_2
+            name: Wohnen 2
+            color: "#f59e0b"
+            extend_to: now
+          - entity: sensor.shelly1_8caab55d7ecf_temperatur_3
+            name: Wohnen 3
+            color: "#eab308"
+            extend_to: now
+          - entity: sensor.shelly1_8caab56147d3_temperatur
+            name: Essen
+            color: "#22c55e"
+            extend_to: now
+          - entity: sensor.shelly1_8caab56147d3_temperatur_2
+            name: Spielen
+            color: "#06b6d4"
+            extend_to: now
+          - entity: sensor.shelly1_8caab56147d3_temperatur_3
+            name: Gäste WC
+            color: "#8b5cf6"
+            extend_to: now
+          - entity: sensor.shelly1_8caab561c0b7_temperatur
+            name: Entrée
+            color: "#ec4899"
+            extend_to: now
+          - entity: sensor.shelly1_8caab561c0b7_temperatur_3
+            name: Galerie
+            color: "#64748b"
+            extend_to: now
+
+      # OG Verlauf
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: Obergeschoss - letzte 24h
+          show_states: true
+          colorize_states: true
+        graph_span: 24h
+        now:
+          show: true
+          label: Jetzt
+          color: "#ffffff"
+        update_interval: 300s
+        apex_config:
+          chart:
+            type: line
+            height: 250
+            toolbar:
+              show: false
+            animations:
+              enabled: false
+          stroke:
+            curve: smooth
+            width:
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+              - 1.5
+          yaxis:
+            min: 18
+            max: 28
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) { return val.toFixed(0) + ' °C'; }
+          xaxis:
+            type: datetime
+            labels:
+              datetimeUTC: false
+              style:
+                colors: "#9e9e9e"
+          grid:
+            borderColor: "#333333"
+            strokeDashArray: 2
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          tooltip:
+            theme: dark
+            x:
+              format: "HH:mm"
+        series:
+          - entity: sensor.shelly1_c45bbe570c30_temperatur
+            name: Eltern
+            color: "#ef4444"
+            extend_to: now
+          - entity: sensor.shelly1_c45bbe570c30_temperatur_2
+            name: Dusche
+            color: "#3b82f6"
+            extend_to: now
+          - entity: sensor.shelly1_c45bbe570c30_temperatur_3
+            name: Hobby
+            color: "#22c55e"
+            extend_to: now
+          - entity: sensor.shelly1_8caab55d7177_temperatur
+            name: Yanik
+            color: "#f59e0b"
+            extend_to: now
+          - entity: sensor.shelly1_8caab55d7177_temperatur_2
+            name: Bad
+            color: "#8b5cf6"
+            extend_to: now
+          - entity: sensor.shelly1_8caab55d7177_temperatur_3
+            name: Mael
+            color: "#ec4899"
+            extend_to: now

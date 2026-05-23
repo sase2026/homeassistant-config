@@ -1,0 +1,23 @@
+{
+  "sensor.shelly1_8caab55d7ecf_temperatur": "FBH KÃ¼che",
+  "sensor.shelly1_8caab55d7ecf_temperatur_2": "FBH Wohnen 2",
+  "sensor.shelly1_8caab55d7ecf_temperatur_3": "FBH Wohnen 3",
+  "sensor.shelly1_8caab56147d3_temperatur": "FBH Essen",
+  "sensor.shelly1_8caab56147d3_temperatur_2": "FBH Spielen",
+  "sensor.shelly1_8caab56147d3_temperatur_3": "FBH GÃ¤ste WC",
+  "sensor.ww_mitte_rl_ist_ww_oben_temperatur": "WW Mitte °C",
+  "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2": "RL Ist °C",
+  "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3": "WW Oben °C",
+  "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur": "WaKü °C",
+  "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2": "RL HK-II °C",
+  "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3": "VL HK-II °C",
+  "sensor.shelly1_8caab55d7177_temperatur": "FBH Yanik",
+  "sensor.shelly1_8caab55d7177_temperatur_2": "FBH Bad",
+  "sensor.shelly1_8caab55d7177_temperatur_3": "FBH Mael",
+  "sensor.shelly1_c45bbe570c30_temperatur": "FBH Eltern",
+  "sensor.shelly1_c45bbe570c30_temperatur_2": "FBH Dusche",
+  "sensor.shelly1_c45bbe570c30_temperatur_3": "FBH Hobby",
+  "sensor.shelly1_8caab561c0b7_temperatur": "FBH EntrÃ©e",
+  "sensor.shelly1_8caab561c0b7_temperatur_2": "FBH Wohnen 1",
+  "sensor.shelly1_8caab561c0b7_temperatur_3": "FBH Galerie"
+}
