@@ -1,0 +1,47 @@
+homeassistant:
+  packages: !include_dir_named packages
+default_config:
+frontend:
+  themes: !include_dir_merge_named themes
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+http:
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 127.0.0.1
+shell_command:
+  git_pull: "cd /config && git pull origin main 2>&1"
+  git_status: "cd /config && git status 2>&1"
+lovelace:
+  mode: storage
+  resources:
+    - url: /local/community/button-card/button-card.js
+      type: module
+    - url: /local/community/apexcharts-card/apexcharts-card.js
+      type: module
+  dashboards:
+    solar-a:
+      mode: yaml
+      title: Solar Manager
+      icon: mdi:solar-power-variant
+      show_in_sidebar: true
+      filename: dashboards/solar_manager_dashboard.yaml
+    boiler-a:
+      mode: yaml
+      title: Boiler PV-Ueberschuss laden
+      icon: mdi:water-boiler-auto
+      show_in_sidebar: true
+      filename: dashboards/boiler_pv_ueberschuss_dashboard.yaml
+    fbh-a:
+      mode: yaml
+      title: FBH Temperatur
+      icon: mdi:thermometer-lines
+      show_in_sidebar: true
+      filename: dashboards/fbh_temperatur_dashboard.yaml
+    ueber-a:
+      mode: yaml
+      title: Uebersicht
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
+      filename: dashboards/uebersicht_dashboard.yaml
