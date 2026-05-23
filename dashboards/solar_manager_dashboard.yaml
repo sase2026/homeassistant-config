@@ -56,7 +56,7 @@ views:
               style: "ha-card { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 16px; }\n"
           - type: custom:mushroom-template-card
             primary: Einspeisung heute
-            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh_2') | float(0) | round(2) }} kWh"
             icon: mdi:transmission-tower-export
             icon_color: green
             layout: vertical
@@ -520,7 +520,7 @@ views:
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Einspeisung heute
-            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh_2') | float(0) | round(2) }} kWh"
             icon: mdi:transmission-tower-export
             icon_color: green
             layout: vertical
@@ -874,7 +874,7 @@ views:
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Rücklauf HK-II °C
-            secondary: "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2') | float(0) | round(1) }} °C"
+            secondary: "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3') | float(0) | round(1) }} °C"
             icon: mdi:thermometer-chevron-down
             icon_color: blue
             layout: vertical
@@ -1080,7 +1080,7 @@ views:
             color: "#ff9800"
             type: line
             extend_to: now
-          - entity: sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2
+          - entity: sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3
             name: Rücklauf HK-II
             color: "#42a5f5"
             type: line
@@ -1345,7 +1345,7 @@ views:
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Einspeisung heute
-            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh_2') | float(0) | round(2) }} kWh"
             icon: mdi:transmission-tower-export
             icon_color: green
             layout: vertical
