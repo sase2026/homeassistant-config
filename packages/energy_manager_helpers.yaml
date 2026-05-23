@@ -1,0 +1,228 @@
+########################################################################
+# Energy Manager berechnete Live-Sensoren
+########################################################################
+
+template:
+  - binary_sensor:
+      - name: Energy Manager WP laeuft
+        unique_id: energy_manager_wp_laeuft
+        icon: mdi:heat-pump
+        state: "{{ states('sensor.heizung_verbrauch_w') | float(0) > 100 }}"
+      - name: Energy Manager WaMa laeuft
+        unique_id: energy_manager_wama_laeuft
+        icon: mdi:washing-machine
+        state: "{{ states('sensor.shelly1pm_84cca8b15caf_leistung') | float(0) > 5 }}"
+  - sensor:
+      - name: Energy Manager PV aktuell W
+        unique_id: energy_manager_pv_aktuell_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ [states('sensor.stp4_0_3av_40_930_pv_power') | float(0), 0] | max | round(0) }}"
+      - name: Energy Manager PV Produktion heute kWh
+        unique_id: energy_manager_pv_produktion_heute_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: >
+          {% set wh = states('sensor.stp4_0_3av_40_930_daily_yield') | float(0) %}
+          {{ [wh, 0] | max / 1000 | round(3) }}
+      - name: Energy Manager Hausverbrauch aktuell W
+        unique_id: energy_manager_hausverbrauch_aktuell_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ [states('sensor.haus_verbrauch_w') | float(0), 0] | max | round(0) }}"
+      - name: Energy Manager WP aktuell W
+        unique_id: energy_manager_wp_aktuell_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ [states('sensor.heizung_verbrauch_w') | float(0), 0] | max | round(0) }}"
+      - name: Energy Manager Netz aktuell W
+        unique_id: energy_manager_netz_aktuell_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        # Direkt vom Shelly 3EM: negativ = Einspeisung, positiv = Bezug
+        state: "{{ states('sensor.leistung_saldierung') | float(0) | round(0) }}"
+      # ── Shelly 3EM Direktsensoren ──────────────────────────────────
+      - name: Shelly 3EM Netzeinspeisung W
+        unique_id: shelly3em_netzeinspeisung_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        # Einspeisung ins Netz: nur wenn leistung_saldierung negativ (Überschuss)
+        state: "{{ [states('sensor.leistung_saldierung') | float(0) * -1, 0] | max | round(1) }}"
+      - name: Shelly 3EM Netzbezug W
+        unique_id: shelly3em_netzbezug_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        # Bezug aus dem Netz: nur wenn leistung_saldierung positiv
+        state: "{{ [states('sensor.leistung_saldierung') | float(0), 0] | max | round(1) }}"
+      - name: Shelly 3EM Phase A W
+        unique_id: shelly3em_phase_a_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ states('sensor.leistung') | float(0) | round(1) }}"
+      - name: Shelly 3EM Phase B W
+        unique_id: shelly3em_phase_b_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ states('sensor.leistung_2') | float(0) | round(1) }}"
+      - name: Shelly 3EM Phase C W
+        unique_id: shelly3em_phase_c_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ states('sensor.leistung_3') | float(0) | round(1) }}"
+      - name: Shelly 3EM Gesamt W
+        unique_id: shelly3em_gesamt_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        # Saldierte Gesamtleistung (negativ = Einspeisung überwiegt)
+        state: "{{ states('sensor.leistung_saldierung') | float(0) | round(1) }}" 
+      - name: Energy Manager Netzstatus
+        unique_id: energy_manager_netzstatus
+        icon: mdi:transmission-tower
+        state: >
+          {% set netz = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+          {% if netz > 50 %}
+            Bezug
+          {% elif netz < -50 %}
+            Einspeisung
+          {% else %}
+            Neutral
+          {% endif %}
+      - name: Energy Manager PV Ueberschuss aktuell W
+        unique_id: energy_manager_pv_ueberschuss_aktuell_w
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ [states('sensor.netzeinspeisung_leistung_w') | float(0), 0] | max | round(0) }}"
+      - name: Energy Manager Eigenverbrauch heute kWh
+        unique_id: energy_manager_eigenverbrauch_heute_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: >
+          {% set pv = states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) %}
+          {% set export = states('sensor.netzeinspeisung_taglich') | float(0) %}
+          {{ [pv - export, 0] | max | round(3) }}
+      - name: Energy Manager Gesamtverbrauch heute kWh
+        unique_id: energy_manager_gesamtverbrauch_heute_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: >
+          {% set haus = states('sensor.energy_manager_hausverbrauch_heute_meter_kwh') | float(0) %}
+          {% set wp = states('sensor.energy_manager_wp_heute_kwh') | float(0) %}
+          {{ [haus + wp, 0] | max | round(3) }}
+      - name: Energy Manager Hausverbrauch heute kWh
+        unique_id: energy_manager_hausverbrauch_heute_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: >
+          {% set haus = states('sensor.energy_manager_hausverbrauch_heute_meter_kwh') | float(0) %}
+          {% set wp = states('sensor.energy_manager_wp_heute_kwh') | float(0) %}
+          {{ [haus + wp, 0] | max | round(3) }}
+      - name: Energy Manager Autarkiegrad heute
+        unique_id: energy_manager_autarkiegrad_heute
+        unit_of_measurement: '%'
+        state_class: measurement
+        state: >
+          {% set eigen = states('sensor.energy_manager_eigenverbrauch_heute_kwh') | float(0) %}
+          {% set gesamt = states('sensor.energy_manager_hausverbrauch_heute_kwh') | float(0) %}
+          {{ (100 * eigen / gesamt) | round(1) if gesamt > 0 else 0 }}
+      - name: Energy Manager Eigenverbrauchsquote heute
+        unique_id: energy_manager_eigenverbrauchsquote_heute
+        unit_of_measurement: '%'
+        state_class: measurement
+        state: >
+          {% set eigen = states('sensor.energy_manager_eigenverbrauch_heute_kwh') | float(0) %}
+          {% set pv = states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) %}
+          {{ (100 * eigen / pv) | round(1) if pv > 0 else 0 }}
+      - name: Energy Manager Sonstiger PV Eigenverbrauch kWh
+        unique_id: energy_manager_sonstiger_pv_eigenverbrauch_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: >
+          {% set pv = states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) %}
+          {% set boiler = states('sensor.boiler_pv_energie_heute') | float(0) %}
+          {% set export = states('sensor.netzeinspeisung_taglich') | float(0) %}
+          {{ [pv - boiler - export, 0] | max | round(3) }}
+      - name: Energy Manager Hausverbrauch Rest kWh
+        unique_id: energy_manager_hausverbrauch_rest_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: >
+          {% set haus = states('sensor.energy_manager_hausverbrauch_heute_kwh') | float(0) %}
+          {% set boiler = states('sensor.boiler_energie_heute_total') | float(0) %}
+          {% set wp = states('sensor.energy_manager_wp_heute_kwh') | float(0) %}
+          {{ [haus - boiler - wp, 0] | max | round(3) }}
+      - name: Energy Manager Verbrauchsverteilung sonstige kWh
+        unique_id: energy_manager_verbrauchsverteilung_sonstige_kwh
+        unit_of_measurement: kWh
+        device_class: energy
+        state_class: total
+        state: "{{ states('sensor.energy_manager_hausverbrauch_rest_kwh') | float(0) | round(3) }}"
+      - name: Energy Manager Energieassistent Status
+        unique_id: energy_manager_energieassistent_status
+        icon: mdi:traffic-light
+        state: >
+          {% set surplus = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %}
+          {% set netz = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+          {% if surplus >= states('input_number.energy_manager_pv_ueberschuss_hoch_w') | float(3000) %}
+            Gruen
+          {% elif netz >= states('input_number.energy_manager_netzbezug_warnschwelle_w') | float(2000) %}
+            Rot
+          {% else %}
+            Orange
+          {% endif %}
+      - name: Energy Manager Empfehlung
+        unique_id: energy_manager_empfehlung
+        icon: mdi:lightbulb-on-outline
+        state: >
+          {% set surplus = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %}
+          {% set netz = states('sensor.energy_manager_netz_aktuell_w') | float(0) %}
+          {% set boiler_temp = states('sensor.boiler_temperatur_oben') | float(99) %}
+          {% if surplus >= states('input_number.energy_manager_pv_ueberschuss_hoch_w') | float(3000) %}
+            Hoher PV-Ueberschuss: Boiler oder flexible Verbraucher starten.
+          {% elif surplus >= states('input_number.energy_manager_pv_ueberschuss_gut_w') | float(1500) %}
+            PV-Ueberschuss vorhanden: Verbraucher zeitnah einplanen.
+          {% elif netz >= states('input_number.energy_manager_netzbezug_warnschwelle_w') | float(2000) %}
+            Hoher Netzbezug: grosse Verbraucher verschieben.
+          {% elif boiler_temp < states('input_number.boiler_nacht_starttemperatur') | float(48) %}
+            Boiler tief: Nachtladung wahrscheinlich noetig.
+          {% else %}
+            Energiefluss stabil.
+          {% endif %}
+      - name: Energy Manager PV spezifischer Ertrag heute
+        unique_id: energy_manager_pv_spezifischer_ertrag_heute
+        unit_of_measurement: kWh/kWp
+        state_class: measurement
+        state: >
+          {% set pv = states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) %}
+          {% set kwp = states('input_number.energy_manager_pv_installierte_leistung_kwp') | float(0) %}
+          {{ (pv / kwp) | round(2) if kwp > 0 else 0 }}
+      - name: Energy Manager PV Performance Jahr
+        unique_id: energy_manager_pv_performance_jahr
+        unit_of_measurement: "%"
+        state_class: measurement
+        state: >
+          {% set ist = states('sensor.energy_manager_pv_produktion_jahr_kwh') | float(0) %}
+          {% set soll = states('input_number.energy_manager_pv_erwarteter_jahresertrag') | float(0) %}
+          {{ (100 * ist / soll) | round(1) if soll > 0 else 0 }}
+      - name: "Netz Leistung Invertiert"
+        unique_id: netz_leistung_invertiert
+        unit_of_measurement: W
+        device_class: power
+        state_class: measurement
+        state: "{{ (states('sensor.leistung_saldierung') | float(0) * -1) | round(0) }}"
