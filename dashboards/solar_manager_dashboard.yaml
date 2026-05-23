@@ -219,13 +219,13 @@ views:
           fill:
             type:
               - gradient
-              - gradient
-              - gradient
+              - solid
+              - solid
               - gradient
             opacity:
               - 0.8
-              - 0.75
-              - 0.70
+              - 0.55
+              - 0.45
               - 0.7
             gradient:
               shade: dark
