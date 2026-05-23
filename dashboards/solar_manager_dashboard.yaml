@@ -184,9 +184,9 @@ views:
         hours_to_show: 24
         refresh_interval: 30
         layout:
-          height: 280
+          height: 300
           margin:
-            t: 5
+            t: 60
             b: 30
             l: 55
             r: 10
@@ -209,11 +209,24 @@ views:
             zerolinecolor: "#444444"
             zerolinewidth: 1
           showlegend: false
-        header:
-          show_header: true
-          title: Übersicht
-          show_states: true
-          colorize_states: true
+          annotations:
+            - text: |
+                $fn ({hass}) => {
+                  const pv = Math.round(parseFloat(hass.states['sensor.energy_manager_pv_aktuell_w'].state)||0);
+                  const haus = Math.round(parseFloat(hass.states['sensor.energy_manager_hausverbrauch_aktuell_w'].state)||0);
+                  const wp = Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0);
+                  const ein = Math.round(parseFloat(hass.states['sensor.netzeinspeisung_leistung_w'].state)||0);
+                  return `<span style='color:#ff9800'><b>${pv} W</b> PV</span>   <span style='color:#5b9bd5'><b>${haus} W</b> Haus</span>   <span style='color:#4dd0e1'><b>${wp} W</b> WP</span>   <span style='color:#7b1fa2'><b>${ein} W</b> Rückspeisung</span>`;
+                }
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.25
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 13
         entities:
           - entity: sensor.energy_manager_pv_aktuell_w
             name: PV Produktion
@@ -223,7 +236,6 @@ views:
               color: "#ff9800"
               width: 0.5
               shape: spline
-            unit_of_measurement: W
           - entity: sensor.energy_manager_hausverbrauch_aktuell_w
             name: Hausverbrauch
             fill: tozeroy
@@ -233,7 +245,6 @@ views:
               width: 0.5
               shape: spline
               dash: dot
-            unit_of_measurement: W
           - entity: sensor.energy_manager_wp_aktuell_w
             name: WP-Verbrauch
             fill: tozeroy
@@ -243,7 +254,6 @@ views:
               width: 0.5
               shape: spline
               dash: dot
-            unit_of_measurement: W
           - entity: sensor.netzeinspeisung_leistung_w
             name: PV Rückspeisung
             fill: tozeroy
@@ -254,7 +264,6 @@ views:
               shape: spline
             filters:
               - multiply: -1
-            unit_of_measurement: W
 
 
       # ── Autarkie & Eigenverbrauch (2 Reihen für Mobile) ──
