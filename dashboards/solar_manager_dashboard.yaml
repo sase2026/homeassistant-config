@@ -262,13 +262,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "-4 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: -3500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
@@ -277,13 +270,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "-3 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: -2500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
@@ -292,13 +278,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "-2 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: -1500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
@@ -307,16 +286,13 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "-1 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: -500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
+                borderWidth: 1
+              - y: 0
+                borderColor: "#555555"
+                strokeDashArray: 3
                 borderWidth: 1
               - y: 500
                 borderColor: "#3a3a3a"
@@ -326,13 +302,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "1 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: 1500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
@@ -341,13 +310,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "2 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: 2500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
@@ -356,13 +318,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "3 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: 3500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
@@ -371,13 +326,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "4 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: 4500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
@@ -386,13 +334,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "5 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: 5500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
@@ -401,13 +342,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "6 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
               - y: 6500
                 borderColor: "#3a3a3a"
                 strokeDashArray: 1
@@ -416,13 +350,6 @@ views:
                 borderColor: "#555555"
                 strokeDashArray: 3
                 borderWidth: 1
-                label:
-                  text: "7 kW"
-                  position: right
-                  style:
-                    color: "#666666"
-                    fontSize: "10px"
-                    background: transparent
           grid:
             borderColor: "#333333"
             strokeDashArray: 0
