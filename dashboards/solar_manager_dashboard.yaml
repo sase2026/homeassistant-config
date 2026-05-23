@@ -186,7 +186,7 @@ views:
         layout:
           height: 300
           margin:
-            t: 75
+            t: 90
             b: 30
             l: 55
             r: 10
@@ -204,17 +204,27 @@ views:
             gridcolor: "#2a2a2a"
             gridwidth: 0.5
             color: "#9e9e9e"
-            tickformat: ".1f"
-            ticksuffix: " kW"
+            tickformat: "d"
             tick0: 0
-            dtick: 500
+            dtick: 1000
             zeroline: true
             zerolinecolor: "#444444"
             zerolinewidth: 1
-            tickvals: [-4000,-3500,-3000,-2500,-2000,-1500,-1000,-500,0,500,1000,1500,2000,2500,3000,3500,4000,4500,5000]
-            ticktext: ["-4","-3.5","-3","-2.5","-2","-1.5","-1","-0.5","0","0.5","1","1.5","2","2.5","3","3.5","4","4.5","5"]
+            tickvals: [-4000,-3000,-2000,-1000,0,1000,2000,3000,4000,5000]
+            ticktext: ["-4","-3","-2","-1","0","1","2","3","4","5"]
           showlegend: false
           annotations:
+            - text: "Übersicht"
+              xref: paper
+              yref: paper
+              x: 0.5
+              "y": 1.38
+              xanchor: center
+              yanchor: top
+              showarrow: false
+              font:
+                size: 22
+                color: "#9e9e9e"
             - text: |
                 $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_pv_aktuell_w'].state)||0) + '<span style="color:#9e9e9e;font-size:11px"> W</span>'
               xref: paper
