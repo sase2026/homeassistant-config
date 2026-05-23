@@ -211,7 +211,7 @@ views:
           showlegend: false
           annotations:
             - text: |
-                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_pv_aktuell_w'].state)||0) + ' W'
+                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_pv_aktuell_w'].state)||0) + '<span style="color:#9e9e9e"> W</span>'
               xref: paper
               yref: paper
               x: 0.0
@@ -234,7 +234,7 @@ views:
                 size: 11
                 color: "#ff9800"
             - text: |
-                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_hausverbrauch_aktuell_w'].state)||0) + ' W'
+                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_hausverbrauch_aktuell_w'].state)||0) + '<span style="color:#9e9e9e"> W</span>'
               xref: paper
               yref: paper
               x: 0.27
@@ -257,7 +257,7 @@ views:
                 size: 11
                 color: "#5b9bd5"
             - text: |
-                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0) + ' W'
+                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0) + '<span style="color:#9e9e9e"> W</span>'
               xref: paper
               yref: paper
               x: 0.55
@@ -280,7 +280,7 @@ views:
                 size: 11
                 color: "#4dd0e1"
             - text: |
-                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.netzeinspeisung_leistung_w'].state)||0) + ' W'
+                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.netzeinspeisung_leistung_w'].state)||0) + '<span style="color:#9e9e9e"> W</span>'
               xref: paper
               yref: paper
               x: 0.78
