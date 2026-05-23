@@ -445,7 +445,8 @@ views:
               - 0
           plotOptions:
             bar:
-              columnWidth: 90%
+              columnWidth: 100%
+              borderRadius: 0
           dataLabels:
             enabled: false
           yaxis:
@@ -477,10 +478,12 @@ views:
             x:
               format: "HH:mm"
         series:
-          - entity: sensor.energy_production_today
-            name: Prognose heute
+          - entity: sensor.power_production_now
+            name: Prognose Verlauf
             color: "#ffffff"
             type: line
+            stroke_width: 1.5
+            curve: smooth
             extend_to: now
           - entity: sensor.power_production_now
             name: Leistung jetzt
