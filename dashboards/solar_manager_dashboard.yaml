@@ -419,14 +419,14 @@ views:
           title: PV Prognose - Solcast
           show_states: true
           colorize_states: true
-        graph_span: 48h
+        graph_span: 24h
         span:
           start: day
         now:
           show: true
           label: Jetzt
           color: "#ffffff"
-        update_interval: 3600s
+        update_interval: 60s
         apex_config:
           chart:
             type: bar
@@ -436,13 +436,18 @@ views:
             animations:
               enabled: false
           stroke:
+            curve: smooth
             width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
+              - 1.5
+              - 0
+            dashArray:
+              - 6
+              - 0
+          plotOptions:
             bar:
-              columnWidth: 80%
+              columnWidth: 90%
+          dataLabels:
+            enabled: false
           yaxis:
             labels:
               style:
@@ -465,16 +470,8 @@ views:
             labels:
               colors: "#9e9e9e"
           grid:
-            borderColor: "#333333"
-            strokeDashArray: 2
-          stroke:
-            curve: smooth
-            width:
-              - 0.8
-              - 0
-            dashArray:
-              - 5
-              - 0
+            borderColor: "#2a2a2a"
+            strokeDashArray: 0
           tooltip:
             theme: dark
             x:
@@ -482,13 +479,16 @@ views:
         series:
           - entity: sensor.energy_production_today
             name: Prognose heute
-            color: "#ff9800"
+            color: "#ffffff"
             type: line
             extend_to: now
           - entity: sensor.power_production_now
             name: Leistung jetzt
-            color: "#ff6f00"
+            color: "#ff9800"
             type: column
+            group_by:
+              duration: 1h
+              func: max
             extend_to: now
 
 
