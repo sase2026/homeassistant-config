@@ -186,7 +186,7 @@ views:
         layout:
           height: 300
           margin:
-            t: 60
+            t: 75
             b: 30
             l: 55
             r: 10
@@ -211,22 +211,97 @@ views:
           showlegend: false
           annotations:
             - text: |
-                $fn ({hass}) => {
-                  const pv = Math.round(parseFloat(hass.states['sensor.energy_manager_pv_aktuell_w'].state)||0);
-                  const haus = Math.round(parseFloat(hass.states['sensor.energy_manager_hausverbrauch_aktuell_w'].state)||0);
-                  const wp = Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0);
-                  const ein = Math.round(parseFloat(hass.states['sensor.netzeinspeisung_leistung_w'].state)||0);
-                  return `<span style='color:#ff9800;font-size:22px;font-weight:700'>${pv}</span><span style='color:#ff9800;font-size:13px'> W<br>PV Produktion</span>        <span style='color:#5b9bd5;font-size:22px;font-weight:700'>${haus}</span><span style='color:#5b9bd5;font-size:13px'> W<br>Hausverbrauch</span>        <span style='color:#4dd0e1;font-size:22px;font-weight:700'>${wp}</span><span style='color:#4dd0e1;font-size:13px'> W<br>WP-Verbrauch</span>        <span style='color:#7b1fa2;font-size:22px;font-weight:700'>${ein}</span><span style='color:#7b1fa2;font-size:13px'> W<br>PV Rückspeisung</span>`;
-                }
+                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_pv_aktuell_w'].state)||0) + ' W'
               xref: paper
               yref: paper
-              x: 0
-              "y": 1.28
+              x: 0.0
+              "y": 1.22
               xanchor: left
               yanchor: top
               showarrow: false
               font:
-                size: 13
+                size: 22
+                color: "#ff9800"
+            - text: "PV Produktion"
+              xref: paper
+              yref: paper
+              x: 0.0
+              "y": 1.08
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 11
+                color: "#ff9800"
+            - text: |
+                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_hausverbrauch_aktuell_w'].state)||0) + ' W'
+              xref: paper
+              yref: paper
+              x: 0.27
+              "y": 1.22
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 22
+                color: "#5b9bd5"
+            - text: "Hausverbrauch"
+              xref: paper
+              yref: paper
+              x: 0.27
+              "y": 1.08
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 11
+                color: "#5b9bd5"
+            - text: |
+                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0) + ' W'
+              xref: paper
+              yref: paper
+              x: 0.55
+              "y": 1.22
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 22
+                color: "#4dd0e1"
+            - text: "WP-Verbrauch"
+              xref: paper
+              yref: paper
+              x: 0.55
+              "y": 1.08
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 11
+                color: "#4dd0e1"
+            - text: |
+                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.netzeinspeisung_leistung_w'].state)||0) + ' W'
+              xref: paper
+              yref: paper
+              x: 0.78
+              "y": 1.22
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 22
+                color: "#7b1fa2"
+            - text: "PV Rückspeisung"
+              xref: paper
+              yref: paper
+              x: 0.78
+              "y": 1.08
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 11
+                color: "#7b1fa2"
         entities:
           - entity: sensor.energy_manager_pv_aktuell_w
             name: PV Produktion
