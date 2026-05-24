@@ -413,121 +413,61 @@ views:
             layout: vertical
 
       # ── Grafik: PV Prognose Solcast ──
-      - type: custom:plotly-graph
-        title: PV Prognose - Solcast
-        refresh_interval: 3600
-        hours_to_show: 1
-        layout:
-          height: 300
-          margin:
-            t: 90
-            b: 40
-            l: 55
-            r: 10
-          paper_bgcolor: "rgba(0,0,0,0)"
-          plot_bgcolor: "rgba(0,0,0,0)"
-          font:
-            color: "#9e9e9e"
-            size: 11
-          xaxis:
-            showgrid: false
-            color: "#9e9e9e"
-            type: category
-          yaxis:
-            showgrid: true
-            gridcolor: "#2a2a2a"
-            color: "#9e9e9e"
-            title: ""
-            range:
-              - 0
-              - 4
-            tickformat: ".1f"
-            ticksuffix: " kW"
-          showlegend: false
-          annotations:
-            - text: "PV Prognose - Solcast"
-              xref: paper
-              yref: paper
-              x: -0.07
-              "y": 1.38
-              xanchor: left
-              yanchor: top
-              showarrow: false
-              font:
-                size: 22
-                color: "#9e9e9e"
-            - text: |
-                $fn ({hass}) => {
-                  const v = parseFloat(hass.states['sensor.solcast_pv_forecast_prognose_heute'].state)||0;
-                  return v.toFixed(1) + '<span style="color:#9e9e9e;font-size:11px"> kWh</span>';
-                }
-              xref: paper
-              yref: paper
-              x: -0.07
-              "y": 1.22
-              xanchor: left
-              yanchor: top
-              showarrow: false
-              font:
-                size: 22
-                color: "#ff9800"
-            - text: "Prognose heute"
-              xref: paper
-              yref: paper
-              x: -0.07
-              "y": 1.08
-              xanchor: left
-              yanchor: top
-              showarrow: false
-              font:
-                size: 11
-                color: "#ff9800"
-            - text: |
-                $fn ({hass}) => {
-                  const v = Math.round(parseFloat(hass.states['sensor.solcast_pv_forecast_prognose_spitzenleistung_heute'].state)||0);
-                  return v + '<span style="color:#9e9e9e;font-size:11px"> W</span>';
-                }
-              xref: paper
-              yref: paper
-              x: 0.65
-              "y": 1.22
-              xanchor: left
-              yanchor: top
-              showarrow: false
-              font:
-                size: 22
-                color: "#ff9800"
-            - text: "Spitze heute"
-              xref: paper
-              yref: paper
-              x: 0.65
-              "y": 1.08
-              xanchor: left
-              yanchor: top
-              showarrow: false
-              font:
-                size: 11
-                color: "#ff9800"
-        entities:
-          - entity: sensor.solcast_pv_forecast_prognose_heute
-            name: Prognose
+      - type: custom:apexcharts-card
+        header:
+          show: true
+          title: PV Prognose - Solcast
+          show_states: true
+          colorize_states: true
+        update_interval: 3600s
+        apex_config:
+          chart:
             type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            attribute: detailedHourly
-            filters:
-              - fn: |
-                  ({states, hass}) => {
-                    const attr = hass.states['sensor.solcast_pv_forecast_prognose_heute'].attributes.detailedHourly || [];
-                    const hours = [7,8,9,10,11,12,13,14,15,16,17,18,19,20];
-                    return {
-                      xs: hours.map(h => h + 'h'),
-                      ys: hours.map(h => {
-                        const e = attr.find(d => new Date(d.period_start).getHours() === h);
-                        return e ? Math.round(e.pv_estimate * 100) / 100 : 0;
-                      })
-                    };
-                  }
+            height: 280
+            toolbar:
+              show: false
+          plotOptions:
+            bar:
+              columnWidth: 80%
+              borderRadius: 2
+          dataLabels:
+            enabled: false
+          stroke:
+            width: 0
+          yaxis:
+            min: 0
+            max: 4
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+              formatter: |
+                EVAL:function(val) { return val.toFixed(1) + ' kW'; }
+          xaxis:
+            type: category
+            labels:
+              style:
+                colors: "#9e9e9e"
+                fontSize: "11px"
+          legend:
+            show: false
+          grid:
+            borderColor: "#2a2a2a"
+          tooltip:
+            theme: dark
+        series:
+          - entity: sensor.solcast_pv_forecast_prognose_heute
+            name: "Prognose heute"
+            color: "#ff9800"
+            show:
+              in_header: true
+              legend_value: true
+          - entity: sensor.solcast_pv_forecast_prognose_spitzenleistung_heute
+            name: "Spitze"
+            color: "#ffcc80"
+            show:
+              in_header: true
+              legend_value: true
 
 
   # ═══════════════════════════════════════════════════════════
