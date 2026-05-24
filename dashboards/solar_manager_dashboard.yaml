@@ -416,6 +416,7 @@ views:
       - type: custom:plotly-graph
         title: PV Prognose - Solcast
         refresh_interval: 3600
+        hours_to_show: 1
         layout:
           height: 300
           margin:
@@ -432,7 +433,6 @@ views:
             showgrid: false
             color: "#9e9e9e"
             type: category
-            tickangle: 0
           yaxis:
             showgrid: true
             gridcolor: "#2a2a2a"
@@ -514,17 +514,19 @@ views:
             type: bar
             marker:
               color: "rgba(255,152,0,0.85)"
+            attribute: detailedHourly
             filters:
               - fn: |
-                  ({meta, hass}) => {
-                    const data = meta.detailedHourly || [];
+                  ({states, hass}) => {
+                    const attr = hass.states['sensor.solcast_pv_forecast_prognose_heute'].attributes.detailedHourly || [];
                     const hours = [7,8,9,10,11,12,13,14,15,16,17,18,19,20];
-                    const xs = hours.map(h => h + 'h');
-                    const ys = hours.map(h => {
-                      const entry = data.find(d => new Date(d.period_start).getHours() === h);
-                      return entry ? parseFloat(entry.pv_estimate.toFixed(2)) : 0;
-                    });
-                    return { xs, ys };
+                    return {
+                      xs: hours.map(h => h + 'h'),
+                      ys: hours.map(h => {
+                        const e = attr.find(d => new Date(d.period_start).getHours() === h);
+                        return e ? Math.round(e.pv_estimate * 100) / 100 : 0;
+                      })
+                    };
                   }
 
 
