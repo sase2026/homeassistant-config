@@ -363,7 +363,7 @@ views:
           - type: custom:mushroom-template-card
             primary: Eigenverbrauch Jahr
             secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) | round(1) }} %"
-            icon: mdi:home-check
+            icon: mdi:home-percent
             icon_color: green
             layout: vertical
 
@@ -1409,7 +1409,7 @@ views:
           - type: custom:mushroom-template-card
             primary: Eigenverbrauch Jahr
             secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) | round(1) }} %"
-            icon: mdi:home-check
+            icon: mdi:home-percent
             icon_color: green
             layout: vertical
 
