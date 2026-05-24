@@ -430,11 +430,8 @@ views:
               enabled: false
           plotOptions:
             bar:
-              columnWidth: 80%
+              columnWidth: 85%
               borderRadius: 2
-              distributed: true
-          colors:
-            - "#ff9800"
           dataLabels:
             enabled: false
           stroke:
@@ -458,9 +455,11 @@ views:
             show: false
           grid:
             borderColor: "#2a2a2a"
-            strokeDashArray: 0
           tooltip:
             theme: dark
+            y:
+              formatter: |
+                EVAL:function(val) { return val.toFixed(2) + ' kW'; }
         series:
           - entity: sensor.solcast_pv_forecast_prognose_heute
             name: "Prognose heute"
@@ -475,131 +474,28 @@ views:
               in_header: true
               legend_value: true
           - entity: sensor.solcast_prognose_07h_kw
-            name: "07:00"
+            name: Prognose
             color: "#ff9800"
             show:
               in_header: false
               legend_value: false
             data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "07h", y: val }];
-          - entity: sensor.solcast_prognose_08h_kw
-            name: "08:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "08h", y: val }];
-          - entity: sensor.solcast_prognose_09h_kw
-            name: "09:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "09h", y: val }];
-          - entity: sensor.solcast_prognose_10h_kw
-            name: "10:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "10h", y: val }];
-          - entity: sensor.solcast_prognose_11h_kw
-            name: "11:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "11h", y: val }];
-          - entity: sensor.solcast_prognose_12h_kw
-            name: "12:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "12h", y: val }];
-          - entity: sensor.solcast_prognose_13h_kw
-            name: "13:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "13h", y: val }];
-          - entity: sensor.solcast_prognose_14h_kw
-            name: "14:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "14h", y: val }];
-          - entity: sensor.solcast_prognose_15h_kw
-            name: "15:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "15h", y: val }];
-          - entity: sensor.solcast_prognose_16h_kw
-            name: "16:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "16h", y: val }];
-          - entity: sensor.solcast_prognose_17h_kw
-            name: "17:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "17h", y: val }];
-          - entity: sensor.solcast_prognose_18h_kw
-            name: "18:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "18h", y: val }];
-          - entity: sensor.solcast_prognose_19h_kw
-            name: "19:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "19h", y: val }];
-          - entity: sensor.solcast_prognose_20h_kw
-            name: "20:00"
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              const val = parseFloat(entity.state) || 0;
-              return [{ x: "20h", y: val }];
+              return [
+                { x: "07h", y: parseFloat(states["sensor.solcast_prognose_07h_kw"].state) || 0 },
+                { x: "08h", y: parseFloat(states["sensor.solcast_prognose_08h_kw"].state) || 0 },
+                { x: "09h", y: parseFloat(states["sensor.solcast_prognose_09h_kw"].state) || 0 },
+                { x: "10h", y: parseFloat(states["sensor.solcast_prognose_10h_kw"].state) || 0 },
+                { x: "11h", y: parseFloat(states["sensor.solcast_prognose_11h_kw"].state) || 0 },
+                { x: "12h", y: parseFloat(states["sensor.solcast_prognose_12h_kw"].state) || 0 },
+                { x: "13h", y: parseFloat(states["sensor.solcast_prognose_13h_kw"].state) || 0 },
+                { x: "14h", y: parseFloat(states["sensor.solcast_prognose_14h_kw"].state) || 0 },
+                { x: "15h", y: parseFloat(states["sensor.solcast_prognose_15h_kw"].state) || 0 },
+                { x: "16h", y: parseFloat(states["sensor.solcast_prognose_16h_kw"].state) || 0 },
+                { x: "17h", y: parseFloat(states["sensor.solcast_prognose_17h_kw"].state) || 0 },
+                { x: "18h", y: parseFloat(states["sensor.solcast_prognose_18h_kw"].state) || 0 },
+                { x: "19h", y: parseFloat(states["sensor.solcast_prognose_19h_kw"].state) || 0 },
+                { x: "20h", y: parseFloat(states["sensor.solcast_prognose_20h_kw"].state) || 0 }
+              ];
 
 
   # ═══════════════════════════════════════════════════════════
