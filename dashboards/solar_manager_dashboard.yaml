@@ -413,61 +413,220 @@ views:
             layout: vertical
 
       # ── Grafik: PV Prognose Solcast ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: PV Prognose - Solcast
-          show_states: true
-          colorize_states: true
-        update_interval: 3600s
-        apex_config:
-          chart:
-            type: bar
-            height: 280
-            toolbar:
-              show: false
-          plotOptions:
-            bar:
-              columnWidth: 80%
-              borderRadius: 2
-          dataLabels:
-            enabled: false
-          stroke:
-            width: 0
-          yaxis:
-            min: 0
-            max: 4
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-              formatter: |
-                EVAL:function(val) { return val.toFixed(1) + ' kW'; }
+      - type: custom:mushroom-template-card
+        primary: PV Prognose - Solcast
+        secondary: >
+          {{ states('sensor.solcast_pv_forecast_prognose_heute') | float(0) | round(1) }} kWh heute
+          | Spitze: {{ (states('sensor.solcast_pv_forecast_prognose_spitzenleistung_heute') | float(0) / 1000) | round(2) }} kW
+          | Morgen: {{ states('sensor.solcast_pv_forecast_prognose_morgen') | float(0) | round(1) }} kWh
+        icon: mdi:solar-power-variant
+        icon_color: >
+          {% set v = states('sensor.solcast_pv_forecast_prognose_heute') | float(0) %}
+          {% if v > 15 %}green{% elif v > 8 %}amber{% else %}blue{% endif %}
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 2: PV
+  # ═══════════════════════════════════════════════════════════
+  - title: PV
+    path: pv
+    icon: mdi:solar-panel
+    cards:
+
+      # ── Kacheln Zeile 1: Produktion ─────────────────────────────
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: PV aktuell
+            secondary: "{{ states('sensor.energy_manager_pv_aktuell_w') | int }} W"
+            icon: mdi:solar-power-variant
+            icon_color: "#ff9800"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: PV heute
+            secondary: "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(2) }} kWh"
+            icon: mdi:white-balance-sunny
+            icon_color: "#ff9800"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: PV Monat
+            secondary: "{{ states('sensor.energy_manager_pv_produktion_monat_kwh') | float(0) | round(1) }} kWh"
+            icon: mdi:calendar-month
+            icon_color: "#ff9800"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: PV Jahr
+            secondary: "{{ states('sensor.energy_manager_pv_produktion_jahr_kwh') | float(0) | round(1) }} kWh"
+            icon: mdi:calendar-year
+            icon_color: "#ff9800"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Gesamtertrag
+            secondary: "{{ states('sensor.stp4_0_3av_40_930_total_yield') | float(0) | round(1) }} kWh"
+            icon: mdi:counter
+            icon_color: "#f59e0b"
+            layout: vertical
+
+      # ── Kacheln Zeile 2: Eigenverbrauch & Autarkie ──────────────
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch heute
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(1) }} %"
+            icon: mdi:home-lightning-bolt
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Eigenverbrauch Monat
+            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) | round(1) }} %"
+            icon: mdi:home-lightning-bolt
+            icon_color: >
+              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) %}
+              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Autarkie heute
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(1) }} %"
+            icon: mdi:shield-sun
+            icon_color: >
+              {% set v = states('sensor.energy_manager_autarkiegrad_heute') | float(0) %}
+              {% if v >= 80 %}green{% elif v >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Autarkie Monat
+            secondary: "{{ states('sensor.energy_manager_autarkiegrad_monat') | float(0) | round(1) }} %"
+            icon: mdi:shield-sun
+            icon_color: >
+              {% set v = states('sensor.energy_manager_autarkiegrad_monat') | float(0) %}
+              {% if v >= 80 %}green{% elif v >= 50 %}amber{% else %}red{% endif %}
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: PV Überschuss
+            secondary: "{{ states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | int }} W"
+            icon: mdi:transmission-tower-export
+            icon_color: "#7b1fa2"
+            layout: vertical
+
+      # ── Kacheln Zeile 3: Solcast Prognose ───────────────────────
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: Prognose heute
+            secondary: "{{ states('sensor.solcast_pv_forecast_prognose_heute') | float(0) | round(1) }} kWh"
+            icon: mdi:solar-power
+            icon_color: "#ff9800"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Prognose morgen
+            secondary: "{{ states('sensor.solcast_pv_forecast_prognose_morgen') | float(0) | round(1) }} kWh"
+            icon: mdi:solar-power
+            icon_color: "#f59e0b"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Spitze heute
+            secondary: "{{ (states('sensor.solcast_pv_forecast_prognose_spitzenleistung_heute') | float(0) / 1000) | round(2) }} kW"
+            icon: mdi:lightning-bolt
+            icon_color: "#ff9800"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Leistung in 1h
+            secondary: "{{ (states('sensor.solcast_pv_forecast_leistung_in_1_stunde') | float(0) / 1000) | round(2) }} kW"
+            icon: mdi:clock-fast
+            icon_color: "#f59e0b"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Verbleibend heute
+            secondary: "{{ states('sensor.solcast_pv_forecast_prognose_verbleibende_leistung_heute') | float(0) | round(1) }} kWh"
+            icon: mdi:sun-clock
+            icon_color: "#ff9800"
+            layout: vertical
+
+      # ── Grafik PV Produktion heute ───────────────────────────────
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 60
+        layout:
+          height: 300
+          margin:
+            t: 60
+            b: 30
+            l: 55
+            r: 10
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
           xaxis:
-            type: category
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-          legend:
-            show: false
-          grid:
-            borderColor: "#2a2a2a"
-          tooltip:
-            theme: dark
-        series:
-          - entity: sensor.solcast_pv_forecast_prognose_heute
-            name: "Prognose heute"
-            color: "#ff9800"
-            show:
-              in_header: true
-              legend_value: true
-          - entity: sensor.solcast_pv_forecast_prognose_spitzenleistung_heute
-            name: "Spitze"
-            color: "#ffcc80"
-            show:
-              in_header: true
-              legend_value: true
+            showgrid: false
+            color: "#9e9e9e"
+            tickformat: "%H:%M"
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            title: ""
+            tickformat: "d"
+            ticksuffix: " W"
+            zeroline: true
+            zerolinecolor: "#444444"
+            zerolinewidth: 1
+          showlegend: false
+          annotations:
+            - text: "PV Produktion heute"
+              xref: paper
+              yref: paper
+              x: -0.07
+              "y": 1.22
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 22
+                color: "#9e9e9e"
+            - text: |
+                $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.energy_manager_pv_aktuell_w'].state)||0) + '<span style="color:#9e9e9e;font-size:11px"> W</span>'
+              xref: paper
+              yref: paper
+              x: 0.5
+              "y": 1.22
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 22
+                color: "#ff9800"
+            - text: "jetzt"
+              xref: paper
+              yref: paper
+              x: 0.5
+              "y": 1.08
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 11
+                color: "#ff9800"
+        entities:
+          - entity: sensor.energy_manager_pv_aktuell_w
+            name: PV Produktion
+            fill: tozeroy
+            fillcolor: "rgba(255,152,0,0.22)"
+            line:
+              color: "#ff9800"
+              width: 0.5
+              shape: spline
+          - entity: sensor.netzeinspeisung_leistung_w
+            name: PV Rückspeisung
+            fill: tozeroy
+            fillcolor: "rgba(123,31,162,0.22)"
+            line:
+              color: "#7b1fa2"
+              width: 0.5
+              shape: spline
+            filters:
+              - multiply: -1
 
 
   # ═══════════════════════════════════════════════════════════
