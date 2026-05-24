@@ -419,6 +419,7 @@ views:
           title: PV Prognose - Solcast
           show_states: true
           colorize_states: true
+        graph_span: 1min
         update_interval: 3600s
         apex_config:
           chart:
@@ -459,7 +460,7 @@ views:
             theme: dark
             y:
               formatter: |
-                EVAL:function(val) { return val.toFixed(2) + ' kW'; }
+                EVAL:function(val) { return val ? val.toFixed(2) + ' kW' : '0 kW'; }
         series:
           - entity: sensor.solcast_pv_forecast_prognose_heute
             name: "Prognose heute"
@@ -474,7 +475,7 @@ views:
               in_header: true
               legend_value: true
           - entity: sensor.solcast_prognose_07h_kw
-            name: Prognose
+            name: Prognose kW
             color: "#ff9800"
             show:
               in_header: false
