@@ -71,15 +71,9 @@ views:
             card_mod:
               style: "ha-card { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); border-radius: 16px; }\n"
 
-      # ── EBENE 3: Autarkie % | Eigenverbrauch % | PV heute kWh ──
+      # ── EBENE 3: PV heute kWh ──
       - type: horizontal-stack
         cards:
-
-            card_mod:
-              style: "ha-card { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 16px; }\n"
-
-            card_mod:
-              style: "ha-card { background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.3); border-radius: 16px; }\n"
           - type: custom:mushroom-template-card
             primary: PV heute
             secondary: "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(2) }} kWh"
