@@ -420,7 +420,7 @@ views:
           height: 300
           margin:
             t: 90
-            b: 30
+            b: 40
             l: 55
             r: 10
           paper_bgcolor: "rgba(0,0,0,0)"
@@ -432,6 +432,7 @@ views:
             showgrid: false
             color: "#9e9e9e"
             type: category
+            tickangle: 0
           yaxis:
             showgrid: true
             gridcolor: "#2a2a2a"
@@ -508,105 +509,23 @@ views:
                 size: 11
                 color: "#ff9800"
         entities:
-          - entity: sensor.solcast_prognose_07h_kw
-            name: "07h"
+          - entity: sensor.solcast_pv_forecast_prognose_heute
+            name: Prognose
             type: bar
             marker:
               color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['07h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_07h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_08h_kw
-            name: "08h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['08h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_08h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_09h_kw
-            name: "09h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['09h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_09h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_10h_kw
-            name: "10h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['10h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_10h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_11h_kw
-            name: "11h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['11h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_11h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_12h_kw
-            name: "12h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['12h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_12h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_13h_kw
-            name: "13h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['13h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_13h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_14h_kw
-            name: "14h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['14h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_14h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_15h_kw
-            name: "15h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['15h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_15h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_16h_kw
-            name: "16h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['16h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_16h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_17h_kw
-            name: "17h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['17h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_17h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_18h_kw
-            name: "18h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['18h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_18h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_19h_kw
-            name: "19h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['19h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_19h_kw'].state) || 0]"
-          - entity: sensor.solcast_prognose_20h_kw
-            name: "20h"
-            type: bar
-            marker:
-              color: "rgba(255,152,0,0.85)"
-            x_fn: "$fn () => ['20h']"
-            y_fn: "$fn ({ys, xs, hass}) => [parseFloat(hass.states['sensor.solcast_prognose_20h_kw'].state) || 0]"
-
+            filters:
+              - fn: |
+                  ({meta, hass}) => {
+                    const data = meta.detailedHourly || [];
+                    const hours = [7,8,9,10,11,12,13,14,15,16,17,18,19,20];
+                    const xs = hours.map(h => h + 'h');
+                    const ys = hours.map(h => {
+                      const entry = data.find(d => new Date(d.period_start).getHours() === h);
+                      return entry ? parseFloat(entry.pv_estimate.toFixed(2)) : 0;
+                    });
+                    return { xs, ys };
+                  }
 
 
   # ═══════════════════════════════════════════════════════════
