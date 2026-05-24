@@ -74,24 +74,10 @@ views:
       # ── EBENE 3: Autarkie % | Eigenverbrauch % | PV heute kWh ──
       - type: horizontal-stack
         cards:
-          - type: custom:mushroom-template-card
-            primary: Autarkie
-            secondary: "{{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(1) }} %"
-            icon: mdi:shield-sun
-            icon_color: >
-              {% set a = states('sensor.energy_manager_autarkiegrad_heute') | float(0) %}
-              {% if a >= 80 %}green{% elif a >= 50 %}amber{% else %}red{% endif %}
-            layout: vertical
+
             card_mod:
               style: "ha-card { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.3); border-radius: 16px; }\n"
-          - type: custom:mushroom-template-card
-            primary: Eigenverbrauch
-            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(1) }} %"
-            icon: mdi:home-percent
-            icon_color: >
-              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
-              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
-            layout: vertical
+
             card_mod:
               style: "ha-card { background: rgba(37,99,235,0.08); border: 1px solid rgba(37,99,235,0.3); border-radius: 16px; }\n"
           - type: custom:mushroom-template-card
@@ -387,14 +373,7 @@ views:
 
       - type: horizontal-stack
         cards:
-          - type: custom:mushroom-template-card
-            primary: Eigenverbrauch heute
-            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(1) }} %"
-            icon: mdi:home-percent
-            icon_color: >
-              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
-              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
-            layout: vertical
+
           - type: custom:mushroom-template-card
             primary: Eigenverbrauch Monat
             secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) | round(1) }} %"
@@ -485,14 +464,7 @@ views:
               {% set v = states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) %}
               {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
             layout: vertical
-          - type: custom:mushroom-template-card
-            primary: Autarkie heute
-            secondary: "{{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(1) }} %"
-            icon: mdi:shield-sun
-            icon_color: >
-              {% set v = states('sensor.energy_manager_autarkiegrad_heute') | float(0) %}
-              {% if v >= 80 %}green{% elif v >= 50 %}amber{% else %}red{% endif %}
-            layout: vertical
+
           - type: custom:mushroom-template-card
             primary: Autarkie Monat
             secondary: "{{ states('sensor.energy_manager_autarkiegrad_monat') | float(0) | round(1) }} %"
@@ -1451,14 +1423,7 @@ views:
       # ── Reihe 2: Eigenverbrauch ──
       - type: horizontal-stack
         cards:
-          - type: custom:mushroom-template-card
-            primary: Eigenverbrauch heute
-            secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) | round(1) }} %"
-            icon: mdi:home-percent
-            icon_color: >
-              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_heute') | float(0) %}
-              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
-            layout: vertical
+
           - type: custom:mushroom-template-card
             primary: Eigenverbrauch Monat
             secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) | round(1) }} %"
