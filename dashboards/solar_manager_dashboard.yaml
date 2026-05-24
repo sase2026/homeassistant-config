@@ -413,90 +413,185 @@ views:
             layout: vertical
 
       # ── Grafik: PV Prognose Solcast ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: PV Prognose - Solcast
-          show_states: true
-          colorize_states: true
-        graph_span: 1min
-        update_interval: 3600s
-        apex_config:
-          chart:
-            type: bar
-            height: 280
-            toolbar:
-              show: false
-            animations:
-              enabled: false
-          plotOptions:
-            bar:
-              columnWidth: 85%
-              borderRadius: 2
-          dataLabels:
-            enabled: false
-          stroke:
-            width: 0
-          yaxis:
-            min: 0
-            max: 4
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-              formatter: |
-                EVAL:function(val) { return val.toFixed(1) + ' kW'; }
+      - type: custom:plotly-graph
+        title: PV Prognose - Solcast
+        refresh_interval: 3600
+        layout:
+          height: 300
+          margin:
+            t: 90
+            b: 30
+            l: 55
+            r: 10
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
           xaxis:
+            showgrid: false
+            color: "#9e9e9e"
             type: category
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-          legend:
-            show: false
-          grid:
-            borderColor: "#2a2a2a"
-          tooltip:
-            theme: dark
-            y:
-              formatter: |
-                EVAL:function(val) { return val ? val.toFixed(2) + ' kW' : '0 kW'; }
-        series:
-          - entity: sensor.solcast_pv_forecast_prognose_heute
-            name: "Prognose heute"
-            color: "#ff9800"
-            show:
-              in_header: true
-              legend_value: true
-          - entity: sensor.solcast_pv_forecast_prognose_spitzenleistung_heute
-            name: "Spitze"
-            color: "#ffcc80"
-            show:
-              in_header: true
-              legend_value: true
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            title: ""
+            range:
+              - 0
+              - 4
+            tickformat: ".1f"
+            ticksuffix: " kW"
+          showlegend: false
+          annotations:
+            - text: "PV Prognose - Solcast"
+              xref: paper
+              yref: paper
+              x: -0.07
+              "y": 1.38
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 22
+                color: "#9e9e9e"
+            - text: |
+                $fn ({hass}) => {
+                  const v = parseFloat(hass.states['sensor.solcast_pv_forecast_prognose_heute'].state)||0;
+                  return v.toFixed(1) + '<span style="color:#9e9e9e;font-size:11px"> kWh</span>';
+                }
+              xref: paper
+              yref: paper
+              x: -0.07
+              "y": 1.22
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 22
+                color: "#ff9800"
+            - text: "Prognose heute"
+              xref: paper
+              yref: paper
+              x: -0.07
+              "y": 1.08
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 11
+                color: "#ff9800"
+            - text: |
+                $fn ({hass}) => {
+                  const v = Math.round(parseFloat(hass.states['sensor.solcast_pv_forecast_prognose_spitzenleistung_heute'].state)||0);
+                  return v + '<span style="color:#9e9e9e;font-size:11px"> W</span>';
+                }
+              xref: paper
+              yref: paper
+              x: 0.65
+              "y": 1.22
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 22
+                color: "#ff9800"
+            - text: "Spitze heute"
+              xref: paper
+              yref: paper
+              x: 0.65
+              "y": 1.08
+              xanchor: left
+              yanchor: top
+              showarrow: false
+              font:
+                size: 11
+                color: "#ff9800"
+        entities:
           - entity: sensor.solcast_prognose_07h_kw
-            name: Prognose kW
-            color: "#ff9800"
-            show:
-              in_header: false
-              legend_value: false
-            data_generator: |
-              return [
-                { x: "07h", y: parseFloat(states["sensor.solcast_prognose_07h_kw"].state) || 0 },
-                { x: "08h", y: parseFloat(states["sensor.solcast_prognose_08h_kw"].state) || 0 },
-                { x: "09h", y: parseFloat(states["sensor.solcast_prognose_09h_kw"].state) || 0 },
-                { x: "10h", y: parseFloat(states["sensor.solcast_prognose_10h_kw"].state) || 0 },
-                { x: "11h", y: parseFloat(states["sensor.solcast_prognose_11h_kw"].state) || 0 },
-                { x: "12h", y: parseFloat(states["sensor.solcast_prognose_12h_kw"].state) || 0 },
-                { x: "13h", y: parseFloat(states["sensor.solcast_prognose_13h_kw"].state) || 0 },
-                { x: "14h", y: parseFloat(states["sensor.solcast_prognose_14h_kw"].state) || 0 },
-                { x: "15h", y: parseFloat(states["sensor.solcast_prognose_15h_kw"].state) || 0 },
-                { x: "16h", y: parseFloat(states["sensor.solcast_prognose_16h_kw"].state) || 0 },
-                { x: "17h", y: parseFloat(states["sensor.solcast_prognose_17h_kw"].state) || 0 },
-                { x: "18h", y: parseFloat(states["sensor.solcast_prognose_18h_kw"].state) || 0 },
-                { x: "19h", y: parseFloat(states["sensor.solcast_prognose_19h_kw"].state) || 0 },
-                { x: "20h", y: parseFloat(states["sensor.solcast_prognose_20h_kw"].state) || 0 }
-              ];
+            name: "07h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['07h']"
+          - entity: sensor.solcast_prognose_08h_kw
+            name: "08h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['08h']"
+          - entity: sensor.solcast_prognose_09h_kw
+            name: "09h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['09h']"
+          - entity: sensor.solcast_prognose_10h_kw
+            name: "10h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['10h']"
+          - entity: sensor.solcast_prognose_11h_kw
+            name: "11h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['11h']"
+          - entity: sensor.solcast_prognose_12h_kw
+            name: "12h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['12h']"
+          - entity: sensor.solcast_prognose_13h_kw
+            name: "13h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['13h']"
+          - entity: sensor.solcast_prognose_14h_kw
+            name: "14h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['14h']"
+          - entity: sensor.solcast_prognose_15h_kw
+            name: "15h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['15h']"
+          - entity: sensor.solcast_prognose_16h_kw
+            name: "16h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['16h']"
+          - entity: sensor.solcast_prognose_17h_kw
+            name: "17h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['17h']"
+          - entity: sensor.solcast_prognose_18h_kw
+            name: "18h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['18h']"
+          - entity: sensor.solcast_prognose_19h_kw
+            name: "19h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['19h']"
+          - entity: sensor.solcast_prognose_20h_kw
+            name: "20h"
+            type: bar
+            marker:
+              color: "rgba(255,152,0,0.85)"
+            x_fn: "$fn () => ['20h']"
 
 
   # ═══════════════════════════════════════════════════════════
