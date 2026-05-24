@@ -335,14 +335,6 @@ views:
       - type: horizontal-stack
         cards:
           - type: custom:mushroom-template-card
-            primary: Autarkie heute
-            secondary: "{{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(1) }} %"
-            icon: mdi:shield-sun
-            icon_color: >
-              {% set a = states('sensor.energy_manager_autarkiegrad_heute') | float(0) %}
-              {% if a >= 80 %}green{% elif a >= 50 %}amber{% else %}red{% endif %}
-            layout: vertical
-          - type: custom:mushroom-template-card
             primary: Autarkie Monat
             secondary: "{{ states('sensor.energy_manager_autarkiegrad_monat') | float(0) | round(1) }} %"
             icon: mdi:shield-sun-outline
@@ -366,17 +358,13 @@ views:
             primary: Eigenverbrauch Monat
             secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) | round(1) }} %"
             icon: mdi:home-percent-outline
-            icon_color: >
-              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) %}
-              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            icon_color: green
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Eigenverbrauch Jahr
             secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) | round(1) }} %"
             icon: mdi:home-check
-            icon_color: >
-              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) %}
-              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            icon_color: green
             layout: vertical
 
       # ── Grafik: PV Prognose Solcast ──
@@ -1416,17 +1404,13 @@ views:
             primary: Eigenverbrauch Monat
             secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) | round(1) }} %"
             icon: mdi:home-percent-outline
-            icon_color: >
-              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_monat') | float(0) %}
-              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            icon_color: green
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Eigenverbrauch Jahr
             secondary: "{{ states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) | round(1) }} %"
             icon: mdi:home-check
-            icon_color: >
-              {% set v = states('sensor.energy_manager_eigenverbrauchsquote_jahr') | float(0) %}
-              {% if v >= 60 %}green{% elif v >= 30 %}amber{% else %}red{% endif %}
+            icon_color: green
             layout: vertical
 
       # ── Reihe 3: PV-Produktion Grafik (kumuliert) ──
