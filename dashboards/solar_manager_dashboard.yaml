@@ -170,7 +170,7 @@ views:
           card:
             - background: "var(--ha-card-background, var(--card-background-color, #1c1c1c))"
             - border-radius: 12px
-            - padding: 12px 16px
+            - padding: 4px 16px 12px 16px
           name:
             - font-size: 13px
             - color: "var(--primary-text-color)"
@@ -257,7 +257,7 @@ views:
             });
             legend += '</g>';
 
-            return `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:auto">
+            return `<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:auto">
               ${paths}${labels}${centerText}${legend}
             </svg>`;
           ]]]
@@ -381,7 +381,7 @@ views:
                 $fn ({hass}) => Math.round(parseFloat(hass.states['sensor.netzeinspeisung_leistung_w'].state)||0) + '<span style="color:#9e9e9e;font-size:11px"> W</span>'
               xref: paper
               yref: paper
-              x: 0.78
+              x: 0.72
               "y": 1.22
               xanchor: left
               yanchor: top
@@ -389,10 +389,10 @@ views:
               font:
                 size: 22
                 color: "#7b1fa2"
-            - text: "PV Rückspeisung"
+            - text: "PV Rückspeis."
               xref: paper
               yref: paper
-              x: 0.78
+              x: 0.72
               "y": 1.08
               xanchor: left
               yanchor: top
