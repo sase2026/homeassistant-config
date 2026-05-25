@@ -229,14 +229,14 @@ views:
                 paths += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="600" fill="white">${(frac*100).toFixed(0)}%</text>`;
               }
 
-              // kWh label outside mit Name
-              const ox = cx + (r + 28) * Math.cos(midAngle);
-              const oy = cy + (r + 28) * Math.sin(midAngle);
-              const anchor = Math.cos(midAngle) > 0 ? 'start' : 'end';
+              // kWh label outside mit Name - mehr Abstand
+              const ox = cx + (r + 35) * Math.cos(midAngle);
+              const oy = cy + (r + 35) * Math.sin(midAngle);
+              const anchor = Math.cos(midAngle) > 0.1 ? 'start' : (Math.cos(midAngle) < -0.1 ? 'end' : 'middle');
               if (frac > 0.04) {
                 const name = seg.label === 'PV Anteil' ? 'PV Produktion' : 'Netzbezug';
-                labels += `<text x="${ox}" y="${oy-6}" text-anchor="${anchor}" dominant-baseline="middle" font-size="10" font-weight="600" fill="${seg.color}">${name}</text>`;
-                labels += `<text x="${ox}" y="${oy+8}" text-anchor="${anchor}" dominant-baseline="middle" font-size="10" fill="${seg.color}">${seg.value.toFixed(2)} kWh</text>`;
+                labels += `<text x="${ox}" y="${oy-7}" text-anchor="${anchor}" font-size="11" font-weight="600" fill="${seg.color}">${name}</text>`;
+                labels += `<text x="${ox}" y="${oy+8}" text-anchor="${anchor}" font-size="11" fill="${seg.color}">${seg.value.toFixed(2)} kWh</text>`;
               }
 
               startAngle = endAngle;
@@ -250,10 +250,21 @@ views:
 
             // Legend
             let legend = '';
+            // Legende auf einer Linie unten
+            legend += `<g transform="translate(-35,215)">`;
+            let lx3 = 0;
+            segments.forEach(seg => {
+              if (seg.value <= 0) return;
+              const name = seg.label === 'PV Anteil' ? 'PV Prod.' : 'Netzbezug';
+              legend += `<rect x="${lx3}" y="0" width="8" height="8" fill="${seg.color}" rx="1"/>`;
+              legend += `<text x="${lx3+11}" y="8" font-size="9.5" fill="#9e9e9e">${name} ${seg.value.toFixed(2)} kWh</text>`;
+              lx3 += 110;
+            });
+            legend += '</g>';
 
-            return `<svg viewBox="0 0 220 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:auto">
+            return `<svg viewBox="0 0 280 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;display:block;margin:auto">
               <text x="0" y="22" font-size="22" font-weight="400" fill="#9e9e9e">Energiebilanz</text>
-              <g transform="translate(0,28)">${paths}${labels}${centerText}${legend}</g>
+              <g transform="translate(40,32)">${paths}${labels}${centerText}${legend}</g>
             </svg>`;
           ]]]
 
