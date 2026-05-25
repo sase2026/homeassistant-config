@@ -1564,6 +1564,41 @@ views:
             name: Jahr
             icon: mdi:currency-usd
 
+      # ── System Parameter ─────────────────────────────────────
+      - type: entities
+        title: Strompreise
+        show_header_toggle: false
+        entities:
+          - entity: input_number.energy_manager_strompreis_hochtarif
+            name: Hochtarif CHF/kWh
+            mode: box
+          - entity: input_number.energy_manager_strompreis_niedertarif
+            name: Niedertarif CHF/kWh
+            mode: box
+          - entity: input_number.energy_manager_einspeiseverguetung
+            name: Einspeisevergütung CHF/kWh
+            mode: box
+
+      - type: entities
+        title: Tarifzeiten (Wochentag Mo-Fr)
+        show_header_toggle: false
+        entities:
+          - entity: input_datetime.ht_beginn_wochentag
+            name: HT Beginn
+            icon: mdi:clock-start
+          - entity: input_datetime.ht_ende_wochentag
+            name: HT Ende
+            icon: mdi:clock-end
+          - type: section
+            label: Sa + So ganztags Niedertarif. Einspeisung 24h/7d.
+
+            # ── Reihe 4: Verbrauch Grafik ──
+      - type: statistics-graph
+        title: Verbrauch Monatsübersicht
+        entities:
+          - entity: sensor.energy_manager_hausverbrauch_monat_kwh
+            name: Hausverbrauch
+          - entity: sensor.energy_manager_wp_monat_kwh
       # ── Reihe 1: Autarkie ──
       - type: horizontal-stack
         cards:
@@ -1624,41 +1659,6 @@ views:
         stat_types:
           - max
 
-      # ── System Parameter ─────────────────────────────────────
-      - type: entities
-        title: Strompreise
-        show_header_toggle: false
-        entities:
-          - entity: input_number.energy_manager_strompreis_hochtarif
-            name: Hochtarif CHF/kWh
-            mode: box
-          - entity: input_number.energy_manager_strompreis_niedertarif
-            name: Niedertarif CHF/kWh
-            mode: box
-          - entity: input_number.energy_manager_einspeiseverguetung
-            name: Einspeisevergütung CHF/kWh
-            mode: box
-
-      - type: entities
-        title: Tarifzeiten (Wochentag Mo-Fr)
-        show_header_toggle: false
-        entities:
-          - entity: input_datetime.ht_beginn_wochentag
-            name: HT Beginn
-            icon: mdi:clock-start
-          - entity: input_datetime.ht_ende_wochentag
-            name: HT Ende
-            icon: mdi:clock-end
-          - type: section
-            label: Sa + So ganztags Niedertarif. Einspeisung 24h/7d.
-
-            # ── Reihe 4: Verbrauch Grafik ──
-      - type: statistics-graph
-        title: Verbrauch Monatsübersicht
-        entities:
-          - entity: sensor.energy_manager_hausverbrauch_monat_kwh
-            name: Hausverbrauch
-          - entity: sensor.energy_manager_wp_monat_kwh
             name: WP-Verbrauch
           - entity: sensor.boiler_energie_monat_total
             name: Boiler Verbrauch
