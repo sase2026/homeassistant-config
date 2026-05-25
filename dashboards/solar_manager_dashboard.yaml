@@ -1649,19 +1649,13 @@ views:
         stat_types:
           - max
 
-            name: WP-Verbrauch
-          - entity: sensor.boiler_energie_monat_total
-            name: Boiler Verbrauch
-        days_to_show: 365
-        chart_type: bar
-        stat_types:
-          - max
 
-
-            # ── Reihe 4: Verbrauch Grafik ──
       - type: statistics-graph
         title: Verbrauch Monatsübersicht
         entities:
           - entity: sensor.energy_manager_hausverbrauch_monat_kwh
             name: Hausverbrauch
           - entity: sensor.energy_manager_wp_monat_kwh
+            name: WP-Verbrauch
+          - entity: sensor.boiler_energie_monat_total
+            name: Boiler Verbrauch
