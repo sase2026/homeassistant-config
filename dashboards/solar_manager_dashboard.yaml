@@ -1651,13 +1651,23 @@ views:
         entities:
           - entity: input_number.energy_manager_strompreis_hochtarif
             name: Hochtarif CHF/kWh
-            type: input-number
           - entity: input_number.energy_manager_strompreis_niedertarif
             name: Niedertarif CHF/kWh
-            type: input-number
           - entity: input_number.energy_manager_einspeiseverguetung
-            name: Einspeisung CHF/kWh
-            type: input-number
+            name: Einspeisevergütung CHF/kWh
+
+      - type: entities
+        title: Tarifzeiten (Wochentag Mo-Fr)
+        show_header_toggle: false
+        entities:
+          - entity: input_datetime.ht_beginn_wochentag
+            name: HT Beginn
+            icon: mdi:clock-start
+          - entity: input_datetime.ht_ende_wochentag
+            name: HT Ende
+            icon: mdi:clock-end
+          - type: section
+            label: Sa + So ganztags Niedertarif. Einspeisung 24h/7d.
 
       - type: entities
         title: Schwellenwerte

@@ -383,6 +383,20 @@ template:
           {% else %}0{% endif %}
 
       # ── Stromkosten Sensoren ──────────────────────────────────
+      # Hilfssensor: Aktuell HT oder NT?
+      - name: Aktuell Hochtarif
+        unique_id: aktuell_hochtarif
+        state: >
+          {% set now_time = now().strftime('%H:%M') %}
+          {% set ht_von = states('input_datetime.ht_beginn_wochentag')[11:16] %}
+          {% set ht_bis = states('input_datetime.ht_ende_wochentag')[11:16] %}
+          {% set wochentag = now().weekday() %}
+          {% if wochentag < 5 and now_time >= ht_von and now_time <= ht_bis %}
+            true
+          {% else %}
+            false
+          {% endif %}
+
       - name: Stromkosten Netzbezug heute CHF
         unique_id: stromkosten_netzbezug_heute
         unit_of_measurement: CHF
@@ -390,7 +404,14 @@ template:
         state: >
           {% set nb = states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) %}
           {% set ht = states('input_number.energy_manager_strompreis_hochtarif') | float(0.32) %}
-          {{ (nb * ht) | round(2) }}
+          {% set nt = states('input_number.energy_manager_strompreis_niedertarif') | float(0.25) %}
+          {% set ht_von = states('input_datetime.ht_beginn_wochentag')[11:16] %}
+          {% set ht_bis = states('input_datetime.ht_ende_wochentag')[11:16] %}
+          {% set ht_h = (ht_bis[:2] | int - ht_von[:2] | int) %}
+          {% set nt_h = 24 - ht_h %}
+          {% set ht_anteil = (ht_h * 5 / (24 * 7)) %}
+          {% set nt_anteil = 1 - ht_anteil %}
+          {{ (nb * (ht * ht_anteil + nt * nt_anteil)) | round(2) }}
 
       - name: Stromkosten Netzbezug Monat CHF
         unique_id: stromkosten_netzbezug_monat
@@ -465,6 +486,18 @@ template:
           {{ (kosten - vergut) | round(2) }}
 
 input_datetime:
+  ht_beginn_wochentag:
+    name: HT Beginn (Wochentag)
+    has_date: false
+    has_time: true
+    initial: "06:00:00"
+    icon: mdi:clock-start
+  ht_ende_wochentag:
+    name: HT Ende (Wochentag)
+    has_date: false
+    has_time: true
+    initial: "21:00:00"
+    icon: mdi:clock-end
   tagesabschluss_push_zeit:
     name: Tagesabschluss Push-Zeit
     has_date: false
