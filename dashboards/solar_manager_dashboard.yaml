@@ -195,7 +195,7 @@ views:
             ];
 
             // SVG Donut berechnen
-            const cx = 110, cy = 110, r = 80, inner = 48;
+            const cx = 100, cy = 100, r = 75, inner = 44;
             let startAngle = -Math.PI / 2;
             let paths = '';
             let labels = '';
@@ -257,7 +257,7 @@ views:
             });
             legend += '</g>';
 
-            return `<svg viewBox="0 0 220 275" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:auto">
+            return `<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:auto">
               ${paths}${labels}${centerText}${legend}
             </svg>`;
           ]]]
@@ -266,7 +266,7 @@ views:
         hours_to_show: 24
         refresh_interval: 30
         layout:
-          height: 300
+          height: 450
           margin:
             t: 90
             b: 30
