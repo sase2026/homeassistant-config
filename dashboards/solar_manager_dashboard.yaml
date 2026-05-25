@@ -186,7 +186,7 @@ views:
             const ein = parseFloat(states['sensor.energy_manager_einspeisung_heute_kwh_2'].state) || 0;
             const hw  = parseFloat(states['sensor.energy_manager_hausverbrauch_heute_kwh'].state) || 0;
             const nb  = parseFloat(states['sensor.energy_manager_netzbezug_heute_kwh'].state) || 0;
-            const total = pv + nb;
+            const total = pv + ein + hw + nb;
 
             const segments = [
               { label: 'PV Produktion', value: pv,  color: '#ff9800' },
