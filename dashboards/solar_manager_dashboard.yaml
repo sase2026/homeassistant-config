@@ -160,6 +160,76 @@ views:
             `;
           ]]]
 
+      # ── Kreisdiagramm Energiebilanz heute ──
+      - type: custom:plotly-graph
+        title: Energiebilanz heute
+        refresh_interval: 300
+        layout:
+          height: 320
+          margin:
+            t: 40
+            b: 10
+            l: 10
+            r: 10
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          showlegend: true
+          legend:
+            orientation: h
+            y: -0.05
+            font:
+              color: "#9e9e9e"
+              size: 11
+        entities:
+          - entity: sensor.energy_manager_pv_produktion_heute_kwh
+            name: Energiebilanz
+            type: pie
+            hole: 0.45
+            textposition: inside
+            textinfo: percent
+            hoverinfo: label+value
+            marker:
+              colors:
+                - "#ff9800"
+                - "#7b1fa2"
+                - "#22c55e"
+                - "#ef4444"
+                - "#4dd0e1"
+                - "#64748b"
+            x_fn: "$fn () => ['PV Produktion', 'Einspeisung', 'Eigenverbrauch', 'Netzbezug', 'WP', 'Waschmaschine']"
+            y_fn: |
+              $fn ({hass}) => [
+                parseFloat(hass.states['sensor.energy_manager_pv_produktion_heute_kwh'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_einspeisung_heute_kwh_2'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_eigenverbrauch_heute_kwh'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_netzbezug_heute_kwh'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_wp_heute_kwh'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_wama_heute_kwh'].state)||0
+              ]
+            text_fn: |
+              $fn ({hass}) => {
+                const vals = [
+                  parseFloat(hass.states['sensor.energy_manager_pv_produktion_heute_kwh'].state)||0,
+                  parseFloat(hass.states['sensor.energy_manager_einspeisung_heute_kwh_2'].state)||0,
+                  parseFloat(hass.states['sensor.energy_manager_eigenverbrauch_heute_kwh'].state)||0,
+                  parseFloat(hass.states['sensor.energy_manager_netzbezug_heute_kwh'].state)||0,
+                  parseFloat(hass.states['sensor.energy_manager_wp_heute_kwh'].state)||0,
+                  parseFloat(hass.states['sensor.energy_manager_wama_heute_kwh'].state)||0
+                ];
+                return vals.map(v => v.toFixed(2) + ' kWh');
+              }
+            texttemplate: "%{percent:.0%}"
+            customdata_fn: |
+              $fn ({hass}) => [
+                parseFloat(hass.states['sensor.energy_manager_pv_produktion_heute_kwh'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_einspeisung_heute_kwh_2'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_eigenverbrauch_heute_kwh'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_netzbezug_heute_kwh'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_wp_heute_kwh'].state)||0,
+                parseFloat(hass.states['sensor.energy_manager_wama_heute_kwh'].state)||0
+              ]
+
+
       - type: custom:plotly-graph
         hours_to_show: 24
         refresh_interval: 30
