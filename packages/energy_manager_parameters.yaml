@@ -61,7 +61,7 @@ input_number:
     min: 0.25
     max: 0.35
     step: 0.001
-    initial: 0.24
+    initial: 0.25
     unit_of_measurement: CHF/kWh
     icon: mdi:cash-clock
   energy_manager_einspeiseverguetung:

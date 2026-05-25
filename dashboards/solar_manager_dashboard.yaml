@@ -1527,9 +1527,11 @@ views:
 
       # ── Stromkosten ──────────────────────────────────────────
       - type: entities
-        title: Stromkosten Netzbezug
+        title: Energie-Kosten & Vergütung
         show_header_toggle: false
         entities:
+          - type: section
+            label: Netzbezug Kosten
           - entity: sensor.stromkosten_netzbezug_heute_chf
             name: Heute
             icon: mdi:cash-clock
@@ -1539,11 +1541,8 @@ views:
           - entity: sensor.stromkosten_netzbezug_jahr_chf
             name: Jahr
             icon: mdi:cash-check
-
-      - type: entities
-        title: Einspeisevergütung
-        show_header_toggle: false
-        entities:
+          - type: section
+            label: Einspeisevergütung
           - entity: sensor.einspeiseverguetung_heute_chf
             name: Heute
             icon: mdi:solar-power
@@ -1553,11 +1552,8 @@ views:
           - entity: sensor.einspeiseverguetung_jahr_chf
             name: Jahr
             icon: mdi:solar-panel
-
-      - type: entities
-        title: Nettostromkosten (Bezug minus Vergütung)
-        show_header_toggle: false
-        entities:
+          - type: section
+            label: Nettostromkosten (Bezug minus Vergütung)
           - entity: sensor.nettostromkosten_heute_chf
             name: Heute
             icon: mdi:currency-usd
