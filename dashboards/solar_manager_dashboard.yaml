@@ -1646,15 +1646,18 @@ views:
             name: Überschuss hoch ab W
 
       - type: entities
-        title: Strompreise
+        title: Strompreise (direkte Eingabe)
         show_header_toggle: false
         entities:
           - entity: input_number.energy_manager_strompreis_hochtarif
             name: Hochtarif CHF/kWh
+            type: input-number
           - entity: input_number.energy_manager_strompreis_niedertarif
             name: Niedertarif CHF/kWh
+            type: input-number
           - entity: input_number.energy_manager_einspeiseverguetung
-            name: Einspeisevergütung CHF/kWh
+            name: Einspeisung CHF/kWh
+            type: input-number
 
       - type: entities
         title: Schwellenwerte
