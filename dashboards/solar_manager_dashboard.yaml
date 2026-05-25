@@ -1497,6 +1497,7 @@ views:
           - entity: sensor.energy_manager_einspeisung_heute_kwh_2
             name: Einspeisung
             icon: mdi:transmission-tower-export
+            format: precision1
           - entity: sensor.energy_manager_netzbezug_heute_kwh
             name: Netzbezug
             icon: mdi:transmission-tower-import
@@ -1568,13 +1569,10 @@ views:
         entities:
           - entity: input_number.energy_manager_strompreis_hochtarif
             name: Hochtarif CHF/kWh
-            mode: box
           - entity: input_number.energy_manager_strompreis_niedertarif
             name: Niedertarif CHF/kWh
-            mode: box
           - entity: input_number.energy_manager_einspeiseverguetung
             name: Einspeisevergütung CHF/kWh
-            mode: box
 
       - type: entities
         title: Tarifzeiten (Wochentag Mo-Fr)
