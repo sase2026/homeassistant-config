@@ -95,171 +95,6 @@ views:
               {% if t >= 60 %}red{% elif t >= 48 %}orange{% else %}blue{% endif %}
             layout: vertical
 
-      - type: custom:button-card
-        name: "Autarkie % / Netzbezug"
-        show_name: true
-        show_icon: false
-        show_label: true
-        styles:
-          card:
-            - padding: 12px 16px
-            - background: "var(--ha-card-background, var(--card-background-color, #fff))"
-            - border-radius: 12px
-          name:
-            - font-size: 13px
-            - color: "var(--primary-text-color)"
-            - margin-bottom: 8px
-            - text-align: left
-          label:
-            - width: 100%
-            - padding: 0
-        label: |
-          [[[
-            const a = parseFloat(states['sensor.energy_manager_autarkiegrad_heute'].state) || 0;
-            const n = Math.max(0, 100 - a);
-            return `
-              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:5px">
-                <span style="color:#f59e0b">Autarkie ${a.toFixed(1)} %</span>
-                <span style="color:#ef4444">Netzbezug ${n.toFixed(1)} %</span>
-              </div>
-              <div style="display:flex;width:100%;height:20px;border-radius:10px;overflow:hidden;background:#ef4444">
-                <div style="width:${a}%;background:#f59e0b;border-radius:10px 0 0 10px;min-width:${a>0?4:0}px"></div>
-              </div>
-            `;
-          ]]]
-      - type: custom:button-card
-        name: "Eigenverbrauch % / PV-Überschuss"
-        show_name: true
-        show_icon: false
-        show_label: true
-        styles:
-          card:
-            - padding: 12px 16px
-            - background: "var(--ha-card-background, var(--card-background-color, #fff))"
-            - border-radius: 12px
-          name:
-            - font-size: 13px
-            - color: "var(--primary-text-color)"
-            - margin-bottom: 8px
-            - text-align: left
-          label:
-            - width: 100%
-            - padding: 0
-        label: |
-          [[[
-            const e = parseFloat(states['sensor.energy_manager_eigenverbrauchsquote_heute'].state) || 0;
-            const r = Math.max(0, 100 - e);
-            return `
-              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:5px">
-                <span style="color:#22c55e">Eigenverbrauch ${e.toFixed(1)} %</span>
-                <span style="color:#6b7280">PV-Überschuss ${r.toFixed(1)} %</span>
-              </div>
-              <div style="display:flex;width:100%;height:20px;border-radius:10px;overflow:hidden;background:#374151">
-                <div style="width:${e}%;background:#22c55e;border-radius:10px 0 0 10px;min-width:${e>0?4:0}px"></div>
-              </div>
-            `;
-          ]]]
-
-      # ── Kreisdiagramm Energiebilanz heute ──
-      - type: custom:button-card
-        name: ""
-        show_name: false
-        show_icon: false
-        show_label: true
-        styles:
-          card:
-            - background: "var(--ha-card-background, var(--card-background-color, #1c1c1c))"
-            - border-radius: 12px
-            - padding: 4px 16px 12px 16px
-          name:
-            - font-size: 13px
-            - color: "var(--primary-text-color)"
-            - text-align: left
-            - margin-bottom: 4px
-          label:
-            - width: 100%
-            - padding: 0
-        label: |
-          [[[
-            const pv  = parseFloat(states['sensor.energy_manager_pv_produktion_heute_kwh'].state) || 0;
-            const ein = parseFloat(states['sensor.energy_manager_einspeisung_heute_kwh_2'].state) || 0;
-            const hw  = parseFloat(states['sensor.energy_manager_hausverbrauch_heute_kwh'].state) || 0;
-            const nb  = parseFloat(states['sensor.energy_manager_netzbezug_heute_kwh'].state) || 0;
-            // PV-Anteil am Hausverbrauch = PV - Einspeisung (was nicht eingespeist wurde)
-            const pv_haus = Math.max(0, Math.min(pv - ein, hw));
-            const nb_haus = Math.max(0, hw - pv_haus);
-            const total = pv_haus + nb_haus; // = hw = 100%
-
-            const segments = [
-              { label: 'PV Anteil', value: pv_haus, color: '#ff9800' },
-              { label: 'Netzbezug', value: nb_haus,  color: '#ef4444' },
-            ];
-
-            // SVG Donut berechnen
-            const cx = 100, cy = 100, r = 75, inner = 44;
-            let startAngle = -Math.PI / 2;
-            let paths = '';
-            let labels = '';
-
-            segments.forEach(seg => {
-              if (seg.value <= 0) return;
-              const frac = seg.value / total;
-              const angle = frac * 2 * Math.PI;
-              const endAngle = startAngle + angle;
-              const midAngle = startAngle + angle / 2;
-
-              // Outer arc
-              const x1 = cx + r * Math.cos(startAngle);
-              const y1 = cy + r * Math.sin(startAngle);
-              const x2 = cx + r * Math.cos(endAngle);
-              const y2 = cy + r * Math.sin(endAngle);
-              // Inner arc
-              const ix1 = cx + inner * Math.cos(endAngle);
-              const iy1 = cy + inner * Math.sin(endAngle);
-              const ix2 = cx + inner * Math.cos(startAngle);
-              const iy2 = cy + inner * Math.sin(startAngle);
-              const large = angle > Math.PI ? 1 : 0;
-
-              paths += `<path d="M${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} L${ix1},${iy1} A${inner},${inner} 0 ${large},0 ${ix2},${iy2} Z" fill="${seg.color}" opacity="0.9"/>`;
-
-              // % label inside
-              const lx = cx + (r + inner) / 2 * Math.cos(midAngle);
-              const ly = cy + (r + inner) / 2 * Math.sin(midAngle);
-              if (frac > 0.05) {
-                paths += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="600" fill="white">${(frac*100).toFixed(0)}%</text>`;
-              }
-
-              // Keine Aussen-Labels - Legende unten
-
-              startAngle = endAngle;
-            });
-
-            // Center: Gesamtverbrauch
-            const centerText = `<text x="${cx}" y="${cy-20}" text-anchor="middle" font-size="10" fill="#9e9e9e">Gesamt-</text>
-              <text x="${cx}" y="${cy-8}" text-anchor="middle" font-size="10" fill="#9e9e9e">verbrauch</text>
-              <text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="18" font-weight="700" fill="white">${hw.toFixed(2)}</text>
-              <text x="${cx}" y="${cy+26}" text-anchor="middle" font-size="10" fill="#9e9e9e">kWh</text>`;
-
-            // Legend
-            let legend = '';
-            // Legende auf einer Linie unten
-            legend += `<g transform="translate(-35,215)">`;
-            let lx3 = 0;
-            segments.forEach(seg => {
-              if (seg.value <= 0) return;
-              const name = seg.label === 'PV Anteil' ? 'PV Prod.' : 'Netzbezug';
-              legend += `<rect x="${lx3}" y="0" width="8" height="8" fill="${seg.color}" rx="1"/>`;
-              legend += `<text x="${lx3+11}" y="8" font-size="9.5" fill="#9e9e9e">${name} ${seg.value.toFixed(2)} kWh</text>`;
-              lx3 += 110;
-            });
-            legend += '</g>';
-
-            return `<svg viewBox="0 0 280 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;display:block;margin:auto">
-              <text x="0" y="22" font-size="22" font-weight="400" fill="#9e9e9e">Energiebilanz</text>
-              <g transform="translate(40,32)">${paths}${labels}${centerText}${legend}</g>
-            </svg>`;
-          ]]]
-
       - type: custom:plotly-graph
         hours_to_show: 24
         refresh_interval: 30
@@ -484,6 +319,171 @@ views:
         icon_color: >
           {% set v = states('sensor.solcast_pv_forecast_prognose_heute') | float(0) %}
           {% if v > 15 %}green{% elif v > 8 %}amber{% else %}blue{% endif %}
+
+      - type: custom:button-card
+        name: "Autarkie % / Netzbezug"
+        show_name: true
+        show_icon: false
+        show_label: true
+        styles:
+          card:
+            - padding: 12px 16px
+            - background: "var(--ha-card-background, var(--card-background-color, #fff))"
+            - border-radius: 12px
+          name:
+            - font-size: 13px
+            - color: "var(--primary-text-color)"
+            - margin-bottom: 8px
+            - text-align: left
+          label:
+            - width: 100%
+            - padding: 0
+        label: |
+          [[[
+            const a = parseFloat(states['sensor.energy_manager_autarkiegrad_heute'].state) || 0;
+            const n = Math.max(0, 100 - a);
+            return `
+              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:5px">
+                <span style="color:#f59e0b">Autarkie ${a.toFixed(1)} %</span>
+                <span style="color:#ef4444">Netzbezug ${n.toFixed(1)} %</span>
+              </div>
+              <div style="display:flex;width:100%;height:20px;border-radius:10px;overflow:hidden;background:#ef4444">
+                <div style="width:${a}%;background:#f59e0b;border-radius:10px 0 0 10px;min-width:${a>0?4:0}px"></div>
+              </div>
+            `;
+          ]]]
+      - type: custom:button-card
+        name: "Eigenverbrauch % / PV-Überschuss"
+        show_name: true
+        show_icon: false
+        show_label: true
+        styles:
+          card:
+            - padding: 12px 16px
+            - background: "var(--ha-card-background, var(--card-background-color, #fff))"
+            - border-radius: 12px
+          name:
+            - font-size: 13px
+            - color: "var(--primary-text-color)"
+            - margin-bottom: 8px
+            - text-align: left
+          label:
+            - width: 100%
+            - padding: 0
+        label: |
+          [[[
+            const e = parseFloat(states['sensor.energy_manager_eigenverbrauchsquote_heute'].state) || 0;
+            const r = Math.max(0, 100 - e);
+            return `
+              <div style="display:flex;justify-content:space-between;font-size:12px;font-weight:600;margin-bottom:5px">
+                <span style="color:#22c55e">Eigenverbrauch ${e.toFixed(1)} %</span>
+                <span style="color:#6b7280">PV-Überschuss ${r.toFixed(1)} %</span>
+              </div>
+              <div style="display:flex;width:100%;height:20px;border-radius:10px;overflow:hidden;background:#374151">
+                <div style="width:${e}%;background:#22c55e;border-radius:10px 0 0 10px;min-width:${e>0?4:0}px"></div>
+              </div>
+            `;
+          ]]]
+
+      # ── Kreisdiagramm Energiebilanz heute ──
+      - type: custom:button-card
+        name: ""
+        show_name: false
+        show_icon: false
+        show_label: true
+        styles:
+          card:
+            - background: "var(--ha-card-background, var(--card-background-color, #1c1c1c))"
+            - border-radius: 12px
+            - padding: 4px 16px 12px 16px
+          name:
+            - font-size: 13px
+            - color: "var(--primary-text-color)"
+            - text-align: left
+            - margin-bottom: 4px
+          label:
+            - width: 100%
+            - padding: 0
+        label: |
+          [[[
+            const pv  = parseFloat(states['sensor.energy_manager_pv_produktion_heute_kwh'].state) || 0;
+            const ein = parseFloat(states['sensor.energy_manager_einspeisung_heute_kwh_2'].state) || 0;
+            const hw  = parseFloat(states['sensor.energy_manager_hausverbrauch_heute_kwh'].state) || 0;
+            const nb  = parseFloat(states['sensor.energy_manager_netzbezug_heute_kwh'].state) || 0;
+            // PV-Anteil am Hausverbrauch = PV - Einspeisung (was nicht eingespeist wurde)
+            const pv_haus = Math.max(0, Math.min(pv - ein, hw));
+            const nb_haus = Math.max(0, hw - pv_haus);
+            const total = pv_haus + nb_haus; // = hw = 100%
+
+            const segments = [
+              { label: 'PV Anteil', value: pv_haus, color: '#ff9800' },
+              { label: 'Netzbezug', value: nb_haus,  color: '#ef4444' },
+            ];
+
+            // SVG Donut berechnen
+            const cx = 100, cy = 100, r = 75, inner = 44;
+            let startAngle = -Math.PI / 2;
+            let paths = '';
+            let labels = '';
+
+            segments.forEach(seg => {
+              if (seg.value <= 0) return;
+              const frac = seg.value / total;
+              const angle = frac * 2 * Math.PI;
+              const endAngle = startAngle + angle;
+              const midAngle = startAngle + angle / 2;
+
+              // Outer arc
+              const x1 = cx + r * Math.cos(startAngle);
+              const y1 = cy + r * Math.sin(startAngle);
+              const x2 = cx + r * Math.cos(endAngle);
+              const y2 = cy + r * Math.sin(endAngle);
+              // Inner arc
+              const ix1 = cx + inner * Math.cos(endAngle);
+              const iy1 = cy + inner * Math.sin(endAngle);
+              const ix2 = cx + inner * Math.cos(startAngle);
+              const iy2 = cy + inner * Math.sin(startAngle);
+              const large = angle > Math.PI ? 1 : 0;
+
+              paths += `<path d="M${x1},${y1} A${r},${r} 0 ${large},1 ${x2},${y2} L${ix1},${iy1} A${inner},${inner} 0 ${large},0 ${ix2},${iy2} Z" fill="${seg.color}" opacity="0.9"/>`;
+
+              // % label inside
+              const lx = cx + (r + inner) / 2 * Math.cos(midAngle);
+              const ly = cy + (r + inner) / 2 * Math.sin(midAngle);
+              if (frac > 0.05) {
+                paths += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="600" fill="white">${(frac*100).toFixed(0)}%</text>`;
+              }
+
+              // Keine Aussen-Labels - Legende unten
+
+              startAngle = endAngle;
+            });
+
+            // Center: Gesamtverbrauch
+            const centerText = `<text x="${cx}" y="${cy-20}" text-anchor="middle" font-size="10" fill="#9e9e9e">Gesamt-</text>
+              <text x="${cx}" y="${cy-8}" text-anchor="middle" font-size="10" fill="#9e9e9e">verbrauch</text>
+              <text x="${cx}" y="${cy+10}" text-anchor="middle" font-size="18" font-weight="700" fill="white">${hw.toFixed(2)}</text>
+              <text x="${cx}" y="${cy+26}" text-anchor="middle" font-size="10" fill="#9e9e9e">kWh</text>`;
+
+            // Legend
+            let legend = '';
+            // Legende auf einer Linie unten
+            legend += `<g transform="translate(-35,215)">`;
+            let lx3 = 0;
+            segments.forEach(seg => {
+              if (seg.value <= 0) return;
+              const name = seg.label === 'PV Anteil' ? 'PV Prod.' : 'Netzbezug';
+              legend += `<rect x="${lx3}" y="0" width="8" height="8" fill="${seg.color}" rx="1"/>`;
+              legend += `<text x="${lx3+11}" y="8" font-size="9.5" fill="#9e9e9e">${name} ${seg.value.toFixed(2)} kWh</text>`;
+              lx3 += 110;
+            });
+            legend += '</g>';
+
+            return `<svg viewBox="0 0 280 300" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:320px;display:block;margin:auto">
+              <text x="0" y="22" font-size="22" font-weight="400" fill="#9e9e9e">Energiebilanz</text>
+              <g transform="translate(40,32)">${paths}${labels}${centerText}${legend}</g>
+            </svg>`;
+          ]]]
 
   # ═══════════════════════════════════════════════════════════
   # VIEW 2: PV
