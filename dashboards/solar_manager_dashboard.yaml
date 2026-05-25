@@ -185,13 +185,14 @@ views:
             const ein = parseFloat(states['sensor.energy_manager_einspeisung_heute_kwh_2'].state) || 0;
             const hw  = parseFloat(states['sensor.energy_manager_hausverbrauch_heute_kwh'].state) || 0;
             const nb  = parseFloat(states['sensor.energy_manager_netzbezug_heute_kwh'].state) || 0;
-            const total = pv + ein + hw + nb;
+            // PV-Anteil am Hausverbrauch = PV - Einspeisung (was nicht eingespeist wurde)
+            const pv_haus = Math.max(0, Math.min(pv - ein, hw));
+            const nb_haus = Math.max(0, hw - pv_haus);
+            const total = pv_haus + nb_haus; // = hw = 100%
 
             const segments = [
-              { label: 'PV Produktion', value: pv,  color: '#ff9800' },
-              { label: 'Einspeisung',   value: ein, color: '#7b1fa2' },
-              { label: 'Haus & WP',     value: hw,  color: '#5b9bd5' },
-              { label: 'Netzbezug',     value: nb,  color: '#ef4444' },
+              { label: 'PV Anteil', value: pv_haus, color: '#ff9800' },
+              { label: 'Netzbezug', value: nb_haus,  color: '#ef4444' },
             ];
 
             // SVG Donut berechnen
@@ -238,22 +239,22 @@ views:
               startAngle = endAngle;
             });
 
-            // Nettoverbrauch = Haus & WP (gesamter Verbrauch)
-            const netto = hw;
-            const centerText = `<text x="${cx}" y="${cy-14}" text-anchor="middle" font-size="11" fill="#9e9e9e">Netto-</text>
-              <text x="${cx}" y="${cy+2}" text-anchor="middle" font-size="11" fill="#9e9e9e">verbrauch</text>
-              <text x="${cx}" y="${cy+20}" text-anchor="middle" font-size="16" font-weight="700" fill="white">${netto.toFixed(2)}</text>
-              <text x="${cx}" y="${cy+35}" text-anchor="middle" font-size="11" fill="#9e9e9e">kWh</text>`;
+            // Center: Gesamtverbrauch
+            const centerText = `<text x="${cx}" y="${cy-18}" text-anchor="middle" font-size="11" fill="#9e9e9e">Haus & WP</text>
+              <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="16" font-weight="700" fill="white">${hw.toFixed(2)}</text>
+              <text x="${cx}" y="${cy+13}" text-anchor="middle" font-size="11" fill="#9e9e9e">kWh total</text>
+              <text x="${cx}" y="${cy+28}" text-anchor="middle" font-size="10" fill="#ff9800">${pv_haus.toFixed(2)} PV</text>
+              <text x="${cx}" y="${cy+42}" text-anchor="middle" font-size="10" fill="#ef4444">${nb_haus.toFixed(2)} Netz</text>`;
 
             // Legend
-            let legend = '<g transform="translate(0,230)">';
+            let legend = '<g transform="translate(0,225)">';
             let lx2 = 5;
             segments.forEach((seg, i) => {
               if (seg.value <= 0) return;
               legend += `<rect x="${lx2}" y="0" width="10" height="10" fill="${seg.color}" rx="2"/>`;
-              legend += `<text x="${lx2+13}" y="9" font-size="10" fill="#9e9e9e">${seg.label} ${seg.value.toFixed(2)} kWh</text>`;
-              lx2 += 110;
-              if (i === 1) { legend += `</g><g transform="translate(0,248)">`; lx2 = 5; }
+              legend += `<text x="${lx2+13}" y="9" font-size="10" fill="#9e9e9e">${seg.label}: ${seg.value.toFixed(2)} kWh</text>`;
+              lx2 = 5;
+              legend += `</g><g transform="translate(0,${225 + (i+1)*16})">`;
             });
             legend += '</g>';
 
@@ -269,7 +270,7 @@ views:
         layout:
           height: 450
           margin:
-            t: 90
+            t: 110
             b: 30
             l: 55
             r: 10
