@@ -229,15 +229,7 @@ views:
                 paths += `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="middle" font-size="11" font-weight="600" fill="white">${(frac*100).toFixed(0)}%</text>`;
               }
 
-              // kWh label outside mit Name - mehr Abstand
-              const ox = cx + (r + 35) * Math.cos(midAngle);
-              const oy = cy + (r + 35) * Math.sin(midAngle);
-              const anchor = Math.cos(midAngle) > 0.1 ? 'start' : (Math.cos(midAngle) < -0.1 ? 'end' : 'middle');
-              if (frac > 0.04) {
-                const name = seg.label === 'PV Anteil' ? 'PV Produktion' : 'Netzbezug';
-                labels += `<text x="${ox}" y="${oy-7}" text-anchor="${anchor}" font-size="11" font-weight="600" fill="${seg.color}">${name}</text>`;
-                labels += `<text x="${ox}" y="${oy+8}" text-anchor="${anchor}" font-size="11" fill="${seg.color}">${seg.value.toFixed(2)} kWh</text>`;
-              }
+              // Keine Aussen-Labels - Legende unten
 
               startAngle = endAngle;
             });
