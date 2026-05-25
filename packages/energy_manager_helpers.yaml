@@ -381,3 +381,11 @@ template:
           {% if data and data | length > 20 %}
             {{ (data[20].pv_estimate) | round(2) }}
           {% else %}0{% endif %}
+
+input_datetime:
+  tagesabschluss_push_zeit:
+    name: Tagesabschluss Push-Zeit
+    has_date: false
+    has_time: true
+    initial: "23:55:00"
+    icon: mdi:clock-outline

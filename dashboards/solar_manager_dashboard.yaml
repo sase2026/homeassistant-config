@@ -1474,6 +1474,45 @@ views:
     path: reports
     icon: mdi:table
     cards:
+      # ── Tageskennzahlen ─────────────────────────────────────
+      - type: entities
+        title: Tageskennzahlen heute
+        show_header_toggle: false
+        entities:
+          - entity: sensor.energy_manager_pv_produktion_heute_kwh
+            name: PV Produktion
+            icon: mdi:solar-power-variant
+          - entity: sensor.energy_manager_einspeisung_heute_kwh_2
+            name: Einspeisung
+            icon: mdi:transmission-tower-export
+          - entity: sensor.energy_manager_netzbezug_heute_kwh
+            name: Netzbezug
+            icon: mdi:transmission-tower-import
+          - entity: sensor.energy_manager_hausverbrauch_heute_kwh
+            name: Haus & WP Verbrauch
+            icon: mdi:home-lightning-bolt
+          - entity: sensor.energy_manager_pv_produktion_monat_kwh
+            name: PV Produktion Monat
+            icon: mdi:solar-power
+          - entity: sensor.energy_manager_autarkiegrad_heute
+            name: Autarkie heute
+            icon: mdi:shield-sun
+          - entity: sensor.energy_manager_eigenverbrauchsquote_heute
+            name: Eigenverbrauch heute
+            icon: mdi:home-percent
+          - entity: sensor.energy_manager_autarkiegrad_monat
+            name: Autarkie Monat
+            icon: mdi:shield-sun-outline
+          - entity: sensor.energy_manager_eigenverbrauchsquote_monat
+            name: Eigenverbrauch Monat
+            icon: mdi:home-percent-outline
+          - entity: sensor.boiler_temperatur_oben
+            name: Boilertemperatur
+            icon: mdi:water-thermometer
+          - entity: sensor.solcast_pv_forecast_prognose_morgen
+            name: Prognose morgen
+            icon: mdi:solar-power
+
       # ── Toggle Push-Meldung ─────────────────────────────────
       - type: horizontal-stack
         cards:
@@ -1481,7 +1520,7 @@ views:
             primary: Tagesabschluss Push
             secondary: >
               {% if is_state('automation.boiler_tagesbericht', 'on') %}
-                Aktiv – Push um 23:55
+                Aktiv – {{ states('input_datetime.tagesabschluss_push_zeit')[11:16] }} Uhr
               {% else %}
                 Deaktiviert
               {% endif %}
@@ -1494,6 +1533,9 @@ views:
               service_data:
                 entity_id: automation.boiler_tagesbericht
             layout: horizontal
+          - entity: input_datetime.tagesabschluss_push_zeit
+            type: entities
+            name: Push-Zeit
 
       # ── Parameter Tableau ────────────────────────────────────
       - type: custom:mushroom-template-card
