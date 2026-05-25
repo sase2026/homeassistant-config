@@ -405,11 +405,16 @@ template:
           {% set nb = states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) %}
           {% set ht = states('input_number.energy_manager_strompreis_hochtarif') | float(0.32) %}
           {% set nt = states('input_number.energy_manager_strompreis_niedertarif') | float(0.25) %}
-          {% set ht_von = states('input_datetime.ht_beginn_wochentag')[11:16] %}
-          {% set ht_bis = states('input_datetime.ht_ende_wochentag')[11:16] %}
-          {% set ht_h = (ht_bis[:2] | int - ht_von[:2] | int) %}
-          {% set nt_h = 24 - ht_h %}
-          {% set ht_anteil = (ht_h * 5 / (24 * 7)) %}
+          {% set ht_von_raw = states('input_datetime.ht_beginn_wochentag') %}
+          {% set ht_bis_raw = states('input_datetime.ht_ende_wochentag') %}
+          {% if ht_von_raw not in ['unavailable','unknown',''] and ht_bis_raw not in ['unavailable','unknown',''] %}
+            {% set ht_von_h = ht_von_raw[11:13] | int(6) %}
+            {% set ht_bis_h = ht_bis_raw[11:13] | int(21) %}
+            {% set ht_h = ht_bis_h - ht_von_h %}
+          {% else %}
+            {% set ht_h = 15 %}
+          {% endif %}
+          {% set ht_anteil = (ht_h * 5) / (24 * 7) %}
           {% set nt_anteil = 1 - ht_anteil %}
           {{ (nb * (ht * ht_anteil + nt * nt_anteil)) | round(2) }}
 
