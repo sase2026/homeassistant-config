@@ -162,8 +162,8 @@ views:
 
       # ── Kreisdiagramm Energiebilanz heute ──
       - type: custom:button-card
-        name: "Energiebilanz heute"
-        show_name: true
+        name: ""
+        show_name: false
         show_icon: false
         show_label: true
         styles:
@@ -257,8 +257,9 @@ views:
             });
             legend += '</g>';
 
-            return `<svg viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:auto">
-              ${paths}${labels}${centerText}${legend}
+            return `<svg viewBox="0 0 200 268" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;display:block;margin:auto">
+              <text x="0" y="16" font-size="22" font-weight="400" fill="#9e9e9e">Energiebilanz</text>
+              <g transform="translate(0,18)">${paths}${labels}${centerText}${legend}</g>
             </svg>`;
           ]]]
 
@@ -389,7 +390,7 @@ views:
               font:
                 size: 22
                 color: "#7b1fa2"
-            - text: "PV Rückspeis."
+            - text: "PV Rückspeisung"
               xref: paper
               yref: paper
               x: 0.72
