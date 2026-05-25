@@ -382,14 +382,6 @@ template:
             {{ (data[20].pv_estimate) | round(2) }}
           {% else %}0{% endif %}
 
-input_datetime:
-  tagesabschluss_push_zeit:
-    name: Tagesabschluss Push-Zeit
-    has_date: false
-    has_time: true
-    initial: "23:55:00"
-    icon: mdi:clock-outline
-
       # ── Stromkosten Sensoren ──────────────────────────────────
       - name: Stromkosten Netzbezug heute CHF
         unique_id: stromkosten_netzbezug_heute
@@ -471,3 +463,11 @@ input_datetime:
           {% set kosten = states('sensor.stromkosten_netzbezug_jahr_chf') | float(0) %}
           {% set vergut = states('sensor.einspeiseverguetung_jahr_chf') | float(0) %}
           {{ (kosten - vergut) | round(2) }}
+
+input_datetime:
+  tagesabschluss_push_zeit:
+    name: Tagesabschluss Push-Zeit
+    has_date: false
+    has_time: true
+    initial: "23:55:00"
+    icon: mdi:clock-outline
