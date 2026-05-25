@@ -1625,36 +1625,19 @@ views:
           - max
 
       # ── System Parameter ─────────────────────────────────────
-      - type: custom:mushroom-template-card
-        primary: System Parameter
-        secondary: ""
-        icon: mdi:cog
-        icon_color: grey
-        layout: horizontal
-
       - type: entities
-        title: PV Anlage
-        show_header_toggle: false
-        entities:
-          - entity: input_number.energy_manager_pv_installierte_leistung_kwp
-            name: Installierte Leistung kWp
-          - entity: input_number.energy_manager_pv_erwarteter_jahresertrag
-            name: Erwarteter Jahresertrag kWh
-          - entity: input_number.energy_manager_pv_ueberschuss_gut_w
-            name: Überschuss gut ab W
-          - entity: input_number.energy_manager_pv_ueberschuss_hoch_w
-            name: Überschuss hoch ab W
-
-      - type: entities
-        title: Strompreise (direkte Eingabe)
+        title: Strompreise
         show_header_toggle: false
         entities:
           - entity: input_number.energy_manager_strompreis_hochtarif
             name: Hochtarif CHF/kWh
+            mode: box
           - entity: input_number.energy_manager_strompreis_niedertarif
             name: Niedertarif CHF/kWh
+            mode: box
           - entity: input_number.energy_manager_einspeiseverguetung
             name: Einspeisevergütung CHF/kWh
+            mode: box
 
       - type: entities
         title: Tarifzeiten (Wochentag Mo-Fr)
@@ -1668,19 +1651,6 @@ views:
             icon: mdi:clock-end
           - type: section
             label: Sa + So ganztags Niedertarif. Einspeisung 24h/7d.
-
-      - type: entities
-        title: Schwellenwerte
-        show_header_toggle: false
-        entities:
-          - entity: input_number.energy_manager_hausverbrauch_grundlast_w
-            name: Grundlast W
-          - entity: input_number.energy_manager_netzbezug_warnschwelle_w
-            name: Netzbezug Warnschwelle W
-          - entity: input_number.energy_manager_co2_faktor_netzstrom
-            name: CO2 Faktor g/kWh
-          - entity: input_boolean.energy_manager_wp_prioritaet_aktiv
-            name: WP Priorität aktiv
 
             # ── Reihe 4: Verbrauch Grafik ──
       - type: statistics-graph
