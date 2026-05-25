@@ -1474,7 +1474,19 @@ views:
     path: reports
     icon: mdi:table
     cards:
-      # ── Tageskennzahlen ─────────────────────────────────────
+
+      # ── 1. Toggle Push + Zeit ────────────────────────────────
+      - type: entities
+        title: Tagesabschluss Push-Meldung
+        show_header_toggle: false
+        entities:
+          - entity: automation.boiler_tagesbericht
+            name: Push aktiv
+            icon: mdi:bell-ring
+          - entity: input_datetime.tagesabschluss_push_zeit
+            name: Push-Zeit
+
+      # ── 2. Tageskennzahlen heute ─────────────────────────────
       - type: entities
         title: Tageskennzahlen heute
         show_header_toggle: false
@@ -1512,77 +1524,6 @@ views:
           - entity: sensor.solcast_pv_forecast_prognose_morgen
             name: Prognose morgen
             icon: mdi:solar-power
-
-      # ── Toggle Push-Meldung ─────────────────────────────────
-      - type: horizontal-stack
-        cards:
-          - type: custom:mushroom-template-card
-            primary: Tagesabschluss Push
-            secondary: >
-              {% if is_state('automation.boiler_tagesbericht', 'on') %}
-                Aktiv – {{ states('input_datetime.tagesabschluss_push_zeit')[11:16] }} Uhr
-              {% else %}
-                Deaktiviert
-              {% endif %}
-            icon: mdi:bell-ring
-            icon_color: >
-              {% if is_state('automation.boiler_tagesbericht', 'on') %}green{% else %}red{% endif %}
-            tap_action:
-              action: call-service
-              service: automation.toggle
-              service_data:
-                entity_id: automation.boiler_tagesbericht
-            layout: horizontal
-          - entity: input_datetime.tagesabschluss_push_zeit
-            type: entities
-            name: Push-Zeit
-
-      # ── Parameter Tableau ────────────────────────────────────
-      - type: custom:mushroom-template-card
-        primary: System Parameter
-        secondary: ""
-        icon: mdi:cog
-        icon_color: grey
-        layout: horizontal
-        card_mod:
-          style: "ha-card { pointer-events: none; }"
-
-      - type: entities
-        title: PV Anlage
-        show_header_toggle: false
-        entities:
-          - entity: input_number.energy_manager_pv_installierte_leistung_kwp
-            name: Installierte Leistung kWp
-          - entity: input_number.energy_manager_pv_erwarteter_jahresertrag
-            name: Erwarteter Jahresertrag kWh
-          - entity: input_number.energy_manager_pv_ueberschuss_gut_w
-            name: Überschuss gut ab W
-          - entity: input_number.energy_manager_pv_ueberschuss_hoch_w
-            name: Überschuss hoch ab W
-
-      - type: entities
-        title: Strompreise
-        show_header_toggle: false
-        entities:
-          - entity: input_number.energy_manager_strompreis_hochtarif
-            name: Hochtarif CHF/kWh
-          - entity: input_number.energy_manager_strompreis_niedertarif
-            name: Niedertarif CHF/kWh
-          - entity: input_number.energy_manager_einspeiseverguetung
-            name: Einspeisevergütung CHF/kWh
-
-      - type: entities
-        title: Schwellenwerte
-        show_header_toggle: false
-        entities:
-          - entity: input_number.energy_manager_hausverbrauch_grundlast_w
-            name: Grundlast W
-          - entity: input_number.energy_manager_netzbezug_warnschwelle_w
-            name: Netzbezug Warnschwelle W
-          - entity: input_number.energy_manager_co2_faktor_netzstrom
-            name: CO2 Faktor g/kWh
-          - entity: input_boolean.energy_manager_wp_prioritaet_aktiv
-            name: WP Priorität aktiv
 
       # ── Reihe 1: Autarkie ──
       - type: horizontal-stack

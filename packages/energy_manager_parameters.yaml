@@ -1,0 +1,113 @@
+###############################################################################
+# Energy Manager Parameter
+###############################################################################
+
+input_boolean:
+  energy_manager_wp_prioritaet_aktiv:
+    name: Energy Manager WP Prioritaet aktiv
+    icon: mdi:heat-pump-outline
+
+input_number:
+  energy_manager_pv_installierte_leistung_kwp:
+    name: Installierte PV Leistung kWp
+    min: 0
+    max: 100
+    step: 0.1
+    initial: 4
+    unit_of_measurement: kWp
+    icon: mdi:solar-panel-large
+  energy_manager_hausverbrauch_grundlast_w:
+    name: Hausverbrauch Grundlast W
+    min: 0
+    max: 5000
+    step: 10
+    initial: 300
+    unit_of_measurement: W
+    icon: mdi:home-lightning-bolt
+  energy_manager_pv_ueberschuss_gut_w:
+    name: PV Ueberschuss gut ab W
+    min: 0
+    max: 20000
+    step: 50
+    initial: 1500
+    unit_of_measurement: W
+    icon: mdi:solar-power-variant
+  energy_manager_pv_ueberschuss_hoch_w:
+    name: PV Ueberschuss hoch ab W
+    min: 0
+    max: 20000
+    step: 50
+    initial: 3000
+    unit_of_measurement: W
+    icon: mdi:solar-power
+  energy_manager_netzbezug_warnschwelle_w:
+    name: Netzbezug Warnschwelle W
+    min: 0
+    max: 20000
+    step: 50
+    initial: 2000
+    unit_of_measurement: W
+    icon: mdi:transmission-tower-import
+  energy_manager_strompreis_hochtarif:
+    name: Strompreis Hochtarif CHF/kWh
+    min: 0.25
+    max: 0.35
+    step: 0.001
+    initial: 0.32
+    unit_of_measurement: CHF/kWh
+    icon: mdi:cash
+  energy_manager_strompreis_niedertarif:
+    name: Strompreis Niedertarif CHF/kWh
+    min: 0.25
+    max: 0.35
+    step: 0.001
+    initial: 0.24
+    unit_of_measurement: CHF/kWh
+    icon: mdi:cash-clock
+  energy_manager_einspeiseverguetung:
+    name: Einspeiseverguetung CHF/kWh
+    min: 0.0
+    max: 0.25
+    step: 0.001
+    initial: 0.10
+    unit_of_measurement: CHF/kWh
+    icon: mdi:cash-refund
+  energy_manager_co2_faktor_netzstrom:
+    name: CO2 Faktor Netzstrom g/kWh
+    min: 0
+    max: 1000
+    step: 1
+    initial: 120
+    unit_of_measurement: g/kWh
+    icon: mdi:molecule-co2
+  energy_manager_pv_neigung:
+    name: PV Neigung
+    min: 0
+    max: 90
+    step: 1
+    initial: 30
+    unit_of_measurement: "°"
+    icon: mdi:angle-acute
+  energy_manager_pv_erwarteter_jahresertrag:
+    name: Erwarteter PV Jahresertrag kWh
+    min: 0
+    max: 100000
+    step: 100
+    initial: 4000
+    unit_of_measurement: kWh
+    icon: mdi:calendar-star
+  energy_manager_pv_performance_warnschwelle:
+    name: PV Performance Warnschwelle %
+    min: 0
+    max: 150
+    step: 1
+    initial: 80
+    unit_of_measurement: "%"
+    icon: mdi:alert-decagram
+
+input_text:
+  energy_manager_pv_ausrichtung:
+    name: PV Ausrichtung Beschreibung
+    initial: "Sued / Ost-West nach Anlage pruefen"
+    max: 120
+    icon: mdi:compass-outline
