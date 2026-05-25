@@ -389,3 +389,85 @@ input_datetime:
     has_time: true
     initial: "23:55:00"
     icon: mdi:clock-outline
+
+      # ── Stromkosten Sensoren ──────────────────────────────────
+      - name: Stromkosten Netzbezug heute CHF
+        unique_id: stromkosten_netzbezug_heute
+        unit_of_measurement: CHF
+        state_class: total
+        state: >
+          {% set nb = states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) %}
+          {% set ht = states('input_number.energy_manager_strompreis_hochtarif') | float(0.32) %}
+          {{ (nb * ht) | round(2) }}
+
+      - name: Stromkosten Netzbezug Monat CHF
+        unique_id: stromkosten_netzbezug_monat
+        unit_of_measurement: CHF
+        state_class: total
+        state: >
+          {% set nb = states('sensor.energy_manager_netzbezug_monat_kwh') | float(0) %}
+          {% set ht = states('input_number.energy_manager_strompreis_hochtarif') | float(0.32) %}
+          {{ (nb * ht) | round(2) }}
+
+      - name: Stromkosten Netzbezug Jahr CHF
+        unique_id: stromkosten_netzbezug_jahr
+        unit_of_measurement: CHF
+        state_class: total
+        state: >
+          {% set nb = states('sensor.energy_manager_netzbezug_jahr_kwh') | float(0) %}
+          {% set ht = states('input_number.energy_manager_strompreis_hochtarif') | float(0.32) %}
+          {{ (nb * ht) | round(2) }}
+
+      - name: Einspeiseverguetung heute CHF
+        unique_id: einspeiseverguetung_heute
+        unit_of_measurement: CHF
+        state_class: total
+        state: >
+          {% set ein = states('sensor.energy_manager_einspeisung_heute_kwh_2') | float(0) %}
+          {% set ev = states('input_number.energy_manager_einspeiseverguetung') | float(0.10) %}
+          {{ (ein * ev) | round(2) }}
+
+      - name: Einspeiseverguetung Monat CHF
+        unique_id: einspeiseverguetung_monat
+        unit_of_measurement: CHF
+        state_class: total
+        state: >
+          {% set ein = states('sensor.energy_manager_einspeisung_monat_kwh') | float(0) %}
+          {% set ev = states('input_number.energy_manager_einspeiseverguetung') | float(0.10) %}
+          {{ (ein * ev) | round(2) }}
+
+      - name: Einspeiseverguetung Jahr CHF
+        unique_id: einspeiseverguetung_jahr
+        unit_of_measurement: CHF
+        state_class: total
+        state: >
+          {% set ein = states('sensor.energy_manager_einspeisung_jahr_kwh') | float(0) %}
+          {% set ev = states('input_number.energy_manager_einspeiseverguetung') | float(0.10) %}
+          {{ (ein * ev) | round(2) }}
+
+      - name: Nettostromkosten heute CHF
+        unique_id: nettostromkosten_heute
+        unit_of_measurement: CHF
+        state_class: total
+        state: >
+          {% set kosten = states('sensor.stromkosten_netzbezug_heute_chf') | float(0) %}
+          {% set vergut = states('sensor.einspeiseverguetung_heute_chf') | float(0) %}
+          {{ (kosten - vergut) | round(2) }}
+
+      - name: Nettostromkosten Monat CHF
+        unique_id: nettostromkosten_monat
+        unit_of_measurement: CHF
+        state_class: total
+        state: >
+          {% set kosten = states('sensor.stromkosten_netzbezug_monat_chf') | float(0) %}
+          {% set vergut = states('sensor.einspeiseverguetung_monat_chf') | float(0) %}
+          {{ (kosten - vergut) | round(2) }}
+
+      - name: Nettostromkosten Jahr CHF
+        unique_id: nettostromkosten_jahr
+        unit_of_measurement: CHF
+        state_class: total
+        state: >
+          {% set kosten = states('sensor.stromkosten_netzbezug_jahr_chf') | float(0) %}
+          {% set vergut = states('sensor.einspeiseverguetung_jahr_chf') | float(0) %}
+          {{ (kosten - vergut) | round(2) }}

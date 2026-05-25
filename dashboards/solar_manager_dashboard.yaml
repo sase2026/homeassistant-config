@@ -1525,6 +1525,49 @@ views:
             name: Prognose morgen
             icon: mdi:solar-power
 
+      # ── Stromkosten ──────────────────────────────────────────
+      - type: entities
+        title: Stromkosten Netzbezug
+        show_header_toggle: false
+        entities:
+          - entity: sensor.stromkosten_netzbezug_heute_chf
+            name: Heute
+            icon: mdi:cash-clock
+          - entity: sensor.stromkosten_netzbezug_monat_chf
+            name: Monat
+            icon: mdi:cash-multiple
+          - entity: sensor.stromkosten_netzbezug_jahr_chf
+            name: Jahr
+            icon: mdi:cash-check
+
+      - type: entities
+        title: Einspeisevergütung
+        show_header_toggle: false
+        entities:
+          - entity: sensor.einspeiseverguetung_heute_chf
+            name: Heute
+            icon: mdi:solar-power
+          - entity: sensor.einspeiseverguetung_monat_chf
+            name: Monat
+            icon: mdi:solar-power-variant
+          - entity: sensor.einspeiseverguetung_jahr_chf
+            name: Jahr
+            icon: mdi:solar-panel
+
+      - type: entities
+        title: Nettostromkosten (Bezug minus Vergütung)
+        show_header_toggle: false
+        entities:
+          - entity: sensor.nettostromkosten_heute_chf
+            name: Heute
+            icon: mdi:currency-usd
+          - entity: sensor.nettostromkosten_monat_chf
+            name: Monat
+            icon: mdi:currency-usd
+          - entity: sensor.nettostromkosten_jahr_chf
+            name: Jahr
+            icon: mdi:currency-usd
+
       # ── Reihe 1: Autarkie ──
       - type: horizontal-stack
         cards:
