@@ -56,7 +56,7 @@ views:
               style: "ha-card { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.3); border-radius: 16px; }\n"
           - type: custom:mushroom-template-card
             primary: Einspeisung heute
-            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh_2') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh_2') | float(0) | round(1) }} kWh"
             icon: mdi:transmission-tower-export
             icon_color: purple
             layout: vertical
@@ -64,7 +64,7 @@ views:
               style: "ha-card { background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.3); border-radius: 16px; }\n"
           - type: custom:mushroom-template-card
             primary: Netzbezug heute
-            secondary: "{{ states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) | round(1) }} kWh"
             icon: mdi:transmission-tower-import
             icon_color: red
             layout: vertical
@@ -76,22 +76,22 @@ views:
         cards:
           - type: custom:mushroom-template-card
             primary: PV heute
-            secondary: "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(1) }} kWh"
             icon: mdi:solar-power
             icon_color: "#ff9800"
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Haus & WP heute
-            secondary: "{{ states('sensor.energy_manager_hausverbrauch_heute_kwh') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_hausverbrauch_heute_kwh') | float(0) | round(1) }} kWh"
             icon: mdi:home-lightning-bolt
             icon_color: blue
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Boilertemperatur
-            secondary: "{{ states('sensor.boiler_temperatur_oben') | float(0) | round(1) }} °C"
+            secondary: "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C"
             icon: mdi:water-thermometer
             icon_color: >
-              {% set t = states('sensor.boiler_temperatur_oben') | float(0) %}
+              {% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %}
               {% if t >= 60 %}red{% elif t >= 48 %}orange{% else %}blue{% endif %}
             layout: vertical
 
@@ -313,7 +313,7 @@ views:
         primary: PV Prognose - Solcast
         secondary: >
           {{ states('sensor.solcast_pv_forecast_prognose_heute') | float(0) | round(1) }} kWh heute
-          | Spitze: {{ (states('sensor.solcast_pv_forecast_prognose_spitzenleistung_heute') | float(0) / 1000) | round(2) }} kW
+          | Spitze: {{ (states('sensor.solcast_pv_forecast_prognose_spitzenleistung_heute') | float(0) / 1000) | round(1) }} kW
           | Morgen: {{ states('sensor.solcast_pv_forecast_prognose_morgen') | float(0) | round(1) }} kWh
         icon: mdi:solar-power-variant
         icon_color: >
@@ -504,7 +504,7 @@ views:
             layout: vertical
           - type: custom:mushroom-template-card
             primary: PV heute
-            secondary: "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(1) }} kWh"
             icon: mdi:white-balance-sunny
             icon_color: "#ff9800"
             layout: vertical
@@ -579,13 +579,13 @@ views:
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Spitze heute
-            secondary: "{{ (states('sensor.solcast_pv_forecast_prognose_spitzenleistung_heute') | float(0) / 1000) | round(2) }} kW"
+            secondary: "{{ (states('sensor.solcast_pv_forecast_prognose_spitzenleistung_heute') | float(0) / 1000) | round(1) }} kW"
             icon: mdi:lightning-bolt
             icon_color: "#ff9800"
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Leistung in 1h
-            secondary: "{{ (states('sensor.solcast_pv_forecast_leistung_in_1_stunde') | float(0) / 1000) | round(2) }} kW"
+            secondary: "{{ (states('sensor.solcast_pv_forecast_leistung_in_1_stunde') | float(0) / 1000) | round(1) }} kW"
             icon: mdi:clock-fast
             icon_color: "#f59e0b"
             layout: vertical
@@ -703,7 +703,7 @@ views:
               style: "ha-card { background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.3); border-radius: 16px; }\n"
           - type: custom:mushroom-template-card
             primary: WP heute kWh
-            secondary: "{{ states('sensor.energy_manager_wp_heute_kwh') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_wp_heute_kwh') | float(0) | round(1) }} kWh"
             icon: mdi:calendar-today
             icon_color: cyan
             layout: vertical
@@ -992,19 +992,19 @@ views:
         cards:
           - type: custom:mushroom-template-card
             primary: Tages-Energie kWh
-            secondary: "{{ states('sensor.boiler_energie_heute_total') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.boiler_energie_heute_total') | float(0) | round(1) }} kWh"
             icon: mdi:calendar-today
             icon_color: orange
             layout: vertical
           - type: custom:mushroom-template-card
             primary: PV-Energie kWh
-            secondary: "{{ states('sensor.boiler_pv_energie_heute') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.boiler_pv_energie_heute') | float(0) | round(1) }} kWh"
             icon: mdi:solar-power
             icon_color: amber
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Netz-Energie kWh
-            secondary: "{{ states('sensor.boiler_netz_energie_heute') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.boiler_netz_energie_heute') | float(0) | round(1) }} kWh"
             icon: mdi:transmission-tower-import
             icon_color: red
             layout: vertical
@@ -1202,13 +1202,13 @@ views:
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Bezug heute
-            secondary: "{{ states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) | round(1) }} kWh"
             icon: mdi:transmission-tower-import
             icon_color: red
             layout: vertical
           - type: custom:mushroom-template-card
             primary: Einspeisung heute
-            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh_2') | float(0) | round(2) }} kWh"
+            secondary: "{{ states('sensor.energy_manager_einspeisung_heute_kwh_2') | float(0) | round(1) }} kWh"
             icon: mdi:transmission-tower-export
             icon_color: purple
             layout: vertical
@@ -1518,12 +1518,9 @@ views:
           - entity: sensor.energy_manager_eigenverbrauchsquote_monat
             name: Eigenverbrauch Monat
             icon: mdi:home-percent-outline
-          - entity: sensor.boiler_temperatur_oben
+          - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
             name: Boilertemperatur
             icon: mdi:water-thermometer
-          - entity: sensor.solcast_pv_forecast_prognose_morgen
-            name: Prognose morgen
-            icon: mdi:solar-power
 
       # ── Stromkosten ──────────────────────────────────────────
       - type: entities
@@ -1592,13 +1589,6 @@ views:
           - type: section
             label: Sa + So ganztags Niedertarif. Einspeisung 24h/7d.
 
-            # ── Reihe 4: Verbrauch Grafik ──
-      - type: statistics-graph
-        title: Verbrauch Monatsübersicht
-        entities:
-          - entity: sensor.energy_manager_hausverbrauch_monat_kwh
-            name: Hausverbrauch
-          - entity: sensor.energy_manager_wp_monat_kwh
       # ── Reihe 1: Autarkie ──
       - type: horizontal-stack
         cards:
@@ -1667,3 +1657,11 @@ views:
         stat_types:
           - max
 
+
+            # ── Reihe 4: Verbrauch Grafik ──
+      - type: statistics-graph
+        title: Verbrauch Monatsübersicht
+        entities:
+          - entity: sensor.energy_manager_hausverbrauch_monat_kwh
+            name: Hausverbrauch
+          - entity: sensor.energy_manager_wp_monat_kwh
