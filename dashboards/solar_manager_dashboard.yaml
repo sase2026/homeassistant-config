@@ -161,47 +161,87 @@ views:
           ]]]
 
       # ── Kreisdiagramm Energiebilanz heute ──
-      - type: custom:plotly-graph
-        title: Energiebilanz heute
-        refresh_interval: 300
-        raw_plotly_config: true
-        config:
-          $fn: |
-            ({hass}) => {
-              const pv  = parseFloat(hass.states['sensor.energy_manager_pv_produktion_heute_kwh'].state)||0;
-              const ein = parseFloat(hass.states['sensor.energy_manager_einspeisung_heute_kwh_2'].state)||0;
-              const hw  = parseFloat(hass.states['sensor.energy_manager_hausverbrauch_heute_kwh'].state)||0;
-              const nb  = parseFloat(hass.states['sensor.energy_manager_netzbezug_heute_kwh'].state)||0;
-              const total = pv + nb;
-              return {
-                data: [{
-                  type: 'pie',
-                  hole: 0.45,
-                  values: [pv, ein, hw, nb],
-                  labels: ['PV Produktion', 'Einspeisung', 'Haus & WP', 'Netzbezug'],
-                  marker: { colors: ['#ff9800', '#7b1fa2', '#22c55e', '#ef4444'] },
-                  textposition: 'inside',
-                  texttemplate: '%{percent:.0%}',
-                  hovertemplate: '%{label}<br>%{value:.2f} kWh<br>%{percent:.1%}<extra></extra>',
-                  text: [pv.toFixed(2)+' kWh', ein.toFixed(2)+' kWh', hw.toFixed(2)+' kWh', nb.toFixed(2)+' kWh'],
-                  textinfo: 'percent',
-                  outsidetextfont: { color: '#9e9e9e', size: 11 },
-                  insidetextfont: { color: '#ffffff', size: 12 }
-                }],
-                layout: {
-                  height: 320,
-                  margin: { t: 30, b: 60, l: 10, r: 10 },
-                  paper_bgcolor: 'rgba(0,0,0,0)',
-                  plot_bgcolor: 'rgba(0,0,0,0)',
-                  showlegend: true,
-                  legend: {
-                    orientation: 'h',
-                    y: -0.15,
-                    font: { color: '#9e9e9e', size: 11 }
-                  }
-                }
-              };
-            }
+      - type: custom:apexcharts-card
+        graph_span: 5min
+        update_interval: 300s
+        apex_config:
+          chart:
+            type: donut
+            height: 320
+          labels:
+            - "PV Produktion"
+            - "Einspeisung"
+            - "Haus & WP"
+            - "Netzbezug"
+          colors:
+            - "#ff9800"
+            - "#7b1fa2"
+            - "#5b9bd5"
+            - "#ef4444"
+          plotOptions:
+            pie:
+              donut:
+                size: 55%
+                labels:
+                  show: true
+                  total:
+                    show: true
+                    label: "Heute"
+                    fontSize: "14px"
+                    color: "#9e9e9e"
+                    formatter: |
+                      EVAL:function(w) {
+                        const sum = w.globals.seriesTotals.reduce((a, b) => a + b, 0);
+                        return sum.toFixed(2) + ' kWh';
+                      }
+                  value:
+                    show: true
+                    fontSize: "20px"
+                    fontWeight: 700
+                    formatter: |
+                      EVAL:function(val) { return val.toFixed(2) + ' kWh'; }
+          dataLabels:
+            enabled: true
+            formatter: |
+              EVAL:function(val) { return val.toFixed(1) + '%'; }
+            style:
+              fontSize: "12px"
+              colors:
+                - "#ffffff"
+          legend:
+            show: true
+            position: bottom
+            labels:
+              colors: "#9e9e9e"
+          tooltip:
+            y:
+              formatter: |
+                EVAL:function(val) { return val.toFixed(2) + ' kWh'; }
+        header:
+          show: true
+          title: Energiebilanz heute
+          show_states: false
+        series:
+          - entity: sensor.energy_manager_pv_produktion_heute_kwh
+            name: "PV Produktion"
+            color: "#ff9800"
+            data_generator: |
+              return [{ x: new Date(), y: parseFloat(states["sensor.energy_manager_pv_produktion_heute_kwh"].state) || 0 }];
+          - entity: sensor.energy_manager_einspeisung_heute_kwh_2
+            name: "Einspeisung"
+            color: "#7b1fa2"
+            data_generator: |
+              return [{ x: new Date(), y: parseFloat(states["sensor.energy_manager_einspeisung_heute_kwh_2"].state) || 0 }];
+          - entity: sensor.energy_manager_hausverbrauch_heute_kwh
+            name: "Haus & WP"
+            color: "#5b9bd5"
+            data_generator: |
+              return [{ x: new Date(), y: parseFloat(states["sensor.energy_manager_hausverbrauch_heute_kwh"].state) || 0 }];
+          - entity: sensor.energy_manager_netzbezug_heute_kwh
+            name: "Netzbezug"
+            color: "#ef4444"
+            data_generator: |
+              return [{ x: new Date(), y: parseFloat(states["sensor.energy_manager_netzbezug_heute_kwh"].state) || 0 }];
 
 
       - type: custom:plotly-graph
