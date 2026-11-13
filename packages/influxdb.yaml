@@ -1,0 +1,47 @@
+# Home Assistant: /homeassistant/packages/influxdb.yaml  (Git: packages/influxdb.yaml)
+# Wird über «homeassistant: packages: !include_dir_named packages» geladen.
+# Verbindung (URL, Benutzer, Passwort) ist in der UI-Integration InfluxDB – hier nur der Filter.
+influxdb:
+  max_retries: 3
+  ignore_attributes:
+    - friendly_name
+    - icon
+    - device_class
+    - state_class
+    - unit_of_measurement
+    - attribution
+  include:
+    entities:
+      # Wärmepumpe / Speicher (Shelly-Fühler)
+      - sensor.ww_mitte_rl_ist_ww_oben_temperatur_3    # WW oben
+      - sensor.ww_mitte_rl_ist_ww_oben_temperatur      # WW Mitte
+      - sensor.ww_mitte_rl_ist_ww_oben_temperatur_2    # RL Ist WP
+      - sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3  # VL HK-II (FBH)
+      - sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2  # RL HK-II (FBH)
+      - sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur    # WaKü
+      - sensor.energy_manager_wp_aktuell_w             # WP Leistung
+      - sensor.heizung_verbrauch_w                     # Heizung Leistung
+      - sensor.verbrauch_wp_heizung_kwh                # WP Energie (Zähler)
+      # Homematic IP – Heizung
+      - sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur      # Aussentemperatur
+      - sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit
+      - sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur       # Wohnraum (schaltet WP)
+      - sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit
+      - climate.wohnzimmer_homematic_ip_wohnzimmer     # Soll-/Ist-Temperatur, Heizanforderung
+      - switch.homematic_ip_fbh_pumpe_hk_ii            # FBH-Pumpe HK II ein/aus
+      - sensor.homematic_ip_fbh_pumpe_hk_ii_leistung   # FBH-Pumpe Leistung
+      - sensor.homematic_ip_fbh_pumpe_hk_ii_energie    # FBH-Pumpe Energie
+      - light.homematic_ip_ww_boiler_schalter          # Heizstab WW-Boiler ein/aus
+      # PV / Haus / Netz
+      - sensor.stp4_0_3av_40_930_pv_power              # PV Leistung (SMA)
+      - sensor.stp4_0_3av_40_930_total_yield           # PV Ertrag gesamt (SMA)
+      - sensor.shelly_3em_netzbezug_w                  # Netzbezug Leistung
+      - sensor.shelly_3em_netzeinspeisung_w            # Einspeisung Leistung
+      - sensor.netzbezug_gesamt_kwh                    # Netzbezug Zähler
+      - sensor.netz_ruckspeisung_kwh                   # Einspeisung Zähler
+      - sensor.haus_verbrauch_w                        # Hausverbrauch Leistung
+      - sensor.verbrauch_haus_kwh                      # Hausverbrauch Zähler
+      # Vergleich Aussentemperatur (Met.no, Feld «temperature»)
+      - weather.zuhause
+    entity_globs:
+      - sensor.shelly1_*_temperatur*                   # FBH-Raumtemperaturen (15 Räume)
