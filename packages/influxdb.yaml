@@ -1,4 +1,4 @@
-# Home Assistant: /homeassistant/packages/influxdb.yaml  (Git: packages/influxdb.yaml)
+﻿# Home Assistant: /homeassistant/packages/influxdb.yaml  (Git: packages/influxdb.yaml)
 # Wird über «homeassistant: packages: !include_dir_named packages» geladen.
 # Verbindung (URL, Benutzer, Passwort) ist in der UI-Integration InfluxDB – hier nur der Filter.
 influxdb:
@@ -27,7 +27,6 @@ influxdb:
       - sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit
       - sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur       # Wohnraum (schaltet WP)
       - sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit
-      - climate.wohnzimmer_homematic_ip_wohnzimmer     # Soll-/Ist-Temperatur, Heizanforderung
       - switch.homematic_ip_fbh_pumpe_hk_ii            # FBH-Pumpe HK II ein/aus
       - sensor.homematic_ip_fbh_pumpe_hk_ii_leistung   # FBH-Pumpe Leistung
       - sensor.homematic_ip_fbh_pumpe_hk_ii_energie    # FBH-Pumpe Energie
