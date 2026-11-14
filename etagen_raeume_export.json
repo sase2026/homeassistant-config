@@ -1,0 +1,863 @@
+{
+ "hinweis": "Export der Etagen/Raeume aus HA (.storage ist nicht im Git). Nur Dokumentation, wird von HA nicht gelesen.",
+ "etagen": [
+  {
+   "floor_id": "1_og",
+   "name": "OG",
+   "level": 1,
+   "icon": "mdi:home-floor-1"
+  },
+  {
+   "floor_id": "eg",
+   "name": "EG",
+   "level": 0,
+   "icon": "mdi:home-floor-0"
+  },
+  {
+   "floor_id": "ug",
+   "name": "UG",
+   "level": -1,
+   "icon": "mdi:home-floor-negative-1"
+  }
+ ],
+ "raeume": [
+  {
+   "area_id": "schlafzimmer",
+   "name": "Schlafzimmer",
+   "floor_id": "1_og",
+   "icon": "mdi:bed"
+  },
+  {
+   "area_id": "bad_dusche",
+   "name": "Bad / Dusche",
+   "floor_id": "1_og",
+   "icon": "mdi:toothbrush-electric"
+  },
+  {
+   "area_id": "terrasse_pva",
+   "name": "Terrasse-PVA",
+   "floor_id": "eg",
+   "icon": "mdi:solar-power"
+  },
+  {
+   "area_id": "haus",
+   "name": "Haus",
+   "floor_id": "ug",
+   "icon": "mdi:home"
+  },
+  {
+   "area_id": "kuche",
+   "name": "Küche",
+   "floor_id": "eg",
+   "icon": null
+  },
+  {
+   "area_id": "wohnzimmer",
+   "name": "Wohnzimmer",
+   "floor_id": "eg",
+   "icon": "mdi:sofa"
+  },
+  {
+   "area_id": "heizung",
+   "name": "Heizung",
+   "floor_id": "ug",
+   "icon": "mdi:heating-coil"
+  },
+  {
+   "area_id": "waschkuche",
+   "name": "Waschküche",
+   "floor_id": "ug",
+   "icon": "mdi:washing-machine"
+  },
+  {
+   "area_id": "essen",
+   "name": "Essen",
+   "floor_id": "eg",
+   "icon": "mdi:silverware-fork-knife"
+  },
+  {
+   "area_id": "spielzimmer",
+   "name": "Spielzimmer",
+   "floor_id": "eg",
+   "icon": "mdi:toy-brick"
+  },
+  {
+   "area_id": "gaste_wc",
+   "name": "Gäste-WC",
+   "floor_id": "eg",
+   "icon": "mdi:toilet"
+  },
+  {
+   "area_id": "entree",
+   "name": "Entrée",
+   "floor_id": "eg",
+   "icon": "mdi:door-open"
+  },
+  {
+   "area_id": "zimmer_yanik",
+   "name": "Zimmer Yanik",
+   "floor_id": "1_og",
+   "icon": "mdi:bed-single"
+  },
+  {
+   "area_id": "zimmer_mael",
+   "name": "Zimmer Mael",
+   "floor_id": "1_og",
+   "icon": "mdi:bed-single"
+  },
+  {
+   "area_id": "galerie",
+   "name": "Galerie",
+   "floor_id": "1_og",
+   "icon": "mdi:stairs"
+  },
+  {
+   "area_id": "hobby",
+   "name": "Hobby",
+   "floor_id": "ug",
+   "icon": "mdi:sofa"
+  },
+  {
+   "area_id": "garage",
+   "name": "Garage",
+   "floor_id": "ug",
+   "icon": "mdi:garage"
+  },
+  {
+   "area_id": "aussen",
+   "name": "Aussen",
+   "floor_id": "eg",
+   "icon": "mdi:tree"
+  },
+  {
+   "area_id": "sammlung",
+   "name": "Sammlung",
+   "floor_id": "eg",
+   "icon": "mdi:calculator-variant"
+  }
+ ],
+ "geraete": [
+  {
+   "name": "Homematic IP Aussen Temperatur-/ Luftfeuchtigkeitssensor",
+   "raum": "Aussen"
+  },
+  {
+   "name": "Homematic IP Pool Pumpe (rechts)",
+   "raum": "Aussen"
+  },
+  {
+   "name": "Homematic IP Pool Salzpumpe (links)",
+   "raum": "Aussen"
+  },
+  {
+   "name": "IO Series 5 00C1",
+   "raum": "Bad / Dusche"
+  },
+  {
+   "name": "Homematic IP Bewegungsmelder - Haustüre",
+   "raum": "Entrée"
+  },
+  {
+   "name": "Homematic IP Eingang Dimmaktor",
+   "raum": "Entrée"
+  },
+  {
+   "name": "Homematic IP Eingangstüre",
+   "raum": "Entrée"
+  },
+  {
+   "name": "Homematic IP HmIP Alarm Control Panel",
+   "raum": "Entrée"
+  },
+  {
+   "name": "Homematic IP Türkontakt Kräuter",
+   "raum": "Essen"
+  },
+  {
+   "name": "Homematic IP Rauchwarnmelder",
+   "raum": "Galerie"
+  },
+  {
+   "name": "Homematic IP Bewegungsmelder - Garage",
+   "raum": "Garage"
+  },
+  {
+   "name": "Homematic IP Garagentor Auto",
+   "raum": "Garage"
+  },
+  {
+   "name": "Homematic IP Garagentor Werkraum",
+   "raum": "Garage"
+  },
+  {
+   "name": "Homematic IP Öffner Garagentor Auto",
+   "raum": "Garage"
+  },
+  {
+   "name": "Homematic IP Öffner Garagentor Werkraum",
+   "raum": "Garage"
+  },
+  {
+   "name": "Homematic IP Fensterkontakt Gäste WC",
+   "raum": "Gäste-WC"
+  },
+  {
+   "name": "Haus Verbauch",
+   "raum": "Haus"
+  },
+  {
+   "name": "Haus Verbauch Phase A",
+   "raum": "Haus"
+  },
+  {
+   "name": "Haus Verbauch Phase B",
+   "raum": "Haus"
+  },
+  {
+   "name": "Haus Verbauch Phase C",
+   "raum": "Haus"
+  },
+  {
+   "name": "Saldierung",
+   "raum": "Haus"
+  },
+  {
+   "name": "Saldierung Phase A",
+   "raum": "Haus"
+  },
+  {
+   "name": "Saldierung Phase B",
+   "raum": "Haus"
+  },
+  {
+   "name": "Saldierung Phase C",
+   "raum": "Haus"
+  },
+  {
+   "name": "1-2-3 (Küche, Wohnen2, Wohnen3)",
+   "raum": "Heizung"
+  },
+  {
+   "name": "10-11-12 (Yanik, Bad, Mael)",
+   "raum": "Heizung"
+  },
+  {
+   "name": "13-14-15 (Eltern, Dusche, Hobby)",
+   "raum": "Heizung"
+  },
+  {
+   "name": "16 (WaKü, RL HK-II, VL HK-II)",
+   "raum": "Heizung"
+  },
+  {
+   "name": "4-5-6 (Essen, Spielen, WC)",
+   "raum": "Heizung"
+  },
+  {
+   "name": "7-8-9 (Entrée, Wohnen1, Galerie)",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Heizung Verbrauch",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Heizung Verbrauch Phase A",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Heizung Verbrauch Phase B",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Heizung Verbrauch Phase C",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Homematic IP FBH-Pumpe (HK II)",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Homematic IP WW Boiler Schalter",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Raspberry Pi",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Raspberry Pi 5",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Shelly-Flood Hzg",
+   "raum": "Heizung"
+  },
+  {
+   "name": "WW-Mitte, RL-Ist, WW-Oben",
+   "raum": "Heizung"
+  },
+  {
+   "name": "Homematic IP Fensterkontakt Kellertreppe",
+   "raum": "Hobby"
+  },
+  {
+   "name": "Homematic IP Fensterkontakt Küche",
+   "raum": "Küche"
+  },
+  {
+   "name": "Küche",
+   "raum": "Küche"
+  },
+  {
+   "name": "Homematic IP Ikea Lampe ",
+   "raum": "Spielzimmer"
+  },
+  {
+   "name": "Homematic IP Türkontakt Spielzimmer / Terrasse",
+   "raum": "Spielzimmer"
+  },
+  {
+   "name": "PVA Produktion",
+   "raum": "Terrasse-PVA"
+  },
+  {
+   "name": "PVA Produktion Phase A",
+   "raum": "Terrasse-PVA"
+  },
+  {
+   "name": "PVA Produktion Phase B",
+   "raum": "Terrasse-PVA"
+  },
+  {
+   "name": "PVA Produktion Phase C",
+   "raum": "Terrasse-PVA"
+  },
+  {
+   "name": "SMA STP4.0-3AV-40 930",
+   "raum": "Terrasse-PVA"
+  },
+  {
+   "name": "Solar production forecast",
+   "raum": "Terrasse-PVA"
+  },
+  {
+   "name": "WaMa (b L1)",
+   "raum": "Waschküche"
+  },
+  {
+   "name": "Denon AVR-X1700H",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Denon AVR-X1700H",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Homematic IP Access Point",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Homematic IP Innen Temperatur-/Luftfeuchtigkeitssensor",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Homematic IP TV&Denon",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Homematic IP Türkontakt Cheminée",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Homematic IP Türkontakt Hibiscus",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Sofalampe Shelly ix3",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Sofalampe Shelly-Button",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Sofalampe Shelly-Dimmer",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "name": "Wohnzimmer",
+   "raum": "Wohnzimmer"
+  }
+ ],
+ "entitaeten_mit_eigenem_raum": [
+  {
+   "entity_id": "switch.homematic_ip_aussen_biohort_group",
+   "raum": "Aussen"
+  },
+  {
+   "entity_id": "switch.homematic_ip_aussenlicht_eingangstreppe_group",
+   "raum": "Aussen"
+  },
+  {
+   "entity_id": "switch.homematic_ip_poolsteckdosen_group",
+   "raum": "Aussen"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7177_temperatur_2",
+   "raum": "Bad / Dusche"
+  },
+  {
+   "entity_id": "sensor.shelly1_c45bbe570c30_temperatur_2",
+   "raum": "Bad / Dusche"
+  },
+  {
+   "entity_id": "switch.homematic_ip_badezimmer_og_group",
+   "raum": "Bad / Dusche"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_entree_sensors",
+   "raum": "Entrée"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab561c0b7_temperatur",
+   "raum": "Entrée"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab56147d3_temperatur",
+   "raum": "Essen"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_galerie_og_sensors",
+   "raum": "Galerie"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab561c0b7_temperatur_3",
+   "raum": "Galerie"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_garage_auto_sensors",
+   "raum": "Garage"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_garage_werkraum_sensors",
+   "raum": "Garage"
+  },
+  {
+   "entity_id": "switch.homematic_ip_garage_auto_group",
+   "raum": "Garage"
+  },
+  {
+   "entity_id": "switch.homematic_ip_garage_werkraum_group",
+   "raum": "Garage"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_gaste_wc_sensors",
+   "raum": "Gäste-WC"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab56147d3_temperatur_3",
+   "raum": "Gäste-WC"
+  },
+  {
+   "entity_id": "automation.pv_boiler_laden",
+   "raum": "Heizung"
+  },
+  {
+   "entity_id": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2",
+   "raum": "Heizung"
+  },
+  {
+   "entity_id": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
+   "raum": "Heizung"
+  },
+  {
+   "entity_id": "switch.homematic_ip_heizungsraum_group",
+   "raum": "Heizung"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_keller_ug_sensors",
+   "raum": "Hobby"
+  },
+  {
+   "entity_id": "sensor.shelly1_c45bbe570c30_temperatur_3",
+   "raum": "Hobby"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_kuche_sensors",
+   "raum": "Küche"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7ecf_temperatur",
+   "raum": "Küche"
+  },
+  {
+   "entity_id": "binary_sensor.energy_manager_wama_laeuft",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "binary_sensor.energy_manager_wp_laeuft",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_external_securityzone",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_internal_securityzone",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "binary_sensor.remote_ui",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.aktuell_hochtarif",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.einspeiseverguetung_aktuell",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.einspeiseverguetung_heute_chf",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.einspeiseverguetung_jahr_chf",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.einspeiseverguetung_monat_chf",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.eiv_taglich_wh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energie_saldierung_cost",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energie_tageswerte",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_autarkiegrad_heute",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_autarkiegrad_jahr",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_autarkiegrad_monat",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_boiler_verbrauch_jahr_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_eigenverbrauch_heute_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_eigenverbrauch_jahr_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_eigenverbrauch_monat_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_eigenverbrauchsquote_heute",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_eigenverbrauchsquote_jahr",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_eigenverbrauchsquote_monat",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_einspeisung_heute_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_empfehlung",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_energieassistent_status",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_gesamtverbrauch_heute_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_hausverbrauch_aktuell_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_hausverbrauch_heute_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_hausverbrauch_rest_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_netz_aktuell_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_netzstatus",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_pv_aktuell_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_pv_performance_jahr",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_pv_produktion_heute_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_pv_spezifischer_ertrag_heute",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_pv_ueberschuss_aktuell_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_sonstiger_pv_eigenverbrauch_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_verbrauchsverteilung_sonstige_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_wp_aktuell_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.energy_manager_wp_anteil_hausverbrauch_heute",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.fbh_strang_abweichung",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.nettostromkosten_heute_chf",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.nettostromkosten_jahr_chf",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.nettostromkosten_monat_chf",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.netz_leistung_invertiert",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.netz_ruckspeisung_kwh_compensation",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.netzbezug_gesamt_kwh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.netzbezug_saldiert",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.netzeinspeisung_energie_wh",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.netzeinspeisung_leistung_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.netzeinspeisung_saldiert",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.netzeinspeisung_taglich",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.shelly_3em_gesamt_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.shelly_3em_netzbezug_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.shelly_3em_netzeinspeisung_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.shelly_3em_phase_a_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.shelly_3em_phase_b_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.shelly_3em_phase_c_w",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_07h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_08h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_09h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_10h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_11h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_12h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_13h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_14h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_15h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_16h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_17h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_18h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_19h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.solcast_prognose_20h_kw",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.stromkosten_netzbezug_heute_chf",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.stromkosten_netzbezug_jahr_chf",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.stromkosten_netzbezug_monat_chf",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.strompreis_aktuell",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.wp_nacht_kennzahlen",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.wp_vornacht_kennzahlen",
+   "raum": "Sammlung"
+  },
+  {
+   "entity_id": "sensor.shelly1_c45bbe570c30_temperatur",
+   "raum": "Schlafzimmer"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_spielzimmer_sensors",
+   "raum": "Spielzimmer"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab56147d3_temperatur_2",
+   "raum": "Spielzimmer"
+  },
+  {
+   "entity_id": "switch.homematic_ip_spielzimmer_group",
+   "raum": "Spielzimmer"
+  },
+  {
+   "entity_id": "sensor.pva_4kw_produktion_w",
+   "raum": "Terrasse-PVA"
+  },
+  {
+   "entity_id": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur",
+   "raum": "Waschküche"
+  },
+  {
+   "entity_id": "binary_sensor.homematic_ip_wohnzimmer_sensors",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7ecf_temperatur_2",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7ecf_temperatur_3",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab561c0b7_temperatur_2",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "entity_id": "switch.homematic_ip_wohnzimmer_group",
+   "raum": "Wohnzimmer"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7177_temperatur_3",
+   "raum": "Zimmer Mael"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7177_temperatur",
+   "raum": "Zimmer Yanik"
+  }
+ ]
+}

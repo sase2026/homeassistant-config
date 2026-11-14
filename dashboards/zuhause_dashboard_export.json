@@ -1,0 +1,2234 @@
+{
+ "title": "Zuhause",
+ "views": [
+  {
+   "title": "Übersicht",
+   "path": "home",
+   "icon": "mdi:home-variant",
+   "type": "sections",
+   "max_columns": 4,
+   "dense_section_placement": true,
+   "sections": [
+    {
+     "type": "grid",
+     "column_span": 4,
+     "cards": [
+      {
+       "type": "custom:mushroom-title-card",
+       "title": "{% set h = now().hour %}{{ 'Guten Morgen' if h < 11 else ('Guten Tag' if h < 17 else 'Guten Abend') }}, Sascha",
+       "subtitle": "{{ ['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag','Sonntag'][now().weekday()] }}, {{ now().strftime('%d.%m.%Y') }} · {% set o = ['binary_sensor.homematic_ip_eingangsture_tur', 'binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur', 'binary_sensor.homematic_ip_turkontakt_cheminee_tur', 'binary_sensor.homematic_ip_turkontakt_krauter_tur', 'binary_sensor.homematic_ip_turkontakt_hibiscus_tur', 'binary_sensor.homematic_ip_fensterkontakt_kuche_tur', 'binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur', 'binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur', 'binary_sensor.homematic_ip_garagentor_auto_tur', 'binary_sensor.homematic_ip_garagentor_werkraum_tur'] | select('is_state','on') | list | count %}{{ 'Alles geschlossen' if o == 0 else (o ~ ' offen') }} · Alarm {{ 'scharf' if not is_state('alarm_control_panel.homematic_ip_hmip_alarm_control_panel','disarmed') else 'aus' }}",
+       "grid_options": {
+        "columns": "full"
+       }
+      },
+      {
+       "type": "custom:mushroom-chips-card",
+       "alignment": "start",
+       "grid_options": {
+        "columns": "full"
+       },
+       "chips": [
+        {
+         "type": "weather",
+         "entity": "weather.zuhause",
+         "show_conditions": true,
+         "show_temperature": true
+        },
+        {
+         "type": "template",
+         "icon": "mdi:home-thermometer",
+         "icon_color": "orange",
+         "content": "{{ states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) | round(1) }} °C innen",
+         "tap_action": {
+          "action": "more-info",
+          "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur"
+         }
+        },
+        {
+         "type": "template",
+         "icon": "mdi:door-open",
+         "icon_color": "{{ 'red' if ['binary_sensor.homematic_ip_eingangsture_tur', 'binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur', 'binary_sensor.homematic_ip_turkontakt_cheminee_tur', 'binary_sensor.homematic_ip_turkontakt_krauter_tur', 'binary_sensor.homematic_ip_turkontakt_hibiscus_tur', 'binary_sensor.homematic_ip_fensterkontakt_kuche_tur', 'binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur', 'binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur', 'binary_sensor.homematic_ip_garagentor_auto_tur', 'binary_sensor.homematic_ip_garagentor_werkraum_tur'] | select('is_state','on') | list | count > 0 else 'green' }}",
+         "content": "{% set o = ['binary_sensor.homematic_ip_eingangsture_tur', 'binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur', 'binary_sensor.homematic_ip_turkontakt_cheminee_tur', 'binary_sensor.homematic_ip_turkontakt_krauter_tur', 'binary_sensor.homematic_ip_turkontakt_hibiscus_tur', 'binary_sensor.homematic_ip_fensterkontakt_kuche_tur', 'binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur', 'binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur', 'binary_sensor.homematic_ip_garagentor_auto_tur', 'binary_sensor.homematic_ip_garagentor_werkraum_tur'] | select('is_state','on') | list | count %}{{ 'zu' if o == 0 else o ~ ' offen' }}"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:solar-power-variant",
+         "icon_color": "amber",
+         "content": "{{ states('sensor.energy_manager_pv_aktuell_w') | int(0) }} W",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/solar-a/0"
+         }
+        },
+        {
+         "type": "template",
+         "icon": "mdi:transmission-tower",
+         "icon_color": "{{ 'green' if states('sensor.shelly_3em_netzeinspeisung_w') | float(0) > 50 else 'red' }}",
+         "content": "{% set e = states('sensor.shelly_3em_netzeinspeisung_w') | float(0) %}{{ ('−' ~ e | int) if e > 50 else (states('sensor.shelly_3em_netzbezug_w') | int(0)) }} W"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:heat-pump",
+         "icon_color": "{{ 'blue' if is_state('binary_sensor.energy_manager_wp_laeuft','on') else 'disabled' }}",
+         "content": "WP {{ 'läuft' if is_state('binary_sensor.energy_manager_wp_laeuft','on') else 'aus' }}",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/fbh-a/0"
+         }
+        },
+        {
+         "type": "template",
+         "icon": "mdi:water-boiler",
+         "icon_color": "red",
+         "content": "WW {{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(0) }} °C",
+         "tap_action": {
+          "action": "navigate",
+          "navigation_path": "/boiler-a/0"
+         }
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "column_span": 1,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Sicherheit",
+       "icon": "mdi:shield-home",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "{% set o = ['binary_sensor.homematic_ip_eingangsture_tur', 'binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur', 'binary_sensor.homematic_ip_turkontakt_cheminee_tur', 'binary_sensor.homematic_ip_turkontakt_krauter_tur', 'binary_sensor.homematic_ip_turkontakt_hibiscus_tur', 'binary_sensor.homematic_ip_fensterkontakt_kuche_tur', 'binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur', 'binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur', 'binary_sensor.homematic_ip_garagentor_auto_tur', 'binary_sensor.homematic_ip_garagentor_werkraum_tur'] | select('is_state','on') | list %}{{ 'Alle Türen & Fenster zu' if o | count == 0 else (o | count ~ ' Tür(en)/Fenster offen') }}",
+       "secondary": "{% set n = {'binary_sensor.homematic_ip_eingangsture_tur': 'Eingangstüre', 'binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur': 'Spielzimmer/Terrasse', 'binary_sensor.homematic_ip_turkontakt_cheminee_tur': 'Cheminée', 'binary_sensor.homematic_ip_turkontakt_krauter_tur': 'Kräuter', 'binary_sensor.homematic_ip_turkontakt_hibiscus_tur': 'Hibiscus', 'binary_sensor.homematic_ip_fensterkontakt_kuche_tur': 'Fenster Küche', 'binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur': 'Fenster Gäste-WC', 'binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur': 'Fenster Kellertreppe', 'binary_sensor.homematic_ip_garagentor_auto_tur': 'Garagentor Auto', 'binary_sensor.homematic_ip_garagentor_werkraum_tur': 'Garagentor Werkraum'} %}{% set o = ['binary_sensor.homematic_ip_eingangsture_tur', 'binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur', 'binary_sensor.homematic_ip_turkontakt_cheminee_tur', 'binary_sensor.homematic_ip_turkontakt_krauter_tur', 'binary_sensor.homematic_ip_turkontakt_hibiscus_tur', 'binary_sensor.homematic_ip_fensterkontakt_kuche_tur', 'binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur', 'binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur', 'binary_sensor.homematic_ip_garagentor_auto_tur', 'binary_sensor.homematic_ip_garagentor_werkraum_tur'] | select('is_state','on') | list %}{% if o | count == 0 %}10 Kontakte überwacht{% else %}{% for e in o %}{{ n[e] }}{{ ', ' if not loop.last }}{% endfor %}{% endif %}",
+       "icon": "{{ 'mdi:shield-check' if ['binary_sensor.homematic_ip_eingangsture_tur', 'binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur', 'binary_sensor.homematic_ip_turkontakt_cheminee_tur', 'binary_sensor.homematic_ip_turkontakt_krauter_tur', 'binary_sensor.homematic_ip_turkontakt_hibiscus_tur', 'binary_sensor.homematic_ip_fensterkontakt_kuche_tur', 'binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur', 'binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur', 'binary_sensor.homematic_ip_garagentor_auto_tur', 'binary_sensor.homematic_ip_garagentor_werkraum_tur'] | select('is_state','on') | list | count == 0 else 'mdi:shield-alert' }}",
+       "icon_color": "{{ 'green' if ['binary_sensor.homematic_ip_eingangsture_tur', 'binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur', 'binary_sensor.homematic_ip_turkontakt_cheminee_tur', 'binary_sensor.homematic_ip_turkontakt_krauter_tur', 'binary_sensor.homematic_ip_turkontakt_hibiscus_tur', 'binary_sensor.homematic_ip_fensterkontakt_kuche_tur', 'binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur', 'binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur', 'binary_sensor.homematic_ip_garagentor_auto_tur', 'binary_sensor.homematic_ip_garagentor_werkraum_tur'] | select('is_state','on') | list | count == 0 else 'red' }}",
+       "layout": "horizontal",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 12
+       }
+      },
+      {
+       "type": "custom:mushroom-alarm-control-panel-card",
+       "entity": "alarm_control_panel.homematic_ip_hmip_alarm_control_panel",
+       "name": "Alarmanlage",
+       "states": [
+        "armed_home",
+        "armed_away"
+       ],
+       "grid_options": {
+        "columns": 12
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Rauch",
+       "secondary": "{{ 'ALARM' if is_state('binary_sensor.homematic_ip_rauchwarnmelder_rauch','on') else 'OK' }}",
+       "icon": "mdi:smoke-detector",
+       "icon_color": "{{ 'red' if is_state('binary_sensor.homematic_ip_rauchwarnmelder_rauch','on') else 'green' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 4
+       },
+       "entity": "binary_sensor.homematic_ip_rauchwarnmelder_rauch",
+       "tap_action": {
+        "action": "more-info",
+        "entity": "binary_sensor.homematic_ip_rauchwarnmelder_rauch"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Wasser Hzg",
+       "secondary": "{{ 'ALARM' if is_state('binary_sensor.shelly_flood_hzg_uberflutung','on') else 'trocken' }}",
+       "icon": "mdi:water-alert",
+       "icon_color": "{{ 'red' if is_state('binary_sensor.shelly_flood_hzg_uberflutung','on') else 'green' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 4
+       },
+       "entity": "binary_sensor.shelly_flood_hzg_uberflutung",
+       "tap_action": {
+        "action": "more-info",
+        "entity": "binary_sensor.shelly_flood_hzg_uberflutung"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Bewegung",
+       "secondary": "{% set m = ['binary_sensor.homematic_ip_bewegungsmelder_hausture_bewegung','binary_sensor.homematic_ip_bewegungsmelder_garage_bewegung'] | select('is_state','on') | list | count %}{{ 'keine' if m == 0 else m ~ ' aktiv' }}",
+       "icon": "mdi:motion-sensor",
+       "icon_color": "{{ 'orange' if ['binary_sensor.homematic_ip_bewegungsmelder_hausture_bewegung','binary_sensor.homematic_ip_bewegungsmelder_garage_bewegung'] | select('is_state','on') | list | count > 0 else 'grey' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 4
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "{{ 'Batterien OK' if states.binary_sensor | selectattr('entity_id','search','batteriestand') | selectattr('state','eq','on') | list | count == 0 else 'Batterie schwach' }}",
+       "secondary": "{% set b = states.binary_sensor | selectattr('entity_id','search','batteriestand') | selectattr('state','eq','on') | list %}{{ '15 Sensoren geprüft' if b | count == 0 else b | map(attribute='name') | map('replace','Homematic IP ','') | map('replace',' Batteriestand','') | join(', ') }}",
+       "icon": "{{ 'mdi:battery-check' if states.binary_sensor | selectattr('entity_id','search','batteriestand') | selectattr('state','eq','on') | list | count == 0 else 'mdi:battery-alert' }}",
+       "icon_color": "{{ 'green' if states.binary_sensor | selectattr('entity_id','search','batteriestand') | selectattr('state','eq','on') | list | count == 0 else 'orange' }}",
+       "layout": "horizontal",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 12
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "column_span": 1,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Energie jetzt",
+       "icon": "mdi:flash",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:power-flow-card-plus",
+       "grid_options": {
+        "columns": 12
+       },
+       "entities": {
+        "grid": {
+         "entity": {
+          "consumption": "sensor.shelly_3em_netzbezug_w",
+          "production": "sensor.shelly_3em_netzeinspeisung_w"
+         },
+         "name": "Netz"
+        },
+        "solar": {
+         "entity": "sensor.energy_manager_pv_aktuell_w",
+         "name": "PV",
+         "display_zero_state": true
+        },
+        "home": {
+         "name": "Haus"
+        },
+        "individual": [
+         {
+          "entity": "sensor.energy_manager_wp_aktuell_w",
+          "name": "Wärmepumpe",
+          "icon": "mdi:heat-pump",
+          "color": "#4fa3e0",
+          "display_zero": true
+         },
+         {
+          "entity": "sensor.shelly1pm_84cca8b15caf_leistung",
+          "name": "WaMa",
+          "icon": "mdi:washing-machine",
+          "display_zero": true
+         }
+        ]
+       },
+       "w_decimals": 0,
+       "kw_decimals": 1,
+       "watt_threshold": 1000,
+       "clickable_entities": true,
+       "use_new_flow_rate_model": true
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "PV heute",
+       "secondary": "{{ states('sensor.energy_manager_pv_produktion_heute_kwh') | float(0) | round(1) }} kWh · Prognose {{ states('sensor.solcast_pv_forecast_prognose_heute') | float(0) | round(1) }}",
+       "icon": "mdi:solar-power",
+       "icon_color": "amber",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/solar-a/1"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Morgen",
+       "secondary": "{{ states('sensor.solcast_pv_forecast_prognose_morgen') | float(0) | round(1) }} kWh erwartet",
+       "icon": "mdi:weather-partly-cloudy",
+       "icon_color": "amber",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "more-info",
+        "entity": "sensor.solcast_pv_forecast_prognose_morgen"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Netzbezug",
+       "secondary": "{{ states('sensor.energy_manager_netzbezug_heute_kwh') | float(0) | round(1) }} kWh",
+       "icon": "mdi:transmission-tower-import",
+       "icon_color": "red",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 4
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/solar-a/4"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Autarkie",
+       "secondary": "{{ states('sensor.energy_manager_autarkiegrad_heute') | float(0) | round(0) }} %",
+       "icon": "mdi:home-lightning-bolt",
+       "icon_color": "green",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 4
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/solar-a/6"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Kosten",
+       "secondary": "{{ states('sensor.nettostromkosten_heute_chf') | float(0) | round(2) }} CHF",
+       "icon": "mdi:cash",
+       "icon_color": "purple",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 4
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/solar-a/5"
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "column_span": 1,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Raumklima",
+       "icon": "mdi:thermometer",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Aussen",
+       "secondary": "{{ states('sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) | round(1) }} °C · {{ states('sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit') | int(0) }} %",
+       "icon": "mdi:thermometer",
+       "icon_color": "{% set t = states('sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) %}{{ 'blue' if t < 5 else ('green' if t < 25 else 'red') }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "more-info",
+        "entity": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Innen",
+       "secondary": "{{ states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) | round(1) }} °C · {{ states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit') | int(0) }} %",
+       "icon": "mdi:home-thermometer",
+       "icon_color": "{% set h = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit') | float(0) %}{{ 'orange' if h < 35 or h > 60 else 'green' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "more-info",
+        "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Räume Ø",
+       "secondary": "{% set v = ['sensor.shelly1_8caab56147d3_temperatur', 'sensor.shelly1_8caab56147d3_temperatur_2', 'sensor.shelly1_8caab56147d3_temperatur_3', 'sensor.shelly1_8caab55d7177_temperatur', 'sensor.shelly1_8caab55d7177_temperatur_2', 'sensor.shelly1_8caab55d7177_temperatur_3', 'sensor.shelly1_8caab55d7ecf_temperatur', 'sensor.shelly1_8caab55d7ecf_temperatur_2', 'sensor.shelly1_8caab55d7ecf_temperatur_3', 'sensor.shelly1_8caab561c0b7_temperatur', 'sensor.shelly1_8caab561c0b7_temperatur_2', 'sensor.shelly1_8caab561c0b7_temperatur_3', 'sensor.shelly1_c45bbe570c30_temperatur', 'sensor.shelly1_c45bbe570c30_temperatur_2', 'sensor.shelly1_c45bbe570c30_temperatur_3'] | map('states') | reject('in',['unknown','unavailable']) | map('float') | list %}{{ (v | sum / v | count) | round(1) if v | count else '–' }} °C (15 Räume)",
+       "icon": "mdi:floor-plan",
+       "icon_color": "orange",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/fbh-a/0"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Warmwasser",
+       "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C oben",
+       "icon": "mdi:water-boiler",
+       "icon_color": "{% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %}{{ 'red' if t >= 45 else ('orange' if t >= 38 else 'blue') }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/boiler-a/0"
+       }
+      },
+      {
+       "type": "custom:mushroom-climate-card",
+       "entity": "climate.wohnzimmer_homematic_ip_wohnzimmer",
+       "name": "Wohnzimmer",
+       "show_temperature_control": true,
+       "collapsible_controls": true,
+       "grid_options": {
+        "columns": 12
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "column_span": 1,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Türen & Fenster",
+       "icon": "mdi:door",
+       "heading_style": "title"
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_eingangsture_tur",
+       "name": "Eingangstüre",
+       "icon": "mdi:door",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur",
+       "name": "Spielzimmer/Terrasse",
+       "icon": "mdi:door-sliding",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_turkontakt_cheminee_tur",
+       "name": "Cheminée",
+       "icon": "mdi:door-sliding",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_turkontakt_krauter_tur",
+       "name": "Kräuter",
+       "icon": "mdi:door",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_turkontakt_hibiscus_tur",
+       "name": "Hibiscus",
+       "icon": "mdi:door",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_fensterkontakt_kuche_tur",
+       "name": "Fenster Küche",
+       "icon": "mdi:window-closed-variant",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur",
+       "name": "Fenster Gäste-WC",
+       "icon": "mdi:window-closed-variant",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur",
+       "name": "Fenster Kellertreppe",
+       "icon": "mdi:window-closed-variant",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_garagentor_auto_tur",
+       "name": "Garagentor Auto",
+       "icon": "mdi:garage",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_garagentor_werkraum_tur",
+       "name": "Garagentor Werkraum",
+       "icon": "mdi:garage",
+       "vertical": false,
+       "hide_state": false,
+       "grid_options": {
+        "columns": 6
+       },
+       "color": "red",
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "column_span": 2,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Verlauf",
+       "icon": "mdi:chart-bell-curve-cumulative",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:plotly-graph",
+       "hours_to_show": 48,
+       "refresh_interval": 300,
+       "grid_options": {
+        "columns": "full"
+       },
+       "title": "Temperaturen 48 h",
+       "defaults": {
+        "entity": {
+         "line": {
+          "shape": "spline",
+          "width": 2
+         }
+        }
+       },
+       "entities": [
+        {
+         "entity": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur",
+         "name": "Aussen",
+         "yaxis": "y1",
+         "line": {
+          "color": "#4fa3e0",
+          "width": 2
+         },
+         "fill": "tozeroy",
+         "fillcolor": "rgba(79,163,224,0.12)"
+        },
+        {
+         "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur",
+         "name": "Innen",
+         "yaxis": "y1",
+         "line": {
+          "color": "#f59e0b",
+          "width": 2
+         }
+        },
+        {
+         "entity": "sensor.shelly1_8caab561c0b7_temperatur_2",
+         "name": "Wohnen 1",
+         "yaxis": "y1",
+         "line": {
+          "color": "#ef4444",
+          "width": 1.5,
+          "dash": "dot"
+         }
+        },
+        {
+         "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+         "name": "Warmwasser",
+         "yaxis": "y2",
+         "line": {
+          "color": "#a855f7",
+          "width": 1.5
+         }
+        }
+       ],
+       "layout": {
+        "height": 290,
+        "margin": {
+         "t": 10,
+         "b": 60,
+         "l": 40,
+         "r": 40
+        },
+        "legend": {
+         "orientation": "h",
+         "y": -0.32
+        },
+        "yaxis": {
+         "title": {
+          "text": "°C"
+         }
+        },
+        "yaxis2": {
+         "title": {
+          "text": "WW °C"
+         },
+         "overlaying": "y",
+         "side": "right",
+         "showgrid": false
+        }
+       }
+      },
+      {
+       "type": "custom:plotly-graph",
+       "hours_to_show": 24,
+       "refresh_interval": 60,
+       "grid_options": {
+        "columns": "full"
+       },
+       "title": "Leistung 24 h",
+       "entities": [
+        {
+         "entity": "sensor.energy_manager_pv_aktuell_w",
+         "name": "PV",
+         "yaxis": "y1",
+         "fill": "tozeroy",
+         "line": {
+          "color": "#f59e0b",
+          "width": 1,
+          "shape": "hv"
+         },
+         "fillcolor": "rgba(245,158,11,0.25)"
+        },
+        {
+         "entity": "sensor.shelly_3em_netzbezug_w",
+         "name": "Netzbezug",
+         "yaxis": "y1",
+         "line": {
+          "color": "#ef4444",
+          "width": 1,
+          "shape": "hv"
+         }
+        },
+        {
+         "entity": "sensor.energy_manager_wp_aktuell_w",
+         "name": "WP",
+         "yaxis": "y1",
+         "line": {
+          "color": "#4fa3e0",
+          "width": 1,
+          "shape": "hv"
+         }
+        }
+       ],
+       "layout": {
+        "height": 270,
+        "margin": {
+         "t": 10,
+         "b": 60,
+         "l": 45,
+         "r": 10
+        },
+        "legend": {
+         "orientation": "h",
+         "y": -0.32
+        },
+        "yaxis": {
+         "title": {
+          "text": "W"
+         },
+         "rangemode": "tozero"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "column_span": 1,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Licht & Geräte",
+       "icon": "mdi:lightbulb-group",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:mushroom-light-card",
+       "entity": "light.shellydimmer2_e8db84d2e240",
+       "name": "Sofalampe",
+       "show_brightness_control": true,
+       "use_light_color": true,
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "custom:mushroom-light-card",
+       "entity": "light.homematic_ip_eingang_dimmaktor",
+       "name": "Eingang",
+       "show_brightness_control": true,
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_aussenlicht_eingangstreppe_group",
+       "name": "Aussenlicht Treppe",
+       "icon": "mdi:outdoor-lamp",
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "toggle"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_ikea_lampe",
+       "name": "Ikea Lampe",
+       "icon": "mdi:floor-lamp",
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "toggle"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_tv_denon",
+       "name": "TV & Denon",
+       "icon": "mdi:television",
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "toggle"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
+       "name": "FBH-Pumpe HK II",
+       "icon": "mdi:pump",
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "toggle",
+        "confirmation": {
+         "text": "FBH-Pumpe HK II wirklich schalten?"
+        }
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_pool_pumpe_rechts",
+       "name": "Pool Pumpe",
+       "icon": "mdi:pool",
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "toggle"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_pool_salzpumpe_links",
+       "name": "Pool Salzpumpe",
+       "icon": "mdi:shaker-outline",
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "toggle"
+       }
+      },
+      {
+       "type": "custom:mushroom-media-player-card",
+       "entity": "media_player.kuche",
+       "name": "Küche",
+       "use_media_info": true,
+       "show_volume_level": true,
+       "media_controls": [
+        "play_pause_on",
+        "previous",
+        "next"
+       ],
+       "volume_controls": [
+        "volume_mute",
+        "volume_set"
+       ],
+       "grid_options": {
+        "columns": 12
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Garage Auto",
+       "secondary": "{{ 'offen' if is_state('binary_sensor.homematic_ip_garagentor_auto_tur','on') else 'geschlossen' }}",
+       "icon": "{{ 'mdi:garage-open' if is_state('binary_sensor.homematic_ip_garagentor_auto_tur','on') else 'mdi:garage' }}",
+       "icon_color": "{{ 'red' if is_state('binary_sensor.homematic_ip_garagentor_auto_tur','on') else 'green' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "call-service",
+        "service": "switch.toggle",
+        "target": {
+         "entity_id": "switch.homematic_ip_offner_garagentor_auto"
+        },
+        "confirmation": {
+         "text": "Garagentor Auto bewegen?"
+        }
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Garage Werkraum",
+       "secondary": "{{ 'offen' if is_state('binary_sensor.homematic_ip_garagentor_werkraum_tur','on') else 'geschlossen' }}",
+       "icon": "{{ 'mdi:garage-open' if is_state('binary_sensor.homematic_ip_garagentor_werkraum_tur','on') else 'mdi:garage' }}",
+       "icon_color": "{{ 'red' if is_state('binary_sensor.homematic_ip_garagentor_werkraum_tur','on') else 'green' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "call-service",
+        "service": "switch.toggle",
+        "target": {
+         "entity_id": "switch.homematic_ip_offner_garagentor_werkraum"
+        },
+        "confirmation": {
+         "text": "Garagentor Werkraum bewegen?"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "column_span": 1,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "System",
+       "icon": "mdi:server",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:mushroom-person-card",
+       "entity": "person.rasppi5",
+       "name": "Sascha",
+       "icon_type": "entity-picture",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Updates",
+       "secondary": "{% set u = states.update | selectattr('state','eq','on') | list %}{{ 'alles aktuell' if u | count == 0 else u | count ~ ' verfügbar' }}",
+       "icon": "mdi:package-up",
+       "icon_color": "{{ 'green' if states.update | selectattr('state','eq','on') | list | count == 0 else 'orange' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/updates"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Backup",
+       "secondary": "{{ as_timestamp(states('sensor.backup_last_successful_automatic_backup'), 0) | timestamp_custom('%d.%m. %H:%M') }} · {{ states('sensor.backup_grosse_des_letzten_erfolgreichen_automatischen_backups') | float(0) | round(0) }} MB",
+       "icon": "mdi:backup-restore",
+       "icon_color": "{{ 'green' if (now() - states('sensor.backup_last_successful_automatic_backup') | as_datetime(now())).total_seconds() < 129600 else 'red' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/backup"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Raspberry Pi",
+       "secondary": "Stromversorgung {{ 'Problem' if is_state('binary_sensor.rpi_power_status','on') else 'OK' }}",
+       "icon": "mdi:raspberry-pi",
+       "icon_color": "{{ 'red' if is_state('binary_sensor.rpi_power_status','on') else 'green' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Solcast",
+       "secondary": "{{ states('sensor.solcast_pv_forecast_verwendete_api_abrufe') }}/{{ states('sensor.solcast_pv_forecast_max_api_abrufe') }} Abrufe heute",
+       "icon": "mdi:weather-sunny-alert",
+       "icon_color": "amber",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "more-info",
+        "entity": "sensor.solcast_pv_forecast_zeitpunkt_letzter_api_abruf"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Integrationen",
+       "secondary": "{% set r = states | selectattr('state','eq','unavailable') | rejectattr('attributes.restored','defined') | list | count %}{{ r }} Entitäten nicht erreichbar",
+       "icon": "mdi:lan-disconnect",
+       "icon_color": "{{ 'green' if states | selectattr('state','eq','unavailable') | rejectattr('attributes.restored','defined') | list | count < 20 else 'orange' }}",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/integrations/dashboard"
+       }
+      },
+      {
+       "type": "heading",
+       "heading": "Weitere Dashboards",
+       "icon": "mdi:view-dashboard",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Solar",
+       "secondary": "Manager",
+       "icon": "mdi:solar-power-variant",
+       "icon_color": "amber",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 4
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/solar-a/0"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Heizung",
+       "secondary": "FBH",
+       "icon": "mdi:heating-coil",
+       "icon_color": "orange",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 4
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/fbh-a/0"
+       }
+      },
+      {
+       "type": "custom:mushroom-template-card",
+       "primary": "Boiler",
+       "secondary": "PV-Laden",
+       "icon": "mdi:water-boiler-auto",
+       "icon_color": "red",
+       "layout": "vertical",
+       "fill_container": true,
+       "grid_options": {
+        "columns": 4
+       },
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/boiler-a/0"
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "EG",
+   "path": "eg",
+   "icon": "mdi:home-floor-0",
+   "type": "sections",
+   "max_columns": 4,
+   "dense_section_placement": true,
+   "sections": [
+    {
+     "type": "grid",
+     "column_span": 4,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "EG – Erdgeschoss",
+       "icon": "mdi:home-floor-0",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:mushroom-chips-card",
+       "alignment": "start",
+       "grid_options": {
+        "columns": "full"
+       },
+       "chips": [
+        {
+         "type": "template",
+         "icon": "mdi:door-open",
+         "icon_color": "{% set o = floor_areas('eg') | map('area_entities') | sum(start=[]) | select('match','binary_sensor') | select('is_state','on') | expand | selectattr('attributes.device_class','in',['door','window','opening','garage_door']) | list | count %}{{ 'red' if o else 'green' }}",
+         "content": "{% set o = floor_areas('eg') | map('area_entities') | sum(start=[]) | select('match','binary_sensor') | select('is_state','on') | expand | selectattr('attributes.device_class','in',['door','window','opening','garage_door']) | list | count %}{{ 'alles zu' if o == 0 else o ~ ' offen' }}"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:lightbulb-group",
+         "icon_color": "{{ 'amber' if floor_areas('eg') | map('area_entities') | sum(start=[]) | select('match','light\\.') | select('is_state','on') | list | count else 'disabled' }}",
+         "content": "{{ floor_areas('eg') | map('area_entities') | sum(start=[]) | select('match','light\\.') | select('is_state','on') | list | count }} Licht an"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:thermometer",
+         "icon_color": "orange",
+         "content": "{% set v = floor_areas('eg') | map('area_entities') | sum(start=[]) | select('match','sensor\\.shelly1_') | select('search','temperatur') | map('states') | reject('in',['unknown','unavailable']) | map('float') | list %}Ø Strang-RL {{ (v | sum / v | count) | round(1) if v | count else '–' }} °C"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:power-plug",
+         "icon_color": "blue",
+         "content": "{{ floor_areas('eg') | map('area_entities') | sum(start=[]) | select('match','switch\\.') | select('is_state','on') | list | count }} Schalter an"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Wohnzimmer",
+       "icon": "mdi:sofa",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/wohnzimmer"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "climate.wohnzimmer_homematic_ip_wohnzimmer",
+       "name": "Thermostat",
+       "grid_options": {
+        "columns": 12
+       },
+       "features": [
+        {
+         "type": "target-temperature"
+        }
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab561c0b7_temperatur_2",
+       "name": "Strang Wohnen 1",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab55d7ecf_temperatur_2",
+       "name": "Strang Wohnen 2",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab55d7ecf_temperatur_3",
+       "name": "Strang Wohnen 3",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur",
+       "name": "Innen Temperatur",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit",
+       "name": "Innen Luftfeuchtigkeit",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_turkontakt_cheminee_tur",
+       "name": "Tür Cheminée",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_turkontakt_hibiscus_tur",
+       "name": "Tür Hibiscus",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "light.shellydimmer2_e8db84d2e240",
+       "name": "Sofalampe Dimmer",
+       "grid_options": {
+        "columns": 12
+       },
+       "features": [
+        {
+         "type": "light-brightness"
+        }
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_tv_denon",
+       "name": "TV&Denon",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_wohnzimmer_group",
+       "name": "Wohnzimmer (Gruppe)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.homematic_ip_tv_denon_leistung",
+       "name": "TV&Denon Leistung",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Küche",
+       "icon": "mdi:texture-box",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/kuche"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab55d7ecf_temperatur",
+       "name": "Strang Küche",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_fensterkontakt_kuche_tur",
+       "name": "Fenster Küche",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "media_player.kuche",
+       "name": "Küche",
+       "grid_options": {
+        "columns": 12
+       },
+       "features": []
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Essen",
+       "icon": "mdi:silverware-fork-knife",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/essen"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab56147d3_temperatur",
+       "name": "Strang Essen",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_turkontakt_krauter_tur",
+       "name": "Tür Kräuter",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Spielzimmer",
+       "icon": "mdi:toy-brick",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/spielzimmer"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab56147d3_temperatur_2",
+       "name": "Strang Spielen",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur",
+       "name": "Tür Spielzimmer / Terrasse",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_ikea_lampe",
+       "name": "Ikea Lampe",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_spielzimmer_group",
+       "name": "Spielzimmer (Gruppe)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.homematic_ip_ikea_lampe_leistung",
+       "name": "Ikea Lampe Leistung",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Entrée",
+       "icon": "mdi:door-open",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/entree"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab561c0b7_temperatur",
+       "name": "Strang Entrée",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_bewegungsmelder_hausture_bewegung",
+       "name": "Bewegung Haustüre",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_eingangsture_tur",
+       "name": "Eingangstüre",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "light.homematic_ip_eingang_dimmaktor",
+       "name": "Eingang Dimmaktor",
+       "grid_options": {
+        "columns": 12
+       },
+       "features": [
+        {
+         "type": "light-brightness"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Gäste-WC",
+       "icon": "mdi:toilet",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/gaste_wc"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab56147d3_temperatur_3",
+       "name": "Strang Gäste WC",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur",
+       "name": "Fenster Gäste WC",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Aussen",
+       "icon": "mdi:tree",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/aussen"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur",
+       "name": "Aussen Temperatur",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit",
+       "name": "Aussen Luftfeuchtigkeit",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_aussen_biohort_group",
+       "name": "Aussen/Biohort (Gruppe)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_aussenlicht_eingangstreppe_group",
+       "name": "Aussenlicht Eingangstreppe (Gruppe)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_pool_pumpe_rechts",
+       "name": "Pool Pumpe (rechts)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_pool_salzpumpe_links",
+       "name": "Pool Salzpumpe (links)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_poolsteckdosen_group",
+       "name": "Poolsteckdosen (Gruppe)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.homematic_ip_pool_pumpe_rechts_leistung",
+       "name": "Pool Pumpe (rechts) Leistung",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.homematic_ip_pool_salzpumpe_links_leistung",
+       "name": "Pool Salzpumpe (links) Leistung",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Terrasse-PVA",
+       "icon": "mdi:solar-power",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/terrasse_pva"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.pva_4kw_produktion_w",
+       "name": "PVA 4kW Produktion W",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.stp4_0_3av_40_930_grid_power",
+       "name": "Wechselrichter AC",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.stp4_0_3av_40_930_pv_power",
+       "name": "PV DC gesamt",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.stp4_0_3av_40_930_pv_power_a",
+       "name": "PV String A",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.stp4_0_3av_40_930_pv_power_b",
+       "name": "PV String B",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.power_production_now",
+       "name": "Prognose jetzt",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "OG",
+   "path": "og",
+   "icon": "mdi:home-floor-1",
+   "type": "sections",
+   "max_columns": 4,
+   "dense_section_placement": true,
+   "sections": [
+    {
+     "type": "grid",
+     "column_span": 4,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "OG – Obergeschoss",
+       "icon": "mdi:home-floor-1",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:mushroom-chips-card",
+       "alignment": "start",
+       "grid_options": {
+        "columns": "full"
+       },
+       "chips": [
+        {
+         "type": "template",
+         "icon": "mdi:door-open",
+         "icon_color": "{% set o = floor_areas('1_og') | map('area_entities') | sum(start=[]) | select('match','binary_sensor') | select('is_state','on') | expand | selectattr('attributes.device_class','in',['door','window','opening','garage_door']) | list | count %}{{ 'red' if o else 'green' }}",
+         "content": "{% set o = floor_areas('1_og') | map('area_entities') | sum(start=[]) | select('match','binary_sensor') | select('is_state','on') | expand | selectattr('attributes.device_class','in',['door','window','opening','garage_door']) | list | count %}{{ 'alles zu' if o == 0 else o ~ ' offen' }}"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:lightbulb-group",
+         "icon_color": "{{ 'amber' if floor_areas('1_og') | map('area_entities') | sum(start=[]) | select('match','light\\.') | select('is_state','on') | list | count else 'disabled' }}",
+         "content": "{{ floor_areas('1_og') | map('area_entities') | sum(start=[]) | select('match','light\\.') | select('is_state','on') | list | count }} Licht an"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:thermometer",
+         "icon_color": "orange",
+         "content": "{% set v = floor_areas('1_og') | map('area_entities') | sum(start=[]) | select('match','sensor\\.shelly1_') | select('search','temperatur') | map('states') | reject('in',['unknown','unavailable']) | map('float') | list %}Ø Strang-RL {{ (v | sum / v | count) | round(1) if v | count else '–' }} °C"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:power-plug",
+         "icon_color": "blue",
+         "content": "{{ floor_areas('1_og') | map('area_entities') | sum(start=[]) | select('match','switch\\.') | select('is_state','on') | list | count }} Schalter an"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Schlafzimmer",
+       "icon": "mdi:bed",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/schlafzimmer"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_c45bbe570c30_temperatur",
+       "name": "Strang Eltern",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Zimmer Yanik",
+       "icon": "mdi:bed-single",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/zimmer_yanik"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab55d7177_temperatur",
+       "name": "Strang Yanik",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Zimmer Mael",
+       "icon": "mdi:bed-single",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/zimmer_mael"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab55d7177_temperatur_3",
+       "name": "Strang Mael",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Bad / Dusche",
+       "icon": "mdi:toothbrush-electric",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/bad_dusche"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab55d7177_temperatur_2",
+       "name": "Strang Bad",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_c45bbe570c30_temperatur_2",
+       "name": "Strang Dusche",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_badezimmer_og_group",
+       "name": "Badezimmer OG (Gruppe)",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Galerie",
+       "icon": "mdi:stairs",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/galerie"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_8caab561c0b7_temperatur_3",
+       "name": "Strang Galerie",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_rauchwarnmelder_rauch",
+       "name": "Rauchmelder",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "title": "UG",
+   "path": "ug",
+   "icon": "mdi:home-floor-negative-1",
+   "type": "sections",
+   "max_columns": 4,
+   "dense_section_placement": true,
+   "sections": [
+    {
+     "type": "grid",
+     "column_span": 4,
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "UG – Untergeschoss",
+       "icon": "mdi:home-floor-negative-1",
+       "heading_style": "title"
+      },
+      {
+       "type": "custom:mushroom-chips-card",
+       "alignment": "start",
+       "grid_options": {
+        "columns": "full"
+       },
+       "chips": [
+        {
+         "type": "template",
+         "icon": "mdi:door-open",
+         "icon_color": "{% set o = floor_areas('ug') | map('area_entities') | sum(start=[]) | select('match','binary_sensor') | select('is_state','on') | expand | selectattr('attributes.device_class','in',['door','window','opening','garage_door']) | list | count %}{{ 'red' if o else 'green' }}",
+         "content": "{% set o = floor_areas('ug') | map('area_entities') | sum(start=[]) | select('match','binary_sensor') | select('is_state','on') | expand | selectattr('attributes.device_class','in',['door','window','opening','garage_door']) | list | count %}{{ 'alles zu' if o == 0 else o ~ ' offen' }}"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:lightbulb-group",
+         "icon_color": "{{ 'amber' if floor_areas('ug') | map('area_entities') | sum(start=[]) | select('match','light\\.') | select('is_state','on') | list | count else 'disabled' }}",
+         "content": "{{ floor_areas('ug') | map('area_entities') | sum(start=[]) | select('match','light\\.') | select('is_state','on') | list | count }} Licht an"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:thermometer",
+         "icon_color": "orange",
+         "content": "{% set v = floor_areas('ug') | map('area_entities') | sum(start=[]) | select('match','sensor\\.shelly1_') | select('search','temperatur') | map('states') | reject('in',['unknown','unavailable']) | map('float') | list %}Ø Strang-RL {{ (v | sum / v | count) | round(1) if v | count else '–' }} °C"
+        },
+        {
+         "type": "template",
+         "icon": "mdi:power-plug",
+         "icon_color": "blue",
+         "content": "{{ floor_areas('ug') | map('area_entities') | sum(start=[]) | select('match','switch\\.') | select('is_state','on') | list | count }} Schalter an"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Heizung",
+       "icon": "mdi:heating-coil",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/heizung"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2",
+       "name": "RL HK-II °C",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
+       "name": "RL Ist °C",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly_flood_hzg_temperatur",
+       "name": "Wassermelder Temperatur",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
+       "name": "VL HK-II °C",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
+       "name": "WW Mitte °C",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+       "name": "WW Oben °C",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.shelly_flood_hzg_uberflutung",
+       "name": "Wassermelder",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "light.homematic_ip_ww_boiler_schalter",
+       "name": "WW Boiler Schalter",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "light.homematic_ip_ww_boiler_schalter_bottom",
+       "name": "WW Boiler Schalter Bottom",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "light.homematic_ip_ww_boiler_schalter_top",
+       "name": "WW Boiler Schalter Top",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
+       "name": "FBH-Pumpe (HK II)",
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "toggle",
+        "confirmation": {
+         "text": "FBH-Pumpe (HK II) wirklich schalten?"
+        }
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_heizungsraum_group",
+       "name": "Heizungsraum (Gruppe)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.heizung_verbrauch_w",
+       "name": "Heizung Verbrauch W",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.homematic_ip_fbh_pumpe_hk_ii_leistung",
+       "name": "FBH-Pumpe (HK II) Leistung",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Waschküche",
+       "icon": "mdi:washing-machine",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/waschkuche"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur",
+       "name": "WaKü °C",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.shelly1pm_84cca8b15caf",
+       "name": "WaMa (b L1)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1pm_84cca8b15caf_leistung",
+       "name": "WaMa (b L1) Leistung",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Hobby",
+       "icon": "mdi:sofa",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/hobby"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shelly1_c45bbe570c30_temperatur_3",
+       "name": "Strang Hobby",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur",
+       "name": "Fenster Kellertreppe",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Garage",
+       "icon": "mdi:garage",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/garage"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_bewegungsmelder_garage_bewegung",
+       "name": "Bewegung Garage",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_garagentor_auto_tur",
+       "name": "Garagentor Auto",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "binary_sensor.homematic_ip_garagentor_werkraum_tur",
+       "name": "Garagentor Werkraum",
+       "grid_options": {
+        "columns": 6
+       },
+       "state_content": [
+        "state",
+        "last_changed"
+       ]
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_garage_auto_group",
+       "name": "Garage Auto (Gruppe)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_garage_werkraum_group",
+       "name": "Garage Werkraum (Gruppe)",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_offner_garagentor_auto",
+       "name": "Öffner Garagentor Auto",
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "toggle",
+        "confirmation": {
+         "text": "Öffner Garagentor Auto wirklich schalten?"
+        }
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.homematic_ip_offner_garagentor_werkraum",
+       "name": "Öffner Garagentor Werkraum",
+       "grid_options": {
+        "columns": 6
+       },
+       "tap_action": {
+        "action": "toggle",
+        "confirmation": {
+         "text": "Öffner Garagentor Werkraum wirklich schalten?"
+        }
+       }
+      }
+     ]
+    },
+    {
+     "type": "grid",
+     "cards": [
+      {
+       "type": "heading",
+       "heading": "Haus",
+       "icon": "mdi:home",
+       "heading_style": "subtitle",
+       "tap_action": {
+        "action": "navigate",
+        "navigation_path": "/config/areas/area/haus"
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.saldierung_pro3em_temperatur",
+       "name": "Saldierung Temperatur",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "switch.haus_verbauch",
+       "name": "Haus Verbrauch",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.haus_verbrauch_w",
+       "name": "Haus Verbrauch W",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.leistung_saldierung",
+       "name": "Leistung Saldierung",
+       "grid_options": {
+        "columns": 6
+       }
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}
