@@ -1114,13 +1114,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Wohnzimmer",
-       "icon": "mdi:sofa",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/wohnzimmer"
+       "type": "area",
+       "area": "wohnzimmer",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/wohnzimmer",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1142,7 +1151,8 @@
        "name": "Strang Wohnen 1",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1150,7 +1160,8 @@
        "name": "Strang Wohnen 2",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1158,7 +1169,8 @@
        "name": "Strang Wohnen 3",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1166,7 +1178,8 @@
        "name": "Innen Temperatur",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "orange"
       },
       {
        "type": "tile",
@@ -1174,7 +1187,8 @@
        "name": "Innen Luftfeuchtigkeit",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "light-blue"
       },
       {
        "type": "tile",
@@ -1183,6 +1197,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -1195,6 +1210,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -1207,6 +1223,7 @@
        "grid_options": {
         "columns": 12
        },
+       "color": "amber",
        "features": [
         {
          "type": "light-brightness"
@@ -1219,7 +1236,8 @@
        "name": "TV&Denon",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "purple"
       },
       {
        "type": "tile",
@@ -1227,7 +1245,8 @@
        "name": "Wohnzimmer (Gruppe)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -1235,7 +1254,8 @@
        "name": "TV&Denon Leistung",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "teal"
       }
      ]
     },
@@ -1243,13 +1263,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Küche",
-       "icon": "mdi:texture-box",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/kuche"
+       "type": "area",
+       "area": "kuche",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/kuche",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1258,7 +1287,8 @@
        "name": "Strang Küche",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1267,6 +1297,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -1279,6 +1310,7 @@
        "grid_options": {
         "columns": 12
        },
+       "color": "indigo",
        "features": []
       }
      ]
@@ -1287,13 +1319,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Essen",
-       "icon": "mdi:silverware-fork-knife",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/essen"
+       "type": "area",
+       "area": "essen",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/essen",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1302,7 +1343,8 @@
        "name": "Strang Essen",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1311,6 +1353,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -1322,13 +1365,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Spielzimmer",
-       "icon": "mdi:toy-brick",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/spielzimmer"
+       "type": "area",
+       "area": "spielzimmer",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/spielzimmer",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1337,7 +1389,8 @@
        "name": "Strang Spielen",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1346,6 +1399,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -1357,7 +1411,8 @@
        "name": "Ikea Lampe",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -1365,7 +1420,8 @@
        "name": "Spielzimmer (Gruppe)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -1373,7 +1429,8 @@
        "name": "Ikea Lampe Leistung",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "teal"
       }
      ]
     },
@@ -1381,13 +1438,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Entrée",
-       "icon": "mdi:door-open",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/entree"
+       "type": "area",
+       "area": "entree",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/entree",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1396,7 +1462,8 @@
        "name": "Strang Entrée",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1405,6 +1472,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "purple",
        "state_content": [
         "state",
         "last_changed"
@@ -1417,6 +1485,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -1429,6 +1498,7 @@
        "grid_options": {
         "columns": 12
        },
+       "color": "amber",
        "features": [
         {
          "type": "light-brightness"
@@ -1441,13 +1511,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Gäste-WC",
-       "icon": "mdi:toilet",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/gaste_wc"
+       "type": "area",
+       "area": "gaste_wc",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/gaste_wc",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1456,7 +1535,8 @@
        "name": "Strang Gäste WC",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1465,6 +1545,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -1476,13 +1557,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Aussen",
-       "icon": "mdi:tree",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/aussen"
+       "type": "area",
+       "area": "aussen",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/aussen",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1491,7 +1581,8 @@
        "name": "Aussen Temperatur",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "orange"
       },
       {
        "type": "tile",
@@ -1499,7 +1590,8 @@
        "name": "Aussen Luftfeuchtigkeit",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "light-blue"
       },
       {
        "type": "tile",
@@ -1507,7 +1599,8 @@
        "name": "Aussen/Biohort (Gruppe)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -1515,7 +1608,8 @@
        "name": "Aussenlicht Eingangstreppe (Gruppe)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -1523,7 +1617,8 @@
        "name": "Pool Pumpe (rechts)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "light-blue"
       },
       {
        "type": "tile",
@@ -1531,7 +1626,8 @@
        "name": "Pool Salzpumpe (links)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "light-blue"
       },
       {
        "type": "tile",
@@ -1539,7 +1635,8 @@
        "name": "Poolsteckdosen (Gruppe)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "light-blue"
       },
       {
        "type": "tile",
@@ -1547,7 +1644,8 @@
        "name": "Pool Pumpe (rechts) Leistung",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "teal"
       },
       {
        "type": "tile",
@@ -1555,7 +1653,8 @@
        "name": "Pool Salzpumpe (links) Leistung",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "teal"
       }
      ]
     },
@@ -1563,13 +1662,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Terrasse-PVA",
-       "icon": "mdi:solar-power",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/terrasse_pva"
+       "type": "area",
+       "area": "terrasse_pva",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/terrasse_pva",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1578,7 +1686,8 @@
        "name": "PVA 4kW Produktion W",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "yellow"
       },
       {
        "type": "tile",
@@ -1586,7 +1695,8 @@
        "name": "Wechselrichter AC",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "yellow"
       },
       {
        "type": "tile",
@@ -1594,7 +1704,8 @@
        "name": "PV DC gesamt",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "yellow"
       },
       {
        "type": "tile",
@@ -1602,7 +1713,8 @@
        "name": "PV String A",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "yellow"
       },
       {
        "type": "tile",
@@ -1610,7 +1722,8 @@
        "name": "PV String B",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "yellow"
       },
       {
        "type": "tile",
@@ -1618,7 +1731,8 @@
        "name": "Prognose jetzt",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "yellow"
       }
      ]
     }
@@ -1681,13 +1795,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Schlafzimmer",
-       "icon": "mdi:bed",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/schlafzimmer"
+       "type": "area",
+       "area": "schlafzimmer",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/schlafzimmer",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1696,7 +1819,8 @@
        "name": "Strang Eltern",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       }
      ]
     },
@@ -1704,13 +1828,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Zimmer Yanik",
-       "icon": "mdi:bed-single",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/zimmer_yanik"
+       "type": "area",
+       "area": "zimmer_yanik",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/zimmer_yanik",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1719,7 +1852,8 @@
        "name": "Strang Yanik",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       }
      ]
     },
@@ -1727,13 +1861,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Zimmer Mael",
-       "icon": "mdi:bed-single",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/zimmer_mael"
+       "type": "area",
+       "area": "zimmer_mael",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/zimmer_mael",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1742,7 +1885,8 @@
        "name": "Strang Mael",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       }
      ]
     },
@@ -1750,13 +1894,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Bad / Dusche",
-       "icon": "mdi:toothbrush-electric",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/bad_dusche"
+       "type": "area",
+       "area": "bad_dusche",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/bad_dusche",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1765,7 +1918,8 @@
        "name": "Strang Bad",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1773,7 +1927,8 @@
        "name": "Strang Dusche",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1781,7 +1936,8 @@
        "name": "Badezimmer OG (Gruppe)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       }
      ]
     },
@@ -1789,13 +1945,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Galerie",
-       "icon": "mdi:stairs",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/galerie"
+       "type": "area",
+       "area": "galerie",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/galerie",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1804,7 +1969,8 @@
        "name": "Strang Galerie",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1813,6 +1979,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -1879,13 +2046,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Heizung",
-       "icon": "mdi:heating-coil",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/heizung"
+       "type": "area",
+       "area": "heizung",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/heizung",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -1894,7 +2070,8 @@
        "name": "RL HK-II °C",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1902,7 +2079,8 @@
        "name": "RL Ist °C",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "orange"
       },
       {
        "type": "tile",
@@ -1910,7 +2088,8 @@
        "name": "Wassermelder Temperatur",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "orange"
       },
       {
        "type": "tile",
@@ -1918,7 +2097,8 @@
        "name": "VL HK-II °C",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -1926,7 +2106,8 @@
        "name": "WW Mitte °C",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "orange"
       },
       {
        "type": "tile",
@@ -1934,7 +2115,8 @@
        "name": "WW Oben °C",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "orange"
       },
       {
        "type": "tile",
@@ -1943,6 +2125,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "blue",
        "state_content": [
         "state",
         "last_changed"
@@ -1954,7 +2137,8 @@
        "name": "WW Boiler Schalter",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "amber"
       },
       {
        "type": "tile",
@@ -1962,7 +2146,8 @@
        "name": "WW Boiler Schalter Bottom",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "amber"
       },
       {
        "type": "tile",
@@ -1970,7 +2155,8 @@
        "name": "WW Boiler Schalter Top",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "amber"
       },
       {
        "type": "tile",
@@ -1979,6 +2165,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "cyan",
        "tap_action": {
         "action": "toggle",
         "confirmation": {
@@ -1992,7 +2179,8 @@
        "name": "Heizungsraum (Gruppe)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -2000,7 +2188,8 @@
        "name": "Heizung Verbrauch W",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "red"
       },
       {
        "type": "tile",
@@ -2008,7 +2197,8 @@
        "name": "FBH-Pumpe (HK II) Leistung",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "red"
       }
      ]
     },
@@ -2016,13 +2206,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Waschküche",
-       "icon": "mdi:washing-machine",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/waschkuche"
+       "type": "area",
+       "area": "waschkuche",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/waschkuche",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -2031,7 +2230,8 @@
        "name": "WaKü °C",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -2039,7 +2239,8 @@
        "name": "WaMa (b L1)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -2047,7 +2248,8 @@
        "name": "WaMa (b L1) Leistung",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "teal"
       }
      ]
     },
@@ -2055,13 +2257,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Hobby",
-       "icon": "mdi:sofa",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/hobby"
+       "type": "area",
+       "area": "hobby",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/hobby",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -2070,7 +2281,8 @@
        "name": "Strang Hobby",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "deep-orange"
       },
       {
        "type": "tile",
@@ -2079,6 +2291,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -2090,13 +2303,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Garage",
-       "icon": "mdi:garage",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/garage"
+       "type": "area",
+       "area": "garage",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/garage",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -2106,6 +2328,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "purple",
        "state_content": [
         "state",
         "last_changed"
@@ -2118,6 +2341,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -2130,6 +2354,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "red",
        "state_content": [
         "state",
         "last_changed"
@@ -2141,7 +2366,8 @@
        "name": "Garage Auto (Gruppe)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -2149,7 +2375,8 @@
        "name": "Garage Werkraum (Gruppe)",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -2158,6 +2385,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "indigo",
        "tap_action": {
         "action": "toggle",
         "confirmation": {
@@ -2172,6 +2400,7 @@
        "grid_options": {
         "columns": 6
        },
+       "color": "indigo",
        "tap_action": {
         "action": "toggle",
         "confirmation": {
@@ -2185,13 +2414,22 @@
      "type": "grid",
      "cards": [
       {
-       "type": "heading",
-       "heading": "Haus",
-       "icon": "mdi:home",
-       "heading_style": "subtitle",
-       "tap_action": {
-        "action": "navigate",
-        "navigation_path": "/config/areas/area/haus"
+       "type": "area",
+       "area": "haus",
+       "display_type": "picture",
+       "sensor_classes": [],
+       "alert_classes": [
+        "door",
+        "window",
+        "garage_door",
+        "moisture",
+        "smoke",
+        "motion"
+       ],
+       "navigation_path": "/config/areas/area/haus",
+       "grid_options": {
+        "columns": 12,
+        "rows": 2
        }
       },
       {
@@ -2200,7 +2438,8 @@
        "name": "Saldierung Temperatur",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "orange"
       },
       {
        "type": "tile",
@@ -2208,7 +2447,8 @@
        "name": "Haus Verbrauch",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "green"
       },
       {
        "type": "tile",
@@ -2216,7 +2456,8 @@
        "name": "Haus Verbrauch W",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "teal"
       },
       {
        "type": "tile",
@@ -2224,7 +2465,8 @@
        "name": "Leistung Saldierung",
        "grid_options": {
         "columns": 6
-       }
+       },
+       "color": "teal"
       }
      ]
     }

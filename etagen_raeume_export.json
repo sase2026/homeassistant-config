@@ -25,115 +25,134 @@
    "area_id": "schlafzimmer",
    "name": "Schlafzimmer",
    "floor_id": "1_og",
-   "icon": "mdi:bed"
+   "icon": "mdi:bed-king",
+   "bild": "raumbilder/schlafzimmer.jpg"
   },
   {
    "area_id": "bad_dusche",
    "name": "Bad / Dusche",
    "floor_id": "1_og",
-   "icon": "mdi:toothbrush-electric"
+   "icon": "mdi:shower",
+   "bild": "raumbilder/bad_dusche.jpg"
   },
   {
    "area_id": "terrasse_pva",
    "name": "Terrasse-PVA",
    "floor_id": "eg",
-   "icon": "mdi:solar-power"
+   "icon": "mdi:solar-power-variant",
+   "bild": "raumbilder/terrasse_pva.jpg"
   },
   {
    "area_id": "haus",
    "name": "Haus",
    "floor_id": "ug",
-   "icon": "mdi:home"
+   "icon": "mdi:home-lightning-bolt",
+   "bild": "raumbilder/haus.jpg"
   },
   {
    "area_id": "kuche",
    "name": "Küche",
    "floor_id": "eg",
-   "icon": null
+   "icon": "mdi:stove",
+   "bild": "raumbilder/kuche.jpg"
   },
   {
    "area_id": "wohnzimmer",
    "name": "Wohnzimmer",
    "floor_id": "eg",
-   "icon": "mdi:sofa"
+   "icon": "mdi:sofa",
+   "bild": "raumbilder/wohnzimmer.jpg"
   },
   {
    "area_id": "heizung",
    "name": "Heizung",
    "floor_id": "ug",
-   "icon": "mdi:heating-coil"
+   "icon": "mdi:heat-pump",
+   "bild": "raumbilder/heizung.jpg"
   },
   {
    "area_id": "waschkuche",
    "name": "Waschküche",
    "floor_id": "ug",
-   "icon": "mdi:washing-machine"
+   "icon": "mdi:washing-machine",
+   "bild": "raumbilder/waschkuche.jpg"
   },
   {
    "area_id": "essen",
    "name": "Essen",
    "floor_id": "eg",
-   "icon": "mdi:silverware-fork-knife"
+   "icon": "mdi:silverware-fork-knife",
+   "bild": "raumbilder/essen.jpg"
   },
   {
    "area_id": "spielzimmer",
    "name": "Spielzimmer",
    "floor_id": "eg",
-   "icon": "mdi:toy-brick"
+   "icon": "mdi:toy-brick",
+   "bild": "raumbilder/spielzimmer.jpg"
   },
   {
    "area_id": "gaste_wc",
    "name": "Gäste-WC",
    "floor_id": "eg",
-   "icon": "mdi:toilet"
+   "icon": "mdi:toilet",
+   "bild": "raumbilder/gaste_wc.jpg"
   },
   {
    "area_id": "entree",
    "name": "Entrée",
    "floor_id": "eg",
-   "icon": "mdi:door-open"
+   "icon": "mdi:door-open",
+   "bild": "raumbilder/entree.jpg"
   },
   {
    "area_id": "zimmer_yanik",
    "name": "Zimmer Yanik",
    "floor_id": "1_og",
-   "icon": "mdi:bed-single"
+   "icon": "mdi:bed-single",
+   "bild": "raumbilder/zimmer_yanik.jpg"
   },
   {
    "area_id": "zimmer_mael",
    "name": "Zimmer Mael",
    "floor_id": "1_og",
-   "icon": "mdi:bed-single"
+   "icon": "mdi:bed-single",
+   "bild": "raumbilder/zimmer_mael.jpg"
   },
   {
    "area_id": "galerie",
    "name": "Galerie",
    "floor_id": "1_og",
-   "icon": "mdi:stairs"
+   "icon": "mdi:stairs",
+   "bild": "raumbilder/galerie.jpg"
   },
   {
    "area_id": "hobby",
    "name": "Hobby",
    "floor_id": "ug",
-   "icon": "mdi:sofa"
+   "icon": "mdi:hammer-screwdriver",
+   "bild": "raumbilder/hobby.jpg"
   },
   {
    "area_id": "garage",
    "name": "Garage",
    "floor_id": "ug",
-   "icon": "mdi:garage"
+   "icon": "mdi:garage",
+   "bild": "raumbilder/garage.jpg"
   },
   {
    "area_id": "aussen",
    "name": "Aussen",
    "floor_id": "eg",
-   "icon": "mdi:tree"
+   "icon": "mdi:tree",
+   "bild": "raumbilder/aussen.jpg"
   },
   {
    "area_id": "sammlung",
    "name": "Sammlung",
    "floor_id": "eg",
-   "icon": "mdi:calculator-variant"
+   "icon": "mdi:calculator-variant",
+   "bild": "raumbilder/sammlung.jpg"
   }
  ],
  "geraete": [
@@ -388,6 +407,492 @@
   {
    "name": "Wohnzimmer",
    "raum": "Wohnzimmer"
+  }
+ ],
+ "entitaets_icons": [
+  {
+   "entity_id": "binary_sensor.shelly_flood_hzg_uberflutung",
+   "icon": "mdi:water-alert"
+  },
+  {
+   "entity_id": "light.homematic_ip_eingang_dimmaktor",
+   "icon": "mdi:light-recessed"
+  },
+  {
+   "entity_id": "light.homematic_ip_ww_boiler_schalter",
+   "icon": "mdi:water-boiler"
+  },
+  {
+   "entity_id": "light.homematic_ip_ww_boiler_schalter_bottom",
+   "icon": "mdi:heating-coil"
+  },
+  {
+   "entity_id": "light.homematic_ip_ww_boiler_schalter_top",
+   "icon": "mdi:heating-coil"
+  },
+  {
+   "entity_id": "light.shellydimmer2_e8db84d2e240",
+   "icon": "mdi:floor-lamp"
+  },
+  {
+   "entity_id": "media_player.kuche",
+   "icon": "mdi:speaker"
+  },
+  {
+   "entity_id": "person.rasppi5",
+   "icon": "mdi:account-box-outline"
+  },
+  {
+   "entity_id": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur",
+   "icon": "mdi:washing-machine"
+  },
+  {
+   "entity_id": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2",
+   "icon": "mdi:thermometer-chevron-down"
+  },
+  {
+   "entity_id": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
+   "icon": "mdi:thermometer-chevron-up"
+  },
+  {
+   "entity_id": "sensor.backup_grosse_des_letzten_erfolgreichen_automatischen_backups",
+   "icon": "mdi:harddisk"
+  },
+  {
+   "entity_id": "sensor.backup_last_successful_automatic_backup",
+   "icon": "mdi:backup-restore"
+  },
+  {
+   "entity_id": "sensor.einspeiseverguetung_heute_chf",
+   "icon": "mdi:cash-plus"
+  },
+  {
+   "entity_id": "sensor.einspeiseverguetung_jahr_chf",
+   "icon": "mdi:cash-plus"
+  },
+  {
+   "entity_id": "sensor.einspeiseverguetung_monat_chf",
+   "icon": "mdi:cash-plus"
+  },
+  {
+   "entity_id": "sensor.energie_saldierung",
+   "icon": "mdi:scale-balance"
+  },
+  {
+   "entity_id": "sensor.energy_current_hour",
+   "icon": "mdi:sun-clock"
+  },
+  {
+   "entity_id": "sensor.energy_manager_autarkiegrad_heute",
+   "icon": "mdi:home-percent"
+  },
+  {
+   "entity_id": "sensor.energy_manager_autarkiegrad_jahr",
+   "icon": "mdi:home-percent"
+  },
+  {
+   "entity_id": "sensor.energy_manager_autarkiegrad_monat",
+   "icon": "mdi:home-percent"
+  },
+  {
+   "entity_id": "sensor.energy_manager_eigenverbrauchsquote_heute",
+   "icon": "mdi:solar-power-variant-outline"
+  },
+  {
+   "entity_id": "sensor.energy_manager_eigenverbrauchsquote_jahr",
+   "icon": "mdi:solar-power-variant-outline"
+  },
+  {
+   "entity_id": "sensor.energy_manager_eigenverbrauchsquote_monat",
+   "icon": "mdi:solar-power-variant-outline"
+  },
+  {
+   "entity_id": "sensor.energy_manager_einspeisung_heute_kwh",
+   "icon": "mdi:transmission-tower-export"
+  },
+  {
+   "entity_id": "sensor.energy_manager_hausverbrauch_aktuell_w",
+   "icon": "mdi:home-lightning-bolt"
+  },
+  {
+   "entity_id": "sensor.energy_manager_hausverbrauch_heute_kwh",
+   "icon": "mdi:home-lightning-bolt-outline"
+  },
+  {
+   "entity_id": "sensor.energy_manager_netz_aktuell_w",
+   "icon": "mdi:transmission-tower"
+  },
+  {
+   "entity_id": "sensor.energy_manager_pv_aktuell_w",
+   "icon": "mdi:solar-power-variant"
+  },
+  {
+   "entity_id": "sensor.energy_manager_pv_produktion_heute_kwh",
+   "icon": "mdi:solar-power"
+  },
+  {
+   "entity_id": "sensor.energy_manager_pv_ueberschuss_aktuell_w",
+   "icon": "mdi:solar-power-variant-outline"
+  },
+  {
+   "entity_id": "sensor.energy_manager_wp_aktuell_w",
+   "icon": "mdi:heat-pump"
+  },
+  {
+   "entity_id": "sensor.energy_next_hour",
+   "icon": "mdi:sun-clock-outline"
+  },
+  {
+   "entity_id": "sensor.energy_production_today",
+   "icon": "mdi:weather-sunny"
+  },
+  {
+   "entity_id": "sensor.energy_production_today_remaining",
+   "icon": "mdi:weather-sunset-down"
+  },
+  {
+   "entity_id": "sensor.energy_production_tomorrow",
+   "icon": "mdi:weather-partly-cloudy"
+  },
+  {
+   "entity_id": "sensor.haus_verbauch_phase_a_leistung",
+   "icon": "mdi:home-lightning-bolt-outline"
+  },
+  {
+   "entity_id": "sensor.haus_verbauch_phase_b_leistung",
+   "icon": "mdi:home-lightning-bolt-outline"
+  },
+  {
+   "entity_id": "sensor.haus_verbauch_phase_c_leistung",
+   "icon": "mdi:home-lightning-bolt-outline"
+  },
+  {
+   "entity_id": "sensor.haus_verbrauch_w",
+   "icon": "mdi:home-lightning-bolt"
+  },
+  {
+   "entity_id": "sensor.heizung_phase_a_energie",
+   "icon": "mdi:heating-coil"
+  },
+  {
+   "entity_id": "sensor.heizung_phase_a_leistung",
+   "icon": "mdi:heat-pump-outline"
+  },
+  {
+   "entity_id": "sensor.heizung_phase_b_leistung",
+   "icon": "mdi:heat-pump-outline"
+  },
+  {
+   "entity_id": "sensor.heizung_phase_c_leistung",
+   "icon": "mdi:heat-pump-outline"
+  },
+  {
+   "entity_id": "sensor.heizung_verbrauch_w",
+   "icon": "mdi:heat-pump"
+  },
+  {
+   "entity_id": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit",
+   "icon": "mdi:water-percent"
+  },
+  {
+   "entity_id": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur",
+   "icon": "mdi:sun-thermometer"
+  },
+  {
+   "entity_id": "sensor.homematic_ip_fbh_pumpe_hk_ii_leistung",
+   "icon": "mdi:pump"
+  },
+  {
+   "entity_id": "sensor.homematic_ip_ikea_lampe_leistung",
+   "icon": "mdi:lamp"
+  },
+  {
+   "entity_id": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_luftfeuchtigkeit",
+   "icon": "mdi:water-percent"
+  },
+  {
+   "entity_id": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur",
+   "icon": "mdi:home-thermometer"
+  },
+  {
+   "entity_id": "sensor.homematic_ip_pool_pumpe_rechts_leistung",
+   "icon": "mdi:pool"
+  },
+  {
+   "entity_id": "sensor.homematic_ip_pool_salzpumpe_links_leistung",
+   "icon": "mdi:shaker-outline"
+  },
+  {
+   "entity_id": "sensor.homematic_ip_tv_denon_leistung",
+   "icon": "mdi:television-classic"
+  },
+  {
+   "entity_id": "sensor.leistung_saldierung",
+   "icon": "mdi:transmission-tower"
+  },
+  {
+   "entity_id": "sensor.nettostromkosten_heute_chf",
+   "icon": "mdi:cash-multiple"
+  },
+  {
+   "entity_id": "sensor.nettostromkosten_jahr_chf",
+   "icon": "mdi:cash-multiple"
+  },
+  {
+   "entity_id": "sensor.nettostromkosten_monat_chf",
+   "icon": "mdi:cash-multiple"
+  },
+  {
+   "entity_id": "sensor.netz_ruckspeisung_kwh",
+   "icon": "mdi:transmission-tower-export"
+  },
+  {
+   "entity_id": "sensor.netzbezug_saldiert",
+   "icon": "mdi:transmission-tower-import"
+  },
+  {
+   "entity_id": "sensor.netzeinspeisung_leistung_w",
+   "icon": "mdi:transmission-tower-export"
+  },
+  {
+   "entity_id": "sensor.power_highest_peak_time_today",
+   "icon": "mdi:chart-bell-curve"
+  },
+  {
+   "entity_id": "sensor.power_highest_peak_time_tomorrow",
+   "icon": "mdi:chart-bell-curve"
+  },
+  {
+   "entity_id": "sensor.power_production_now",
+   "icon": "mdi:sun-wireless"
+  },
+  {
+   "entity_id": "sensor.pva_4kw_produktion_w",
+   "icon": "mdi:solar-power"
+  },
+  {
+   "entity_id": "sensor.saldierung_pro3em_temperatur",
+   "icon": "mdi:meter-electric"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7177_temperatur",
+   "icon": "mdi:bed-single"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7177_temperatur_2",
+   "icon": "mdi:bathtub-outline"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7177_temperatur_3",
+   "icon": "mdi:bed-single-outline"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7ecf_temperatur",
+   "icon": "mdi:stove"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7ecf_temperatur_2",
+   "icon": "mdi:sofa-outline"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab55d7ecf_temperatur_3",
+   "icon": "mdi:sofa-single"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab56147d3_temperatur",
+   "icon": "mdi:silverware-fork-knife"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab56147d3_temperatur_2",
+   "icon": "mdi:toy-brick"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab56147d3_temperatur_3",
+   "icon": "mdi:toilet"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab561c0b7_temperatur",
+   "icon": "mdi:door-open"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab561c0b7_temperatur_2",
+   "icon": "mdi:sofa"
+  },
+  {
+   "entity_id": "sensor.shelly1_8caab561c0b7_temperatur_3",
+   "icon": "mdi:stairs"
+  },
+  {
+   "entity_id": "sensor.shelly1_c45bbe570c30_temperatur",
+   "icon": "mdi:bed-king"
+  },
+  {
+   "entity_id": "sensor.shelly1_c45bbe570c30_temperatur_2",
+   "icon": "mdi:shower"
+  },
+  {
+   "entity_id": "sensor.shelly1_c45bbe570c30_temperatur_3",
+   "icon": "mdi:radiator"
+  },
+  {
+   "entity_id": "sensor.shelly1pm_84cca8b15caf_leistung",
+   "icon": "mdi:washing-machine"
+  },
+  {
+   "entity_id": "sensor.shelly_3em_netzbezug_w",
+   "icon": "mdi:transmission-tower-import"
+  },
+  {
+   "entity_id": "sensor.shelly_3em_netzeinspeisung_w",
+   "icon": "mdi:transmission-tower-export"
+  },
+  {
+   "entity_id": "sensor.shelly_flood_hzg_temperatur",
+   "icon": "mdi:thermometer-water"
+  },
+  {
+   "entity_id": "sensor.solcast_pv_forecast_leistung_in_1_stunde",
+   "icon": "mdi:sun-clock"
+  },
+  {
+   "entity_id": "sensor.solcast_pv_forecast_prognose_heute",
+   "icon": "mdi:weather-sunny"
+  },
+  {
+   "entity_id": "sensor.solcast_pv_forecast_prognose_morgen",
+   "icon": "mdi:weather-partly-cloudy"
+  },
+  {
+   "entity_id": "sensor.solcast_pv_forecast_prognose_spitzenleistung_heute",
+   "icon": "mdi:chart-bell-curve"
+  },
+  {
+   "entity_id": "sensor.solcast_pv_forecast_prognose_verbleibende_leistung_heute",
+   "icon": "mdi:weather-sunset-down"
+  },
+  {
+   "entity_id": "sensor.stp4_0_3av_40_930_grid_power",
+   "icon": "mdi:current-ac"
+  },
+  {
+   "entity_id": "sensor.stp4_0_3av_40_930_pv_power",
+   "icon": "mdi:solar-panel-large"
+  },
+  {
+   "entity_id": "sensor.stp4_0_3av_40_930_pv_power_a",
+   "icon": "mdi:solar-panel"
+  },
+  {
+   "entity_id": "sensor.stp4_0_3av_40_930_pv_power_b",
+   "icon": "mdi:solar-panel"
+  },
+  {
+   "entity_id": "sensor.stp4_0_3av_40_930_total_yield",
+   "icon": "mdi:solar-power"
+  },
+  {
+   "entity_id": "sensor.stromkosten_netzbezug_heute_chf",
+   "icon": "mdi:cash-minus"
+  },
+  {
+   "entity_id": "sensor.stromkosten_netzbezug_jahr_chf",
+   "icon": "mdi:cash-minus"
+  },
+  {
+   "entity_id": "sensor.stromkosten_netzbezug_monat_chf",
+   "icon": "mdi:cash-minus"
+  },
+  {
+   "entity_id": "sensor.verbrauch_haus_kwh",
+   "icon": "mdi:home-lightning-bolt-outline"
+  },
+  {
+   "entity_id": "sensor.verbrauch_wp_heizung_kwh",
+   "icon": "mdi:heat-pump-outline"
+  },
+  {
+   "entity_id": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
+   "icon": "mdi:thermometer-water"
+  },
+  {
+   "entity_id": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
+   "icon": "mdi:thermometer-chevron-down"
+  },
+  {
+   "entity_id": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+   "icon": "mdi:water-boiler"
+  },
+  {
+   "entity_id": "switch.haus_verbauch",
+   "icon": "mdi:home-lightning-bolt"
+  },
+  {
+   "entity_id": "switch.homematic_ip_aussen_biohort_group",
+   "icon": "mdi:barn"
+  },
+  {
+   "entity_id": "switch.homematic_ip_aussenlicht_eingangstreppe_group",
+   "icon": "mdi:outdoor-lamp"
+  },
+  {
+   "entity_id": "switch.homematic_ip_badezimmer_og_group",
+   "icon": "mdi:shower"
+  },
+  {
+   "entity_id": "switch.homematic_ip_fbh_pumpe_hk_ii",
+   "icon": "mdi:pump"
+  },
+  {
+   "entity_id": "switch.homematic_ip_garage_auto_group",
+   "icon": "mdi:car"
+  },
+  {
+   "entity_id": "switch.homematic_ip_garage_werkraum_group",
+   "icon": "mdi:tools"
+  },
+  {
+   "entity_id": "switch.homematic_ip_heizungsraum_group",
+   "icon": "mdi:heat-pump"
+  },
+  {
+   "entity_id": "switch.homematic_ip_ikea_lampe",
+   "icon": "mdi:lamp"
+  },
+  {
+   "entity_id": "switch.homematic_ip_offner_garagentor_auto",
+   "icon": "mdi:garage-variant"
+  },
+  {
+   "entity_id": "switch.homematic_ip_offner_garagentor_werkraum",
+   "icon": "mdi:garage-variant"
+  },
+  {
+   "entity_id": "switch.homematic_ip_pool_pumpe_rechts",
+   "icon": "mdi:pool"
+  },
+  {
+   "entity_id": "switch.homematic_ip_pool_salzpumpe_links",
+   "icon": "mdi:shaker-outline"
+  },
+  {
+   "entity_id": "switch.homematic_ip_poolsteckdosen_group",
+   "icon": "mdi:power-socket-ch"
+  },
+  {
+   "entity_id": "switch.homematic_ip_spielzimmer_group",
+   "icon": "mdi:toy-brick"
+  },
+  {
+   "entity_id": "switch.homematic_ip_tv_denon",
+   "icon": "mdi:television-classic"
+  },
+  {
+   "entity_id": "switch.homematic_ip_wohnzimmer_group",
+   "icon": "mdi:sofa"
+  },
+  {
+   "entity_id": "switch.shelly1pm_84cca8b15caf",
+   "icon": "mdi:washing-machine"
   }
  ],
  "entitaeten_mit_eigenem_raum": [
