@@ -742,212 +742,258 @@ views:
             icon_color: blue
             layout: vertical
 
-      # ── Grafik: Heizung Leistung 3-phasig ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: Heizung Leistung - letzte 24h
-          show_states: true
-          colorize_states: true
-        graph_span: 24h
-        now:
-          show: true
-          label: Jetzt
-          color: "#ffffff"
-        update_interval: 60s
-        apex_config:
-          chart:
-            type: area
-            height: 280
-            toolbar:
-              show: false
-            animations:
-              enabled: false
-          stroke:
-            curve: smooth
-            width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
-            dashArray:
-              - 8
-              - 0
-              - 0
-              - 0
-          fill:
-            type:
-              - gradient
-              - solid
-              - solid
-              - solid
-            opacity:
-              - 0.4
-              - 0
-              - 0
-              - 0
-          yaxis:
-            min: 0
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-              formatter: |
-                EVAL:function(val) {
-                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
-                  return val.toFixed(0) + ' W';
-                }
+      # ── Grafik: Heizung Leistung 3-phasig (Plotly) ──
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 60
+        layout:
+          height: 360
+          margin:
+            t: 75
+            b: 70
+            l: 50
+            r: 50
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
           xaxis:
-            type: datetime
-            labels:
-              datetimeUTC: false
-              style:
-                colors: "#9e9e9e"
+            showgrid: false
+            color: "#9e9e9e"
+            tickformat: "%H:%M"
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            tickformat: "~s"
+            ticksuffix: "W"
+          showlegend: true
           legend:
-            show: true
-            position: bottom
-            labels:
-              colors: "#9e9e9e"
-          grid:
-            borderColor: "#333333"
-            strokeDashArray: 2
-          tooltip:
-            theme: dark
-            x:
-              format: "HH:mm"
-        series:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.12
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Heizung Leistung (24 h)"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: |
+                $fn ({hass}) => 'WP ' + Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0) + ' W'
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 14
+                color: "#06b6d4"
+        entities:
           - entity: sensor.heizung_verbrauch_w
             name: Gesamt
-            color: "#b3e5fc"
-            type: area
-            extend_to: now
+            yaxis: "y"
+            fill: tozeroy
+            fillcolor: "rgba(179,229,252,0.18)"
+            line:
+              color: "rgba(179,229,252,0.9)"
+              width: 0.6
           - entity: sensor.heizung_phase_a_leistung
             name: Phase A
-            color: "#0288d1"
-            type: line
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#0288d1"
+              width: 0.6
           - entity: sensor.heizung_phase_b_leistung
             name: Phase B
-            color: "#4fc3f7"
-            type: line
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#4fc3f7"
+              width: 0.6
           - entity: sensor.heizung_phase_c_leistung
             name: Phase C
-            color: "#81d4fa"
-            type: line
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#81d4fa"
+              width: 0.6
+              dash: dot
 
-      # ── Grafik: Temperaturen WW-oben / Vorlauf / Rücklauf HK-II ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: Temperaturen - letzte 24h
-          show_states: true
-          colorize_states: true
-        graph_span: 24h
-        now:
-          show: true
-          label: Jetzt
-          color: "#ffffff"
-        update_interval: 60s
-        apex_config:
-          chart:
-            type: area
-            height: 300
-            toolbar:
-              show: false
-            animations:
-              enabled: false
-          stroke:
-            curve: smooth
-            width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
-              - 8
-              - 0
-              - 0
-          fill:
-            type:
-              - gradient
-              - solid
-              - solid
-            opacity:
-              - 0.4
-              - 0
-              - 0
-          yaxis:
-            - seriesName: WW-oben
-              min: 45
-              max: 65
-              tickAmount: 4
-              title:
-                text: "WW-oben °C"
-                style:
-                  color: "#ef5350"
-                  fontSize: "11px"
-              labels:
-                style:
-                  colors: "#ef5350"
-                  fontSize: "11px"
-                formatter: |
-                  EVAL:function(val) { return val.toFixed(1) + ' °C'; }
-            - seriesName: Vorlauf HK-II
-              opposite: true
-              min: 18
-              max: 50
-              tickAmount: 4
-              title:
-                text: "HK-II °C"
-                style:
-                  color: "#9e9e9e"
-                  fontSize: "11px"
-              labels:
-                style:
-                  colors: "#9e9e9e"
-                  fontSize: "11px"
-                formatter: |
-                  EVAL:function(val) { return val.toFixed(1) + ' °C'; }
-            - seriesName: Rücklauf HK-II
-              opposite: true
-              show: false
-              min: 18
-              max: 50
+      # ── Grafik: Temperaturen Warmwasser / VL / RL HK-II (Plotly) ──
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 60
+        layout:
+          height: 360
+          margin:
+            t: 75
+            b: 60
+            l: 50
+            r: 50
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
           xaxis:
-            type: datetime
-            labels:
-              datetimeUTC: false
-              style:
-                colors: "#9e9e9e"
+            showgrid: false
+            color: "#9e9e9e"
+            tickformat: "%H:%M"
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            ticksuffix: "°"
+            range: [15, 60]
+          showlegend: true
           legend:
-            show: true
-            position: bottom
-            labels:
-              colors: "#9e9e9e"
-          grid:
-            borderColor: "#333333"
-            strokeDashArray: 2
-          tooltip:
-            theme: dark
-            x:
-              format: "HH:mm"
-        series:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.12
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Temperaturen (24 h)"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: |
+                $fn ({hass}) => 'Warmwasser ' + (parseFloat(hass.states['sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'].state)||0).toFixed(1) + ' °C'
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 14
+                color: "#ef5350"
+        entities:
           - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
-            name: WW-oben
-            color: "#ef5350"
-            type: area
-            extend_to: now
+            name: Warmwasser
+            yaxis: "y"
+            line:
+              color: "#ef5350"
+              width: 1.4
           - entity: sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3
             name: Vorlauf HK-II
-            color: "#ff9800"
-            type: line
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#ff9800"
+              width: 0.9
           - entity: sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2
             name: Rücklauf HK-II
-            color: "#42a5f5"
-            type: line
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#42a5f5"
+              width: 0.9
+
+      # ── Grafik: WP-Verbrauch je Monat (sensor.energie_tageswerte) ──
+      - type: custom:plotly-graph
+        hours_to_show: 1
+        refresh_interval: 600
+        layout:
+          height: 360
+          barmode: stack
+          bargap: 0.25
+          margin:
+            t: 75
+            b: 60
+            l: 55
+            r: 10
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
+          xaxis:
+            type: category
+            range: $ex [-0.5, JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').length - 0.5]
+            color: "#9e9e9e"
+            showgrid: false
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            ticksuffix: " kWh"
+            zeroline: true
+            zerolinecolor: "#666666"
+          showlegend: true
+          legend:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.14
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "WP-Verbrauch je Monat"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: "kWh aus Langzeitstatistik, letzte 13 Monate"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 11
+                color: "#9e9e9e"
+        entities:
+          - entity: ""
+            name: WP
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.wp)
+            marker:
+              color: "#06b6d4"
+            hovertemplate: "%{x}: %{y:.0f}<extra>WP</extra>"
+          - entity: ""
+            name: Haus (ohne WP)
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.haus)
+            marker:
+              color: "#3b82f6"
+            hovertemplate: "%{x}: %{y:.0f}<extra>Haus (ohne WP)</extra>"
 
   # ═══════════════════════════════════════════════════════════
   # VIEW 4: BOILER PV-Überschuss
@@ -956,228 +1002,214 @@ views:
     path: boiler
     icon: mdi:water-boiler
     cards:
-      # ── Reihe 1: WW-oben | PV-Laden W | Netz-Laden W ──
+      # ── Reihe 1: Warmwasser | Heizstab | PV-Überschuss | Netz ──
       - type: horizontal-stack
         cards:
           - type: custom:mushroom-template-card
-            primary: WW-oben °C
+            primary: Warmwasser
             secondary: "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C"
             icon: mdi:water-thermometer
-            icon_color: >
-              {% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %}
-              {% if t >= 60 %}red{% elif t >= 48 %}orange{% else %}blue{% endif %}
+            icon_color: "#ef5350"
             layout: vertical
-            card_mod:
-              style: "ha-card { background: rgba(249,115,22,0.08); border: 1px solid rgba(249,115,22,0.3); border-radius: 16px; }\n"
+
           - type: custom:mushroom-template-card
-            primary: PV-Laden W
-            secondary: "{{ states('sensor.boiler_pv_ladeleistung') | int }} W"
+            primary: Heizstab
+            secondary: "{{ 'EIN' if is_state('switch.haus_verbauch', 'on') else 'AUS' }}"
+            icon: mdi:heating-coil
+            icon_color: "{{ 'orange' if is_state('switch.haus_verbauch', 'on') else 'grey' }}"
+            layout: vertical
+            tap_action:
+              action: more-info
+            entity: switch.haus_verbauch
+
+          - type: custom:mushroom-template-card
+            primary: PV-Überschuss
+            secondary: "{{ states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) | round(0) | int }} W"
             icon: mdi:solar-power
-            icon_color: amber
+            icon_color: "amber"
             layout: vertical
+
           - type: custom:mushroom-template-card
-            primary: Netz-Laden W
-            secondary: "{{ states('sensor.boiler_netz_ladeleistung') | int }} W"
+            primary: Netz
+            secondary: "{{ states('sensor.energy_manager_netz_aktuell_w') | float(0) | round(0) | int }} W"
             icon: mdi:transmission-tower
-            icon_color: red
+            icon_color: "red"
             layout: vertical
 
-      # ── Reihe 2: Boiler Relais ──
-      - type: custom:mushroom-entity-card
-        entity: switch.boiler_relais
-        name: Boiler Relais
 
-      # ── Reihe 3: Tages-Energie kWh | PV-Energie kWh | Netz-Energie kWh ──
+      # ── Reihe 2: Heizstab-Energie (geschätzt aus Laufzeit × Boilerleistung, Automation «Boiler Statistik zaehlen») ──
       - type: horizontal-stack
         cards:
           - type: custom:mushroom-template-card
-            primary: Tages-Energie kWh
-            secondary: "{{ states('sensor.boiler_energie_heute_total') | float(0) | round(1) }} kWh"
+            primary: Ladezeit heute
+            secondary: "{{ states('input_number.boiler_ladezeit_heute') | float(0) | round(0) | int }} min"
+            icon: mdi:timer-sand
+            icon_color: "orange"
+            layout: vertical
+
+          - type: custom:mushroom-template-card
+            primary: Energie heute
+            secondary: "{{ states('input_number.boiler_kapazitaet_heute') | float(0) | round(2) }} kWh"
             icon: mdi:calendar-today
-            icon_color: orange
-            layout: vertical
-          - type: custom:mushroom-template-card
-            primary: PV-Energie kWh
-            secondary: "{{ states('sensor.boiler_pv_energie_heute') | float(0) | round(1) }} kWh"
-            icon: mdi:solar-power
-            icon_color: amber
-            layout: vertical
-          - type: custom:mushroom-template-card
-            primary: Netz-Energie kWh
-            secondary: "{{ states('sensor.boiler_netz_energie_heute') | float(0) | round(1) }} kWh"
-            icon: mdi:transmission-tower-import
-            icon_color: red
+            icon_color: "orange"
             layout: vertical
 
-      # ── Reihe 4: Energie Monat | PV-Energie Monat | Netz Monat ──
-      - type: horizontal-stack
-        cards:
           - type: custom:mushroom-template-card
-            primary: Energie Monat kWh
-            secondary: "{{ states('sensor.boiler_energie_monat_total') | float(0) | round(1) }} kWh"
+            primary: Energie Monat
+            secondary: "{{ states('input_number.boiler_kapazitaet_monat') | float(0) | round(1) }} kWh"
             icon: mdi:calendar-month
-            icon_color: orange
-            layout: vertical
-          - type: custom:mushroom-template-card
-            primary: PV-Energie Monat kWh
-            secondary: "{{ states('sensor.boiler_pv_energie_monat') | float(0) | round(1) }} kWh"
-            icon: mdi:solar-power
-            icon_color: amber
-            layout: vertical
-          - type: custom:mushroom-template-card
-            primary: Netz Monat kWh
-            secondary: "{{ states('sensor.boiler_netz_energie_monat') | float(0) | round(1) }} kWh"
-            icon: mdi:transmission-tower-import
-            icon_color: red
+            icon_color: "orange"
             layout: vertical
 
-      # ── Grafik: Boiler Temperatur ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: Boiler Temperatur - letzte 24h
-          show_states: true
-          colorize_states: true
-        graph_span: 24h
-        now:
-          show: true
-          label: Jetzt
-          color: "#ffffff"
-        update_interval: 60s
-        apex_config:
-          chart:
-            type: area
-            height: 250
-            toolbar:
-              show: false
-            animations:
-              enabled: false
-          stroke:
-            curve: smooth
-            width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
-            type:
-              - gradient
-            opacity:
-              - 0.5
-          yaxis:
-            min: 30
-            max: 80
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-              formatter: |
-                EVAL:function(val) { return val.toFixed(0) + ' °C'; }
+          - type: custom:mushroom-template-card
+            primary: Energie total
+            secondary: "{{ states('input_number.boiler_kapazitaet_total') | float(0) | round(0) | int }} kWh"
+            icon: mdi:lightning-bolt
+            icon_color: "amber"
+            layout: vertical
+
+          - type: custom:mushroom-template-card
+            primary: Ø pro Tag
+            secondary: "{{ states('input_number.boiler_durchschnitt_kapazitaet_pro_tag') | float(0) | round(2) }} kWh"
+            icon: mdi:chart-bar
+            icon_color: "amber"
+            layout: vertical
+
+
+      # ── Schalter: Heizstab manuell + PV-Automatik ──
+      - type: entities
+        title: Heizstab Boiler
+        show_header_toggle: false
+        entities:
+          - entity: input_boolean.boiler_pv_automatik
+            name: PV-Automatik (Heizstab bei PV-Überschuss)
+          - entity: switch.haus_verbauch
+            name: Heizstab-Relais (manuell EIN/AUS)
+            icon: mdi:heating-coil
+            secondary_info: last-changed
+
+      # ── Grafik: Boiler & Heizstab (Plotly) ──
+      - type: custom:plotly-graph
+        hours_to_show: 48
+        refresh_interval: 60
+        layout:
+          height: 380
+          margin:
+            t: 75
+            b: 60
+            l: 50
+            r: 50
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
           xaxis:
-            type: datetime
-            labels:
-              datetimeUTC: false
-              style:
-                colors: "#9e9e9e"
+            showgrid: false
+            color: "#9e9e9e"
+            tickformat: "%H:%M"
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            ticksuffix: "°"
+            range: [25, 70]
+          yaxis2:
+            overlaying: "y"
+            side: right
+            visible: true
+            showgrid: false
+            color: "#9e9e9e"
+            tickformat: "~s"
+            ticksuffix: "W"
+            rangemode: tozero
+          yaxis3:
+            overlaying: "y"
+            visible: false
+            range: [0, 1]
+            fixedrange: true
+          showlegend: true
           legend:
-            show: true
-            position: bottom
-            labels:
-              colors: "#9e9e9e"
-          grid:
-            borderColor: "#333333"
-            strokeDashArray: 2
-          tooltip:
-            theme: dark
-            x:
-              format: "HH:mm"
-        series:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.12
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Boiler & Heizstab (48 h)"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: |
+                $fn ({hass}) => 'Warmwasser ' + (parseFloat(hass.states['sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'].state)||0).toFixed(1) + ' °C · Heizstab ' + (hass.states['switch.haus_verbauch'].state === 'on' ? 'EIN' : 'AUS')
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 14
+                color: "#ef5350"
+        entities:
+          - entity: switch.haus_verbauch
+            name: Heizstab EIN
+            yaxis: "y3"
+            fill: tozeroy
+            fillcolor: "rgba(249,115,22,0.18)"
+            line:
+              color: "rgba(249,115,22,0.4)"
+              width: 0.5
+              shape: hv
+            filters:
+              - map_y: 'y === "on" ? 1 : 0'
+          - entity: sensor.energy_manager_pv_ueberschuss_aktuell_w
+            name: PV-Überschuss
+            yaxis: "y2"
+            fill: tozeroy
+            fillcolor: "rgba(255,152,0,0.10)"
+            line:
+              color: "rgba(255,152,0,0.7)"
+              width: 0.5
           - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
-            name: WW-oben °C
-            color: "#ef5350"
-            type: area
-            extend_to: now
-
-      # ── Grafik: Boiler PV Laden vs Netz Laden ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: Boiler Ladeleistung - PV vs Netz
-          show_states: true
-          colorize_states: true
-        graph_span: 24h
-        now:
-          show: true
-          label: Jetzt
-          color: "#ffffff"
-        update_interval: 60s
-        apex_config:
-          chart:
-            type: area
-            height: 250
-            toolbar:
-              show: false
-            animations:
-              enabled: false
-          stroke:
-            curve: smooth
-            width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
-              - gradient
-              - gradient
-            opacity:
-              - 0.7
-              - 0.7
-          yaxis:
-            min: 0
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-              formatter: |
-                EVAL:function(val) {
-                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
-                  return val.toFixed(0) + ' W';
-                }
-          xaxis:
-            type: datetime
-            labels:
-              datetimeUTC: false
-              style:
-                colors: "#9e9e9e"
-          legend:
-            show: true
-            position: bottom
-            labels:
-              colors: "#9e9e9e"
-          grid:
-            borderColor: "#333333"
-            strokeDashArray: 2
-          tooltip:
-            theme: dark
-            x:
-              format: "HH:mm"
-        series:
-          - entity: sensor.boiler_pv_ladeleistung
-            name: PV Laden W
-            color: "#ff9800"
-            type: area
-            extend_to: now
-          - entity: sensor.boiler_netz_ladeleistung
-            name: Netz Laden W
-            color: "#ef5350"
-            type: area
-            extend_to: now
+            name: Warmwasser
+            yaxis: "y"
+            line:
+              color: "#ef5350"
+              width: 1.4
+          - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur
+            name: WW mitte
+            yaxis: "y"
+            line:
+              color: "#f97316"
+              width: 0.9
 
       # ── Boiler Steuerparameter ──
       - type: entities
         title: Boiler Steuerparameter
         entities:
-          - entity: input_number.boiler_nacht_starttemperatur
-          - entity: input_number.boiler_pv_starttemperatur
-          - entity: input_number.boiler_pv_stopptemperatur
+          - entity: input_number.boiler_maximaltemperatur
+            name: Maximaltemperatur
+          - entity: input_number.boiler_wiedereinschalttemperatur
+            name: Wiedereinschalttemperatur
+          - entity: input_number.boiler_leistung
+            name: Boilerleistung (Heizstab)
+          - entity: input_number.boiler_reserveleistung
+            name: Reserveleistung
+          - entity: input_number.boiler_max_netzbezug
+            name: Max. Netzbezug (Schutz)
+          - entity: input_number.boiler_mindestlaufzeit
+            name: Mindestlaufzeit
 
   # ═══════════════════════════════════════════════════════════
   # VIEW 5: NETZ
@@ -1217,8 +1249,8 @@ views:
       - type: horizontal-stack
         cards:
           - type: custom:mushroom-template-card
-            primary: Netzbezug (saldiert)
-            secondary: "{{ states('sensor.netzbezug_saldiert') | float(0) | round(1) }} kWh"
+            primary: Netzbezug gesamt
+            secondary: "{{ states('sensor.netzbezug_gesamt_kwh') | float(0) | round(1) }} kWh"
             icon: mdi:gauge
             icon_color: red
             layout: vertical
@@ -1235,237 +1267,220 @@ views:
             icon_color: blue
             layout: vertical
 
-      # ── Grafik: Netzleistung saldiert ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: Netzleistung - letzte 24h (saldiert)
-          show_states: true
-          colorize_states: true
-        graph_span: 24h
-        now:
-          show: true
-          label: Jetzt
-          color: "#ffffff"
-        update_interval: 60s
-        apex_config:
-          chart:
-            type: area
-            height: 250
-            toolbar:
-              show: false
-            animations:
-              enabled: false
-          stroke:
-            curve: smooth
-            width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
-            opacity:
-              - 0.7
-          yaxis:
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-              formatter: |
-                EVAL:function(val) {
-                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
-                  return val.toFixed(0) + ' W';
-                }
+      # ── Grafik: Netzleistung saldiert (Plotly, filigran) ──
+      - type: custom:plotly-graph
+        hours_to_show: 24
+        refresh_interval: 60
+        layout:
+          height: 330
+          margin:
+            t: 75
+            b: 50
+            l: 50
+            r: 50
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
           xaxis:
-            type: datetime
-            labels:
-              datetimeUTC: false
-              style:
-                colors: "#9e9e9e"
+            showgrid: false
+            color: "#9e9e9e"
+            tickformat: "%H:%M"
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            tickformat: "~s"
+            ticksuffix: "W"
+          showlegend: true
           legend:
-            show: true
-            position: bottom
-            labels:
-              colors: "#9e9e9e"
-          grid:
-            borderColor: "#333333"
-            strokeDashArray: 2
-          tooltip:
-            theme: dark
-            x:
-              format: "HH:mm"
-        series:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.12
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Netzleistung saldiert (24 h)"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: |
+                $fn ({hass}) => { const v = Math.round(parseFloat(hass.states['sensor.leistung_saldierung'].state)||0); return (v >= 0 ? 'Bezug ' : 'Einspeisung ') + Math.abs(v) + ' W'; }
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 14
+                color: "#ef4444"
+        entities:
           - entity: sensor.leistung_saldierung
-            name: Saldiert
-            color: "#7b1fa2"
-            type: area
-            extend_to: now
+            name: Bezug
+            yaxis: "y"
+            fill: tozeroy
+            fillcolor: "rgba(239,68,68,0.15)"
+            line:
+              color: "rgba(239,68,68,0.9)"
+              width: 0.4
+            filters:
+              - map_y: 'Math.max(0, parseFloat(y))'
+          - entity: sensor.leistung_saldierung
+            name: Einspeisung
+            yaxis: "y"
+            fill: tozeroy
+            fillcolor: "rgba(123,31,162,0.18)"
+            line:
+              color: "rgba(123,31,162,0.9)"
+              width: 0.4
+            filters:
+              - map_y: 'Math.min(0, parseFloat(y))'
 
-      # ── Grafik: Netzleistung 3-phasig ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: Netzleistung - 3-phasig heute
-          show_states: true
-          colorize_states: true
-        graph_span: 1d
-        span:
-          start: day
-        now:
-          show: true
-          label: Jetzt
-          color: "#ffffff"
-        update_interval: 60s
-        apex_config:
-          chart:
-            type: area
-            height: 250
-            toolbar:
-              show: false
-            animations:
-              enabled: false
-          stroke:
-            curve: smooth
-            width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
-            type:
-              - gradient
-              - gradient
-              - gradient
-            opacity:
-              - 0.6
-              - 0.6
-              - 0.6
-          yaxis:
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-              formatter: |
-                EVAL:function(val) {
-                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
-                  return val.toFixed(0) + ' W';
-                }
+      # ── Grafik: Netzleistung 3-phasig heute (Plotly, filigran) ──
+      - type: custom:plotly-graph
+        hours_to_show: current_day
+        refresh_interval: 60
+        layout:
+          height: 330
+          margin:
+            t: 75
+            b: 50
+            l: 50
+            r: 50
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
           xaxis:
-            type: datetime
-            labels:
-              datetimeUTC: false
-              style:
-                colors: "#9e9e9e"
+            showgrid: false
+            color: "#9e9e9e"
+            tickformat: "%H:%M"
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            tickformat: "~s"
+            ticksuffix: "W"
+          showlegend: true
           legend:
-            show: true
-            position: bottom
-            labels:
-              colors: "#9e9e9e"
-          grid:
-            borderColor: "#333333"
-            strokeDashArray: 2
-          tooltip:
-            theme: dark
-            x:
-              format: "HH:mm"
-        series:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.12
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Netzleistung 3-phasig (heute)"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+        entities:
           - entity: sensor.leistung
             name: Phase A
-            color: "#e53935"
-            type: area
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#e53935"
+              width: 0.5
           - entity: sensor.leistung_2
             name: Phase B
-            color: "#fb8c00"
-            type: area
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#fb8c00"
+              width: 0.5
           - entity: sensor.leistung_3
             name: Phase C
-            color: "#43a047"
-            type: area
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#43a047"
+              width: 0.5
 
-      # ── Grafik: Hausverbrauch 3-phasig ──
-      - type: custom:apexcharts-card
-        header:
-          show: true
-          title: Hausverbrauch - 3-phasig heute
-          show_states: true
-          colorize_states: true
-        graph_span: 1d
-        span:
-          start: day
-        now:
-          show: true
-          label: Jetzt
-          color: "#ffffff"
-        update_interval: 60s
-        apex_config:
-          chart:
-            type: area
-            height: 250
-            toolbar:
-              show: false
-            animations:
-              enabled: false
-          stroke:
-            curve: smooth
-            width:
-              - 1.0
-              - 1.0
-              - 1.0
-              - 1.0
-            type:
-              - gradient
-              - gradient
-              - gradient
-            opacity:
-              - 0.6
-              - 0.6
-              - 0.6
-          yaxis:
-            min: 0
-            labels:
-              style:
-                colors: "#9e9e9e"
-                fontSize: "11px"
-              formatter: |
-                EVAL:function(val) {
-                  if (Math.abs(val) >= 1000) return (val/1000).toFixed(1) + ' kW';
-                  return val.toFixed(0) + ' W';
-                }
+      # ── Grafik: Hausverbrauch 3-phasig heute (Plotly, filigran) ──
+      - type: custom:plotly-graph
+        hours_to_show: current_day
+        refresh_interval: 60
+        layout:
+          height: 330
+          margin:
+            t: 75
+            b: 50
+            l: 50
+            r: 50
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
           xaxis:
-            type: datetime
-            labels:
-              datetimeUTC: false
-              style:
-                colors: "#9e9e9e"
+            showgrid: false
+            color: "#9e9e9e"
+            tickformat: "%H:%M"
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            tickformat: "~s"
+            ticksuffix: "W"
+          showlegend: true
           legend:
-            show: true
-            position: bottom
-            labels:
-              colors: "#9e9e9e"
-          grid:
-            borderColor: "#333333"
-            strokeDashArray: 2
-          tooltip:
-            theme: dark
-            x:
-              format: "HH:mm"
-        series:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.12
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Hausverbrauch 3-phasig (heute)"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+        entities:
           - entity: sensor.haus_verbauch_phase_a_leistung
             name: Phase A
-            color: "#e53935"
-            type: area
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#e53935"
+              width: 0.5
           - entity: sensor.haus_verbauch_phase_b_leistung
             name: Phase B
-            color: "#fb8c00"
-            type: area
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#fb8c00"
+              width: 0.5
           - entity: sensor.haus_verbauch_phase_c_leistung
             name: Phase C
-            color: "#43a047"
-            type: area
-            extend_to: now
+            yaxis: "y"
+            line:
+              color: "#43a047"
+              width: 0.5
 
   # ═══════════════════════════════════════════════════════════
   # VIEW 6: TABELLE (Reports)
@@ -1632,28 +1647,669 @@ views:
             icon_color: green
             layout: vertical
 
-      # ── Reihe 3: PV-Produktion Grafik (kumuliert) ──
-      - type: statistics-graph
-        title: PV-Produktion Monatsübersicht
+      # ── Grafik: PV-Produktion je Monat (ersetzt statistics-graph) ──
+      - type: custom:plotly-graph
+        hours_to_show: 1
+        refresh_interval: 600
+        layout:
+          height: 360
+          barmode: group
+          bargap: 0.25
+          margin:
+            t: 75
+            b: 60
+            l: 55
+            r: 10
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
+          xaxis:
+            type: category
+            range: $ex [-0.5, JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').length - 0.5]
+            color: "#9e9e9e"
+            showgrid: false
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            ticksuffix: " kWh"
+            zeroline: true
+            zerolinecolor: "#666666"
+          showlegend: true
+          legend:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.14
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "PV-Produktion je Monat"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: "kWh · Eigenverbrauch = PV − Einspeisung"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 11
+                color: "#9e9e9e"
         entities:
-          - entity: sensor.energy_manager_pv_produktion_monat_kwh
+          - entity: ""
             name: PV Produktion
-          - entity: sensor.energy_manager_einspeisung_monat_kwh
-            name: Netz Rückspeisung
-          - entity: sensor.energy_manager_eigenverbrauch_monat_kwh
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.pv)
+            marker:
+              color: "#ff9800"
+            hovertemplate: "%{x}: %{y:.0f}<extra>PV Produktion</extra>"
+          - entity: ""
+            name: Einspeisung
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.ein)
+            marker:
+              color: "#7b1fa2"
+            hovertemplate: "%{x}: %{y:.0f}<extra>Einspeisung</extra>"
+          - entity: ""
             name: Eigenverbrauch
-        days_to_show: 365
-        chart_type: bar
-        stat_types:
-          - max
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => (r.pv === null ? null : Math.round((r.pv - r.ein) * 10) / 10))
+            marker:
+              color: "#22c55e"
+            hovertemplate: "%{x}: %{y:.0f}<extra>Eigenverbrauch</extra>"
 
-
-      - type: statistics-graph
-        title: Verbrauch Monatsübersicht
+      # ── Grafik: Verbrauch je Monat (ersetzt statistics-graph) ──
+      - type: custom:plotly-graph
+        hours_to_show: 1
+        refresh_interval: 600
+        layout:
+          height: 360
+          barmode: stack
+          bargap: 0.25
+          margin:
+            t: 75
+            b: 60
+            l: 55
+            r: 10
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
+          xaxis:
+            type: category
+            range: $ex [-0.5, JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').length - 0.5]
+            color: "#9e9e9e"
+            showgrid: false
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            ticksuffix: " kWh"
+            zeroline: true
+            zerolinecolor: "#666666"
+          showlegend: true
+          legend:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.14
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Verbrauch je Monat"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: "kWh · Balken = Haus + WP, Linie = Netzbezug"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 11
+                color: "#9e9e9e"
         entities:
-          - entity: sensor.energy_manager_hausverbrauch_monat_kwh
-            name: Hausverbrauch
-          - entity: sensor.energy_manager_wp_monat_kwh
-            name: WP-Verbrauch
-          - entity: sensor.boiler_energie_monat_total
-            name: Boiler Verbrauch
+          - entity: ""
+            name: Haus (ohne WP)
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.haus)
+            marker:
+              color: "#3b82f6"
+            hovertemplate: "%{x}: %{y:.0f}<extra>Haus (ohne WP)</extra>"
+          - entity: ""
+            name: WP
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.wp)
+            marker:
+              color: "#06b6d4"
+            hovertemplate: "%{x}: %{y:.0f}<extra>WP</extra>"
+          - entity: ""
+            name: Netzbezug
+            type: scatter
+            mode: lines+markers
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.bez)
+            line:
+              color: "#ef4444"
+              width: 1.2
+            marker:
+              size: 5
+
+      # ── Grafik: Energiekosten je Monat (Langzeit) ──
+      - type: custom:plotly-graph
+        hours_to_show: 1
+        refresh_interval: 600
+        layout:
+          height: 360
+          barmode: relative
+          bargap: 0.25
+          margin:
+            t: 75
+            b: 60
+            l: 55
+            r: 10
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
+          xaxis:
+            type: category
+            range: $ex [-0.5, JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').length - 0.5]
+            color: "#9e9e9e"
+            showgrid: false
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            ticksuffix: " CHF"
+            zeroline: true
+            zerolinecolor: "#666666"
+          showlegend: true
+          legend:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.14
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Energiekosten je Monat"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: "CHF mit aktuellen Tarifen · HT Mo–Fr 06–21 h · Vergütung negativ · Linie = Netto"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 11
+                color: "#9e9e9e"
+        entities:
+          - entity: ""
+            name: Netzbezug HT
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => Math.round((r.ht || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_hochtarif'].state)||0) * 100) / 100)
+            marker:
+              color: "#ef4444"
+            hovertemplate: "%{x}: %{y:.2f} CHF<extra>Bezug HT</extra>"
+          - entity: ""
+            name: Netzbezug NT
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => Math.round((r.nt || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_niedertarif'].state)||0) * 100) / 100)
+            marker:
+              color: "#f97316"
+            hovertemplate: "%{x}: %{y:.2f} CHF<extra>Bezug NT</extra>"
+          - entity: ""
+            name: Einspeisevergütung
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => -Math.round((r.ein || 0) * (parseFloat(hass.states['input_number.energy_manager_einspeiseverguetung'].state)||0) * 100) / 100)
+            marker:
+              color: "#22c55e"
+            hovertemplate: "%{x}: %{y:.2f} CHF<extra>Vergütung</extra>"
+          - entity: ""
+            name: Netto
+            type: scatter
+            mode: lines+markers+text
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => Math.round(((r.ht || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_hochtarif'].state)||0) + (r.nt || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_niedertarif'].state)||0) - (r.ein || 0) * (parseFloat(hass.states['input_number.energy_manager_einspeiseverguetung'].state)||0)) * 100) / 100)
+            text: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => Math.round((r.ht || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_hochtarif'].state)||0) + (r.nt || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_niedertarif'].state)||0) - (r.ein || 0) * (parseFloat(hass.states['input_number.energy_manager_einspeiseverguetung'].state)||0)))
+            textposition: top center
+            textfont:
+              size: 9
+              color: "#ffffff"
+            line:
+              color: "#ffffff"
+              width: 1
+            marker:
+              size: 4
+
+      # ── Grafik: Jahresübersicht ──
+      - type: custom:plotly-graph
+        hours_to_show: 1
+        refresh_interval: 600
+        layout:
+          height: 360
+          barmode: group
+          bargap: 0.25
+          margin:
+            t: 75
+            b: 60
+            l: 55
+            r: 10
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
+          xaxis:
+            type: category
+            range: $ex [-0.5, JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').length - 0.5]
+            color: "#9e9e9e"
+            showgrid: false
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            ticksuffix: " kWh"
+            zeroline: true
+            zerolinecolor: "#666666"
+          showlegend: true
+          legend:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.14
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Jahresübersicht"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: "kWh je Kalenderjahr (Statistik ab 29.01.2026)"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 11
+                color: "#9e9e9e"
+        entities:
+          - entity: ""
+            name: PV
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.p)
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.pv)
+            marker:
+              color: "#ff9800"
+            hovertemplate: "%{x}: %{y:.0f}<extra>PV</extra>"
+          - entity: ""
+            name: Einspeisung
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.p)
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.ein)
+            marker:
+              color: "#7b1fa2"
+            hovertemplate: "%{x}: %{y:.0f}<extra>Einspeisung</extra>"
+          - entity: ""
+            name: Netzbezug
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.p)
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.bez)
+            marker:
+              color: "#ef4444"
+            hovertemplate: "%{x}: %{y:.0f}<extra>Netzbezug</extra>"
+          - entity: ""
+            name: Haus (ohne WP)
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.p)
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.haus)
+            marker:
+              color: "#3b82f6"
+            hovertemplate: "%{x}: %{y:.0f}<extra>Haus (ohne WP)</extra>"
+          - entity: ""
+            name: WP
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.p)
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.wp)
+            marker:
+              color: "#06b6d4"
+            hovertemplate: "%{x}: %{y:.0f}<extra>WP</extra>"
+
+      # ── Grafik: Energiekosten je Jahr ──
+      - type: custom:plotly-graph
+        hours_to_show: 1
+        refresh_interval: 600
+        layout:
+          height: 320
+          barmode: relative
+          bargap: 0.25
+          margin:
+            t: 75
+            b: 60
+            l: 55
+            r: 10
+          paper_bgcolor: "rgba(0,0,0,0)"
+          plot_bgcolor: "rgba(0,0,0,0)"
+          font:
+            color: "#9e9e9e"
+            size: 11
+          xaxis:
+            type: category
+            range: $ex [-0.5, JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').length - 0.5]
+            color: "#9e9e9e"
+            showgrid: false
+          yaxis:
+            showgrid: true
+            gridcolor: "#2a2a2a"
+            color: "#9e9e9e"
+            ticksuffix: " CHF"
+            zeroline: true
+            zerolinecolor: "#666666"
+          showlegend: true
+          legend:
+            orientation: h
+            x: 0
+            xanchor: left
+            "y": -0.14
+            yanchor: top
+            font:
+              size: 10
+          annotations:
+            - text: "Energiekosten je Jahr"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.13
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 20
+                color: "#9e9e9e"
+            - text: "CHF mit aktuellen Tarifen"
+              xref: paper
+              yref: paper
+              x: 0
+              "y": 1.04
+              xanchor: left
+              yanchor: bottom
+              showarrow: false
+              font:
+                size: 11
+                color: "#9e9e9e"
+        entities:
+          - entity: ""
+            name: Netzbezug HT
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.p)
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => Math.round((r.ht || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_hochtarif'].state)||0) * 100) / 100)
+            marker:
+              color: "#ef4444"
+            hovertemplate: "%{x}: %{y:.2f} CHF<extra>Bezug HT</extra>"
+          - entity: ""
+            name: Netzbezug NT
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.p)
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => Math.round((r.nt || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_niedertarif'].state)||0) * 100) / 100)
+            marker:
+              color: "#f97316"
+            hovertemplate: "%{x}: %{y:.2f} CHF<extra>Bezug NT</extra>"
+          - entity: ""
+            name: Einspeisevergütung
+            type: bar
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.p)
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => -Math.round((r.ein || 0) * (parseFloat(hass.states['input_number.energy_manager_einspeiseverguetung'].state)||0) * 100) / 100)
+            marker:
+              color: "#22c55e"
+            hovertemplate: "%{x}: %{y:.2f} CHF<extra>Vergütung</extra>"
+          - entity: ""
+            name: Netto
+            type: scatter
+            mode: lines+markers+text
+            yaxis: "y"
+            x: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => r.p)
+            "y": |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => Math.round(((r.ht || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_hochtarif'].state)||0) + (r.nt || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_niedertarif'].state)||0) - (r.ein || 0) * (parseFloat(hass.states['input_number.energy_manager_einspeiseverguetung'].state)||0)) * 100) / 100)
+            text: |
+              $ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).jahre || '[]').map(r => Math.round((r.ht || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_hochtarif'].state)||0) + (r.nt || 0) * (parseFloat(hass.states['input_number.energy_manager_strompreis_niedertarif'].state)||0) - (r.ein || 0) * (parseFloat(hass.states['input_number.energy_manager_einspeiseverguetung'].state)||0)))
+            textposition: top center
+            textfont:
+              size: 9
+              color: "#ffffff"
+            line:
+              color: "#ffffff"
+              width: 1
+            marker:
+              size: 4
+
+      # ── 4. Tageswerte Langzeit (SQL-Sensor sensor.energie_tageswerte, packages/wp_nacht_kennzahlen.yaml) ──
+      - type: markdown
+        title: Tageswerte & Durchschnitte (Langzeit)
+        content: |
+          {% set s = 'sensor.energie_tageswerte' %}
+          {% set raw = state_attr(s, 'tage') %}
+          {% set t = raw | from_json if raw else [] %}
+          {% macro f(v, d=1) %}{% if v is number %}{{ (v | round(d)) if d > 0 else (v | round(0) | int) }}{% else %}–{% endif %}{% endmacro %}
+          **Letzte 14 Tage** (kWh) · Daten ab {{ state_attr(s, 'ab') or '–' }}
+
+          | Tag | PV | Einsp. | Netzbezug | Haus | WP | Verbrauch | Autarkie | Eigenverbr. |
+          |:--|--:|--:|--:|--:|--:|--:|--:|--:|
+          {% for r in t -%}
+          | {{ r.d[8:10] }}.{{ r.d[5:7] }}.{% if r.d == now().strftime('%Y-%m-%d') %} *(laufend)*{% endif %} | {{ f(r.pv) }} | {{ f(r.ein) }} | **{{ f(r.bez) }}** | {{ f(r.haus) }} | {{ f(r.wp) }} | {{ f(r.verbr) }} | {{ f(r.autarkie) }} % | {{ f(r.eigen) }} % |
+          {% endfor %}
+
+          **Durchschnitt pro Tag und Summen** (kWh)
+
+          | Zeitraum | Tage | PV | Einsp. | Netzbezug | Haus | WP | Verbrauch | Autarkie | Eigenverbr. |
+          |:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|
+          {% for key, label, mode in [('avg7','Ø letzte 7 Tage','avg'), ('avg30','Ø letzte 30 Tage','avg'), ('monat','Ø Monat bisher','avg'), ('vormonat','Ø Vormonat','avg'), ('jahr','Ø Jahr bisher','avg'), ('monat','Σ Monat bisher','sum'), ('vormonat','Σ Vormonat','sum'), ('jahr','Σ Jahr bisher','sum')] -%}
+          {% set rr = state_attr(s, key) %}{% set a = rr | from_json if rr else {} %}{% set n = a.get('n') or 0 %}{% set q = (n if (mode == 'avg' and n > 0) else 1) -%}
+          | {{ label }} | {{ n }} | {{ f(a.get('pv', 0) / q if a.get('pv') is number else none) }} | {{ f(a.get('ein', 0) / q if a.get('ein') is number else none) }} | **{{ f(a.get('bez', 0) / q if a.get('bez') is number else none) }}** | {{ f(a.get('haus', 0) / q if a.get('haus') is number else none) }} | {{ f(a.get('wp', 0) / q if a.get('wp') is number else none) }} | {{ f(a.get('verbr', 0) / q if a.get('verbr') is number else none) }} | {{ f(a.get('autarkie')) }} % | {{ f(a.get('eigen')) }} % |
+          {% endfor %}
+
+          {% set pht = states('input_number.energy_manager_strompreis_hochtarif') | float(0) %}{% set pnt = states('input_number.energy_manager_strompreis_niedertarif') | float(0) %}{% set pev = states('input_number.energy_manager_einspeiseverguetung') | float(0) -%}
+          **Energiekosten** (CHF, aktuelle Tarife: HT {{ pht }} · NT {{ pnt }} · Vergütung {{ pev }} CHF/kWh)
+
+          | Tag / Zeitraum | Bezug HT kWh | Bezug NT kWh | Kosten Bezug | Vergütung | **Netto** |
+          |:--|--:|--:|--:|--:|--:|
+          {% for r in t -%}
+          {% set kb = (r.ht or 0) * pht + (r.nt or 0) * pnt %}{% set kv = (r.ein or 0) * pev -%}
+          | {{ r.d[8:10] }}.{{ r.d[5:7] }}. | {{ f(r.ht) }} | {{ f(r.nt) }} | {{ f(kb, 2) }} | {{ f(kv, 2) }} | **{{ f(kb - kv, 2) }}** |
+          {% endfor -%}
+          {% for key, label, mode in [('avg7','Ø/Tag letzte 7 Tage','avg'), ('avg30','Ø/Tag letzte 30 Tage','avg'), ('monat','Σ Monat bisher','sum'), ('vormonat','Σ Vormonat','sum'), ('jahr','Σ Jahr bisher','sum')] -%}
+          {% set rr = state_attr(s, key) %}{% set a = rr | from_json if rr else {} %}{% set n = a.get('n') or 0 %}{% set q = (n if (mode == 'avg' and n > 0) else 1) %}{% set kb = ((a.get('ht') or 0) * pht + (a.get('nt') or 0) * pnt) / q %}{% set kv = (a.get('ein') or 0) * pev / q -%}
+          | *{{ label }}* | {{ f((a.get('ht') or 0) / q) }} | {{ f((a.get('nt') or 0) / q) }} | {{ f(kb, 2) }} | {{ f(kv, 2) }} | **{{ f(kb - kv, 2) }}** |
+          {% endfor %}
+
+          <sub>Quelle: HA-Langzeitstatistik (Stundenwerte, dauerhaft) – Tageswert = Zählerstand Tagesende − Vortag. Netzbezug = Saldierungs-Zähler (Netzanschluss). Autarkie = (PV − Einspeisung) / Verbrauch · Eigenverbrauch = (PV − Einspeisung) / PV. Jahr ab 29.01.2026 (Beginn Statistik). Laufender Tag hinkt bis 1 h nach. Kosten: HT Mo–Fr 06–21 Uhr (Feiertage nicht berücksichtigt), mit den aktuell eingestellten Tarifen gerechnet.</sub>
+
+  # ═══════════════════════════════════════════════════════════
+  # VIEW 7: KENNZAHLEN (WP letzte Nacht vs. Vornacht, SQL-Sensoren aus packages/wp_nacht_kennzahlen.yaml)
+  # ═══════════════════════════════════════════════════════════
+  - title: Kennzahlen
+    path: kennzahlen
+    icon: mdi:clipboard-text-clock
+    cards:
+      - type: horizontal-stack
+        cards:
+          - type: custom:mushroom-template-card
+            primary: WP-Strom Nacht
+            secondary: "{{ state_attr('sensor.wp_nacht_kennzahlen', 'strom_kwh') if state_attr('sensor.wp_nacht_kennzahlen', 'strom_kwh') is not none else '–' }} kWh"
+            icon: mdi:heat-pump
+            icon_color: "#06b6d4"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: WW-Ladungen
+            secondary: "{{ state_attr('sensor.wp_nacht_kennzahlen', 'ww_ladungen') if state_attr('sensor.wp_nacht_kennzahlen', 'ww_ladungen') is not none else '–' }} "
+            icon: mdi:water-boiler
+            icon_color: "#ef4444"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Anteil WW
+            secondary: "{{ state_attr('sensor.wp_nacht_kennzahlen', 'ww_anteil_pct') if state_attr('sensor.wp_nacht_kennzahlen', 'ww_anteil_pct') is not none else '–' }} %"
+            icon: mdi:percent
+            icon_color: "#f97316"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Heiz-Takte
+            secondary: "{{ state_attr('sensor.wp_nacht_kennzahlen', 'heiz_takte') if state_attr('sensor.wp_nacht_kennzahlen', 'heiz_takte') is not none else '–' }} "
+            icon: mdi:sync
+            icon_color: "#22c55e"
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Mitte min.
+            secondary: "{{ state_attr('sensor.wp_nacht_kennzahlen', 'mitte_min') if state_attr('sensor.wp_nacht_kennzahlen', 'mitte_min') is not none else '–' }} °C"
+            icon: mdi:thermometer-water
+            icon_color: "#f59e0b"
+            layout: vertical
+      - type: markdown
+        title: Kennzahlen Nacht im Vergleich zur Vornacht
+        content: |
+          {% set a = states.sensor.wp_nacht_kennzahlen.attributes if states.sensor.wp_nacht_kennzahlen is not none else {} %}
+          {% set b = states.sensor.wp_vornacht_kennzahlen.attributes if states.sensor.wp_vornacht_kennzahlen is not none else {} %}
+          {% macro f(v, d) %}{% if v is number %}{{ (v | round(d)) if d > 0 else (v | round(0) | int) }}{% else %}–{% endif %}{% endmacro %}
+          {% macro row(l, k, u, d, n) -%}
+          {%- set x = a.get(k) %}{% set y = b.get(k) -%}
+          | {{ l }} | **{{ f(x, d) }}** {{ u }} | {{ f(y, d) }} {{ u }} | {% if x is number and y is number %}{{ '+' if x - y > 0 else '' }}{{ f(x - y, d) }}{% else %}–{% endif %} | {{ n }} |
+          {%- endmacro %}
+          | Kennzahl | Nacht {{ a.get('nacht', '–') }} | Vornacht {{ b.get('nacht', '–') }} | Δ | Bemerkung |
+          |:--|--:|--:|--:|:--|
+          {{ row('WP-Strom Nacht', 'strom_kwh', 'kWh', 1, '') }}
+          {{ row('davon im WW-Modus', 'ww_kwh', 'kWh', 1, '') }}
+          {{ row('Anteil WP-Strom im WW-Modus', 'ww_anteil_pct', '%', 0, 'Nov.-Schnitt vor Fühler-Umstecken ≈ 46 %') }}
+          {{ row('WW-Ladungen', 'ww_ladungen', '', 0, 'Ziel nachts: 0') }}
+          {{ row('Laufzeit WW-Modus', 'ww_h', 'h', 1, '') }}
+          {{ row('Heiz-Takte', 'heiz_takte', '', 0, '') }}
+          {{ row('Laufzeit Heizbetrieb', 'heiz_h', 'h', 1, '') }}
+          {{ row('FBH aktiv (Spreizung > 2.5 K)', 'fbh_aktiv_h', 'h', 1, '') }}
+          {{ row('FBH-Pumpe EIN (Leistung > 10 W)', 'pumpe_h', 'h', 1, '') }}
+          {{ row('RL Ist WP max. im Betrieb', 'rl_max_betrieb', '°C', 1, 'WW ab 38 °C') }}
+          {{ row('Speicher mitte min.', 'mitte_min', '°C', 1, 'WW-Fühler') }}
+          {{ row('Speicher oben min.', 'oben_min', '°C', 1, 'Zapfzone') }}
+          {{ row('Ø Δ Mitte, WP aus + FBH läuft', 'dmitte_aus_fbh', 'K/h', 2, 'Wärmeentzug durch FBH') }}
+          {{ row('Ø Δ Mitte, WP heizt + FBH läuft', 'dmitte_heiz_fbh', 'K/h', 2, '< 0 = Mitte kühlt trotz Heizbetrieb') }}
+          {{ row('Ø Δ Mitte, FBH steht', 'dmitte_fbh_steht', 'K/h', 2, 'Verluste + Zapfung') }}
+          {{ row('Ø Δ Oben, ganze Nacht', 'doben', 'K/h', 2, '') }}
+          {{ row('Aussen min.', 'aussen_min', '°C', 1, 'Homematic') }}
+          {{ row('Aussen Ø', 'aussen_mittel', '°C', 1, '') }}
+          | Speicher mitte 18:00 → 08:00 | **{{ f(a.get('mitte_start'),1) }} → {{ f(a.get('mitte_ende'),1) }}** °C | {{ f(b.get('mitte_start'),1) }} → {{ f(b.get('mitte_ende'),1) }} °C | | |
+          | Speicher oben 18:00 → 08:00 | **{{ f(a.get('oben_start'),1) }} → {{ f(a.get('oben_ende'),1) }}** °C | {{ f(b.get('oben_start'),1) }} → {{ f(b.get('oben_ende'),1) }} °C | | |
+          | Innen 18:00 → 08:00 | **{{ f(a.get('innen_start'),1) }} → {{ f(a.get('innen_ende'),1) }}** °C | {{ f(b.get('innen_start'),1) }} → {{ f(b.get('innen_ende'),1) }} °C | | |
+          | FBH-Pumpe erstmals EIN | **{{ a.get('pumpe_ein') or '–' }}** | {{ b.get('pumpe_ein') or '–' }} | | |
+
+          <sub>Nacht = 18:00–08:00, 5-min-Mittel der HA-Kurzzeitstatistik (ca. 10 Tage). Zustand: Aus < 200 W · WW = WP läuft und RL Ist ≥ 38 °C · sonst Heizen. Gleiche Logik wie Excel-Blatt «Nacht_13_14», Abschnitt A. Homematic-Werte (Pumpe, Aussen, Innen) ab 13.11.2026 23:00.</sub>

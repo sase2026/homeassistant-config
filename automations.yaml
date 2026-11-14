@@ -1,0 +1,312 @@
+- id: '1777121561066'
+  alias: PV Boiler laden
+  description: Schaltet den Boiler ein, wenn der Saldierungszaehler fuer 2 Minuten
+    genuegend Rueckspeisung zeigt.
+  triggers:
+  - value_template: '{{ states(''sensor.leistung_saldierung'') | float(0) < ((states(''input_number.boiler_leistung'')
+      | float(2300) + states(''input_number.boiler_reserveleistung'') | float(70))
+      * -1) }}'
+    for:
+      minutes: 2
+    trigger: template
+  conditions:
+  - condition: state
+    entity_id: input_boolean.boiler_pv_automatik
+    state: 'on'
+  - condition: state
+    entity_id: switch.haus_verbauch
+    state: 'off'
+  - condition: template
+    value_template: '{{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'') |
+      float(999) < states(''input_number.boiler_wiedereinschalttemperatur'') | float(60)
+      }}'
+  actions:
+  - target:
+      entity_id: switch.haus_verbauch
+    action: switch.turn_on
+  mode: single
+- id: boiler_pv_ueberschuss_ausschalten
+  alias: PV Boiler ausschalten
+  description: Schaltet den Boiler aus, wenn nach Mindestlaufzeit fuer 2 Minuten nicht
+    mehr genug Rueckspeisung vorhanden ist.
+  triggers:
+  - value_template: '{{ states(''sensor.leistung_saldierung'') | float(0) > (states(''input_number.boiler_reserveleistung'')
+      | float(70) * -1) }}'
+    for:
+      minutes: 2
+    trigger: template
+  conditions:
+  - condition: state
+    entity_id: input_boolean.boiler_pv_automatik
+    state: 'on'
+  - condition: state
+    entity_id: switch.haus_verbauch
+    state: 'on'
+  - condition: template
+    value_template: '{% set changed = states.switch.haus_verbauch.last_changed %}
+      {% set min_runtime = states(''input_number.boiler_mindestlaufzeit'') | float(10)
+      %} {{ (now() - changed).total_seconds() >= min_runtime * 60 }}'
+  actions:
+  - data:
+      message: 'Boiler gestoppt wegen zu wenig PV-Ueberschuss. Saldierung: {{ states(''sensor.leistung_saldierung'')
+        | float(0) | round(0) }} W, WW-Oben: {{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'')
+        }} C.'
+      title: Boiler gestoppt
+    action: notify.mobile_app_iphone_12_sse
+  - target:
+      entity_id: switch.haus_verbauch
+    action: switch.turn_off
+  mode: single
+- id: boiler_pv_automatik_deaktiviert_ausschalten
+  alias: PV Boiler Automatik deaktiviert
+  description: Schaltet den Boiler aus, wenn die PV-Boiler-Automatik deaktiviert wird.
+  triggers:
+  - to: 'off'
+    entity_id: input_boolean.boiler_pv_automatik
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: switch.haus_verbauch
+    state: 'on'
+  actions:
+  - target:
+      entity_id: switch.haus_verbauch
+    action: switch.turn_off
+  mode: single
+- id: boiler_ladezeit_heute_zaehlen
+  alias: Boiler Statistik zaehlen
+  description: Zaehlt pro laufender Minute Ladezeit, kWh und Durchschnittswerte ab
+    Statistikstart.
+  triggers:
+  - trigger: time_pattern
+    minutes: /1
+  conditions:
+  - condition: state
+    entity_id: switch.haus_verbauch
+    state: 'on'
+  actions:
+  - variables:
+      tage: '{{ [1, (((as_timestamp(now()) - as_timestamp(states(''input_datetime.boiler_statistik_start'')))
+        / 86400) | int + 1)] | max }}'
+      kwh_minute: '{{ (states(''input_number.boiler_leistung'') | float(2300)) / 1000
+        / 60 }}'
+      kwh_heute_neu: '{{ (states(''input_number.boiler_kapazitaet_heute'') | float(0))
+        + (kwh_minute | float(0)) }}'
+      monat_stunden_neu: '{{ (states(''input_number.boiler_ladezeit_monat'') | float(0))
+        + (1 / 60) }}'
+      ladezeit_heute_neu: '{{ (states(''input_number.boiler_ladezeit_heute'') | float(0))
+        + 1 }}'
+      total_kwh_neu: '{{ (states(''input_number.boiler_kapazitaet_total'') | float(0))
+        + (kwh_minute | float(0)) }}'
+      total_stunden_neu: '{{ (states(''input_number.boiler_ladezeit_total'') | float(0))
+        + (1 / 60) }}'
+      monat_kwh_neu: '{{ (states(''input_number.boiler_kapazitaet_monat'') | float(0))
+        + (kwh_minute | float(0)) }}'
+  - data:
+      value: '{{ ladezeit_heute_neu | round(0) }}'
+    target:
+      entity_id: input_number.boiler_ladezeit_heute
+    action: input_number.set_value
+  - data:
+      value: '{{ kwh_heute_neu | round(3) }}'
+    target:
+      entity_id: input_number.boiler_kapazitaet_heute
+    action: input_number.set_value
+  - data:
+      value: '{{ total_stunden_neu | round(2) }}'
+    target:
+      entity_id: input_number.boiler_ladezeit_total
+    action: input_number.set_value
+  - data:
+      value: '{{ total_kwh_neu | round(3) }}'
+    target:
+      entity_id: input_number.boiler_kapazitaet_total
+    action: input_number.set_value
+  - data:
+      value: '{{ monat_stunden_neu | round(2) }}'
+    target:
+      entity_id: input_number.boiler_ladezeit_monat
+    action: input_number.set_value
+  - data:
+      value: '{{ monat_kwh_neu | round(3) }}'
+    target:
+      entity_id: input_number.boiler_kapazitaet_monat
+    action: input_number.set_value
+  - data:
+      value: '{{ (total_stunden_neu | float(0) / tage | float(1)) | round(2) }}'
+    target:
+      entity_id: input_number.boiler_durchschnitt_ladezeit_pro_tag
+    action: input_number.set_value
+  - data:
+      value: '{{ (total_kwh_neu | float(0) / tage | float(1)) | round(3) }}'
+    target:
+      entity_id: input_number.boiler_durchschnitt_kapazitaet_pro_tag
+    action: input_number.set_value
+  mode: single
+- id: boiler_ladezeit_heute_reset
+  alias: Boiler Tageswerte reset
+  description: Setzt taegliche Boiler-Ladezeit und Tages-kWh um Mitternacht zurueck.
+    Die Historie bleibt im Recorder abrufbar.
+  triggers:
+  - trigger: time
+    at: 00:00:00
+  conditions: []
+  actions:
+  - data:
+      value: 0
+    target:
+      entity_id: input_number.boiler_ladezeit_heute
+    action: input_number.set_value
+  - data:
+      value: 0
+    target:
+      entity_id: input_number.boiler_kapazitaet_heute
+    action: input_number.set_value
+  mode: single
+- id: boiler_maximaltemperatur_erreicht_ausschalten
+  alias: Boiler Maximaltemperatur erreicht
+  description: Schaltet den Boiler aus, sobald WW-Oben die eingestellte Maximaltemperatur
+    erreicht.
+  triggers:
+  - value_template: '{{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'') |
+      float(0) >= states(''input_number.boiler_maximaltemperatur'') | float(63) }}'
+    for:
+      seconds: 30
+    trigger: template
+  conditions:
+  - condition: state
+    entity_id: switch.haus_verbauch
+    state: 'on'
+  actions:
+  - data:
+      message: 'Boiler gestoppt: {{ states(''input_number.boiler_maximaltemperatur'')
+        | float(63) | round(1) }} C Temperatur erreicht. WW-Oben: {{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'')
+        }} C.'
+      title: Boiler gestoppt
+    action: notify.mobile_app_iphone_12_sse
+  - target:
+      entity_id: switch.haus_verbauch
+    action: switch.turn_off
+  mode: single
+- id: boiler_netzbezug_schutz_ausschalten
+  alias: Boiler Netzbezug Schutz
+  description: Schaltet den Boiler aus, wenn beim Laden deutlicher Netzbezug entsteht.
+  triggers:
+  - value_template: '{{ states(''sensor.leistung_saldierung'') | float(0) > states(''input_number.boiler_max_netzbezug'')
+      | float(300) }}'
+    for:
+      minutes: 2
+    trigger: template
+  conditions:
+  - condition: state
+    entity_id: switch.haus_verbauch
+    state: 'on'
+  actions:
+  - data:
+      message: 'Boiler gestoppt wegen Netzbezug-Schutz. Saldierung: {{ states(''sensor.leistung_saldierung'')
+        | float(0) | round(0) }} W.'
+      title: Boiler gestoppt
+    action: notify.mobile_app_iphone_12_sse
+  - target:
+      entity_id: switch.haus_verbauch
+    action: switch.turn_off
+  mode: single
+- id: boiler_benachrichtigung_gestartet
+  alias: Boiler Benachrichtigung gestartet
+  description: Meldet Start bei genuegend PV-Ueberschuss.
+  triggers:
+  - from: 'off'
+    to: 'on'
+    entity_id: switch.haus_verbauch
+    trigger: state
+  conditions:
+  - condition: template
+    value_template: '{{ states(''sensor.leistung_saldierung'') | float(0) < ((states(''input_number.boiler_leistung'')
+      | float(2300) + states(''input_number.boiler_reserveleistung'') | float(70))
+      * -1) }}'
+  actions:
+  - data:
+      message: 'Boiler gestartet: genuegend PV-Ueberschuss. Saldierung: {{ states(''sensor.leistung_saldierung'')
+        | float(0) | round(0) }} W, WW-Oben: {{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'')
+        }} C.'
+      title: Boiler gestartet
+    action: notify.mobile_app_iphone_12_sse
+  mode: single
+- id: boiler_tagesbericht
+  alias: Tagesabschluss
+  description: Taegl. Push mit Energie-Kennzahlen - Zeit via input_datetime steuerbar
+  triggers:
+  - trigger: time
+    at: input_datetime.tagesabschluss_push_zeit
+  conditions: []
+  actions:
+  - data:
+      message: 'Tagesabschluss {{ now().strftime(''%d.%m.%Y'') }}
+
+
+        PV Produktion:   {{ states(''sensor.energy_manager_pv_produktion_heute_kwh'')
+        | float(0) | round(1) }} kWh
+
+        Einspeisung:     {{ states(''sensor.energy_manager_einspeisung_heute_kwh_2'')
+        | float(0) | round(1) }} kWh
+
+        Netzbezug:       {{ states(''sensor.energy_manager_netzbezug_heute_kwh'')
+        | float(0) | round(1) }} kWh
+
+        Haus & WP:       {{ states(''sensor.energy_manager_hausverbrauch_heute_kwh'')
+        | float(0) | round(1) }} kWh
+
+
+        Autarkie:        {{ states(''sensor.energy_manager_autarkiegrad_heute'') |
+        float(0) | round(1) }} %
+
+        Eigenverbrauch:  {{ states(''sensor.energy_manager_eigenverbrauchsquote_heute'')
+        | float(0) | round(1) }} %
+
+
+        Boiler (WW-Oben):{{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'')
+        | float(0) | round(1) }} C
+
+        Solcast morgen:  {{ states(''sensor.solcast_pv_forecast_prognose_morgen'')
+        | float(0) | round(1) }} kWh'
+      title: Tagesabschluss Energie
+    action: notify.mobile_app_iphone_12_sse
+  mode: single
+- id: boiler_monatsbericht
+  alias: Boiler Monatsbericht
+  description: Meldet am Monatsende die per PV-Ueberschuss geladene Energie.
+  triggers:
+  - trigger: time
+    at: '23:56:00'
+  conditions:
+  - condition: template
+    value_template: '{{ (now() + timedelta(days=1)).month != now().month }}'
+  actions:
+  - data:
+      message: 'Monat {{ now().strftime(''%m.%Y'') }}: {{ states(''input_number.boiler_kapazitaet_monat'')
+        | float(0) | round(2) }} kWh mit PV-Ueberschuss geladen. Ladezeit: {{ states(''input_number.boiler_ladezeit_monat'')
+        | float(0) | round(2) }} h.'
+      title: Boiler Monatsbericht
+    action: notify.mobile_app_iphone_12_sse
+  mode: single
+- id: boiler_monatswerte_reset
+  alias: Boiler Monatswerte reset
+  description: Setzt die Monatswerte am Monatsanfang zurueck.
+  triggers:
+  - trigger: time
+    at: 00:05:00
+  conditions:
+  - condition: template
+    value_template: '{{ now().day == 1 }}'
+  actions:
+  - data:
+      value: 0
+    target:
+      entity_id: input_number.boiler_kapazitaet_monat
+    action: input_number.set_value
+  - data:
+      value: 0
+    target:
+      entity_id: input_number.boiler_ladezeit_monat
+    action: input_number.set_value
+  mode: single

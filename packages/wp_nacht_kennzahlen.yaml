@@ -1,0 +1,319 @@
+# ════════════════════════════════════════════════════════════════════════
+# WP – Nacht-Kennzahlen (wie Excel WP_Verbrauchsanalyse_2026, Blatt Nacht_xx, Abschnitt A)
+# Quelle: HA-Kurzzeitstatistik (5-min-Mittel, ca. 10 Tage) aus der Recorder-DB.
+# Nacht = 18:00–08:00 (169 Werte). «Letzte Nacht» = zuletzt um 08:00 abgeschlossene Nacht.
+# Zustand je 5 min: Aus < 200 W; WW = WP läuft und RL Ist ≥ 38 °C; sonst Heizen.
+# FBH aktiv = VL HK-II − RL HK-II > 2.5 K. Zustand = strom_kwh, alle weiteren Kennzahlen als Attribute.
+# Erstellt 14.11.2026 (Claude); Test gegen Excel: Nacht 13./14.11. 16.5 kWh / 0 WW / 6 Takte – identisch.
+# ════════════════════════════════════════════════════════════════════════
+sql:
+  - name: WP Nacht Kennzahlen
+    unique_id: wp_nacht_kennzahlen_letzte
+    icon: mdi:weather-night
+    unit_of_measurement: kWh
+    column: strom_kwh
+    query: >
+      WITH p AS (
+        SELECT CAST(strftime('%s', CASE WHEN strftime('%H', 'now', 'localtime') >= '08'
+              THEN date('now', 'localtime') ELSE date('now', 'localtime', '-1 day') END || ' 08:00:00', 'utc') AS INTEGER)
+              - 0 AS e
+      ), r AS (
+        SELECT s.start_ts AS t,
+          MAX(CASE WHEN m.statistic_id='sensor.energy_manager_wp_aktuell_w' THEN s.mean END) AS w,
+          MAX(CASE WHEN m.statistic_id='sensor.ww_mitte_rl_ist_ww_oben_temperatur_2' THEN s.mean END) AS rl,
+          MAX(CASE WHEN m.statistic_id='sensor.ww_mitte_rl_ist_ww_oben_temperatur' THEN s.mean END) AS c,
+          MAX(CASE WHEN m.statistic_id='sensor.ww_mitte_rl_ist_ww_oben_temperatur_3' THEN s.mean END) AS b,
+          MAX(CASE WHEN m.statistic_id='sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3' THEN s.mean END) AS vl,
+          MAX(CASE WHEN m.statistic_id='sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2' THEN s.mean END) AS rlh,
+          MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur' THEN s.mean END) AS ta,
+          MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur' THEN s.mean END) AS ti,
+          MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_fbh_pumpe_hk_ii_leistung' THEN s.mean END) AS pw
+        FROM statistics_short_term s JOIN statistics_meta m ON s.metadata_id = m.id, p
+        WHERE m.statistic_id IN ('sensor.energy_manager_wp_aktuell_w','sensor.ww_mitte_rl_ist_ww_oben_temperatur_2','sensor.ww_mitte_rl_ist_ww_oben_temperatur','sensor.ww_mitte_rl_ist_ww_oben_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_fbh_pumpe_hk_ii_leistung') AND s.start_ts BETWEEN p.e - 50700 AND p.e + 300
+        GROUP BY s.start_ts
+      ), z AS (
+        SELECT r.*,
+          CASE WHEN w IS NULL THEN NULL WHEN w < 200 THEN 'Aus' WHEN rl >= 38 THEN 'WW' ELSE 'Heizen' END AS st,
+          CASE WHEN vl - rlh > 2.5 THEN 1 ELSE 0 END AS fbh,
+          (LEAD(c) OVER (ORDER BY t) - c) * 12 AS dc,
+          (LEAD(b) OVER (ORDER BY t) - b) * 12 AS db
+        FROM r
+      ), y AS (
+        SELECT z.*, LAG(st) OVER (ORDER BY t) AS pst FROM z
+      ), n AS (
+        SELECT y.* FROM y, p WHERE t BETWEEN p.e - 50400 AND p.e
+      )
+      SELECT
+        ROUND(SUM(w) / 12000.0, 1) AS strom_kwh,
+        strftime('%d.%m.', MIN(t) + 0, 'unixepoch', 'localtime') || '/' || strftime('%d.%m.', MAX(t), 'unixepoch', 'localtime') AS nacht,
+        ROUND(COALESCE(SUM(CASE WHEN st = 'WW' THEN w END), 0) / 12000.0, 1) AS ww_kwh,
+        ROUND(100.0 * COALESCE(SUM(CASE WHEN st = 'WW' THEN w END), 0) / NULLIF(SUM(w), 0), 0) AS ww_anteil_pct,
+        SUM(CASE WHEN st = 'WW' AND (pst IS NULL OR pst <> 'WW') THEN 1 ELSE 0 END) AS ww_ladungen,
+        ROUND(SUM(CASE WHEN st = 'WW' THEN 1 ELSE 0 END) / 12.0, 1) AS ww_h,
+        SUM(CASE WHEN st = 'Heizen' AND (pst IS NULL OR pst <> 'Heizen') THEN 1 ELSE 0 END) AS heiz_takte,
+        ROUND(SUM(CASE WHEN st = 'Heizen' THEN 1 ELSE 0 END) / 12.0, 1) AS heiz_h,
+        ROUND(SUM(fbh) / 12.0, 1) AS fbh_aktiv_h,
+        ROUND(MAX(CASE WHEN st <> 'Aus' THEN rl END), 1) AS rl_max_betrieb,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN c END), 1) AS mitte_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN c END), 1) AS mitte_ende,
+        ROUND(MIN(c), 1) AS mitte_min,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN b END), 1) AS oben_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN b END), 1) AS oben_ende,
+        ROUND(MIN(b), 1) AS oben_min,
+        ROUND(AVG(CASE WHEN st = 'Aus' AND fbh = 1 THEN dc END), 2) AS dmitte_aus_fbh,
+        ROUND(AVG(CASE WHEN st = 'Heizen' AND fbh = 1 THEN dc END), 2) AS dmitte_heiz_fbh,
+        ROUND(AVG(CASE WHEN fbh = 0 THEN dc END), 2) AS dmitte_fbh_steht,
+        ROUND(AVG(CASE WHEN t < (SELECT e FROM p) THEN db END), 2) AS doben,
+        ROUND(SUM(CASE WHEN pw > 10 THEN 1 ELSE 0 END) / 12.0, 1) AS pumpe_h,
+        strftime('%H:%M', MIN(CASE WHEN pw > 10 THEN t END), 'unixepoch', 'localtime') AS pumpe_ein,
+        ROUND(MIN(ta), 1) AS aussen_min,
+        ROUND(AVG(ta), 1) AS aussen_mittel,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN ti END), 1) AS innen_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN ti END), 1) AS innen_ende
+      FROM n
+  - name: WP Vornacht Kennzahlen
+    unique_id: wp_nacht_kennzahlen_vornacht
+    icon: mdi:history
+    unit_of_measurement: kWh
+    column: strom_kwh
+    query: >
+      WITH p AS (
+        SELECT CAST(strftime('%s', CASE WHEN strftime('%H', 'now', 'localtime') >= '08'
+              THEN date('now', 'localtime') ELSE date('now', 'localtime', '-1 day') END || ' 08:00:00', 'utc') AS INTEGER)
+              - 86400 AS e
+      ), r AS (
+        SELECT s.start_ts AS t,
+          MAX(CASE WHEN m.statistic_id='sensor.energy_manager_wp_aktuell_w' THEN s.mean END) AS w,
+          MAX(CASE WHEN m.statistic_id='sensor.ww_mitte_rl_ist_ww_oben_temperatur_2' THEN s.mean END) AS rl,
+          MAX(CASE WHEN m.statistic_id='sensor.ww_mitte_rl_ist_ww_oben_temperatur' THEN s.mean END) AS c,
+          MAX(CASE WHEN m.statistic_id='sensor.ww_mitte_rl_ist_ww_oben_temperatur_3' THEN s.mean END) AS b,
+          MAX(CASE WHEN m.statistic_id='sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3' THEN s.mean END) AS vl,
+          MAX(CASE WHEN m.statistic_id='sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2' THEN s.mean END) AS rlh,
+          MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur' THEN s.mean END) AS ta,
+          MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur' THEN s.mean END) AS ti,
+          MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_fbh_pumpe_hk_ii_leistung' THEN s.mean END) AS pw
+        FROM statistics_short_term s JOIN statistics_meta m ON s.metadata_id = m.id, p
+        WHERE m.statistic_id IN ('sensor.energy_manager_wp_aktuell_w','sensor.ww_mitte_rl_ist_ww_oben_temperatur_2','sensor.ww_mitte_rl_ist_ww_oben_temperatur','sensor.ww_mitte_rl_ist_ww_oben_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_fbh_pumpe_hk_ii_leistung') AND s.start_ts BETWEEN p.e - 50700 AND p.e + 300
+        GROUP BY s.start_ts
+      ), z AS (
+        SELECT r.*,
+          CASE WHEN w IS NULL THEN NULL WHEN w < 200 THEN 'Aus' WHEN rl >= 38 THEN 'WW' ELSE 'Heizen' END AS st,
+          CASE WHEN vl - rlh > 2.5 THEN 1 ELSE 0 END AS fbh,
+          (LEAD(c) OVER (ORDER BY t) - c) * 12 AS dc,
+          (LEAD(b) OVER (ORDER BY t) - b) * 12 AS db
+        FROM r
+      ), y AS (
+        SELECT z.*, LAG(st) OVER (ORDER BY t) AS pst FROM z
+      ), n AS (
+        SELECT y.* FROM y, p WHERE t BETWEEN p.e - 50400 AND p.e
+      )
+      SELECT
+        ROUND(SUM(w) / 12000.0, 1) AS strom_kwh,
+        strftime('%d.%m.', MIN(t) + 0, 'unixepoch', 'localtime') || '/' || strftime('%d.%m.', MAX(t), 'unixepoch', 'localtime') AS nacht,
+        ROUND(COALESCE(SUM(CASE WHEN st = 'WW' THEN w END), 0) / 12000.0, 1) AS ww_kwh,
+        ROUND(100.0 * COALESCE(SUM(CASE WHEN st = 'WW' THEN w END), 0) / NULLIF(SUM(w), 0), 0) AS ww_anteil_pct,
+        SUM(CASE WHEN st = 'WW' AND (pst IS NULL OR pst <> 'WW') THEN 1 ELSE 0 END) AS ww_ladungen,
+        ROUND(SUM(CASE WHEN st = 'WW' THEN 1 ELSE 0 END) / 12.0, 1) AS ww_h,
+        SUM(CASE WHEN st = 'Heizen' AND (pst IS NULL OR pst <> 'Heizen') THEN 1 ELSE 0 END) AS heiz_takte,
+        ROUND(SUM(CASE WHEN st = 'Heizen' THEN 1 ELSE 0 END) / 12.0, 1) AS heiz_h,
+        ROUND(SUM(fbh) / 12.0, 1) AS fbh_aktiv_h,
+        ROUND(MAX(CASE WHEN st <> 'Aus' THEN rl END), 1) AS rl_max_betrieb,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN c END), 1) AS mitte_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN c END), 1) AS mitte_ende,
+        ROUND(MIN(c), 1) AS mitte_min,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN b END), 1) AS oben_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN b END), 1) AS oben_ende,
+        ROUND(MIN(b), 1) AS oben_min,
+        ROUND(AVG(CASE WHEN st = 'Aus' AND fbh = 1 THEN dc END), 2) AS dmitte_aus_fbh,
+        ROUND(AVG(CASE WHEN st = 'Heizen' AND fbh = 1 THEN dc END), 2) AS dmitte_heiz_fbh,
+        ROUND(AVG(CASE WHEN fbh = 0 THEN dc END), 2) AS dmitte_fbh_steht,
+        ROUND(AVG(CASE WHEN t < (SELECT e FROM p) THEN db END), 2) AS doben,
+        ROUND(SUM(CASE WHEN pw > 10 THEN 1 ELSE 0 END) / 12.0, 1) AS pumpe_h,
+        strftime('%H:%M', MIN(CASE WHEN pw > 10 THEN t END), 'unixepoch', 'localtime') AS pumpe_ein,
+        ROUND(MIN(ta), 1) AS aussen_min,
+        ROUND(AVG(ta), 1) AS aussen_mittel,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN ti END), 1) AS innen_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN ti END), 1) AS innen_ende
+      FROM n
+  # FBH-Strang-Abgleich: Ø Abweichung jedes Strang-RL vom Mittel aller 15 Stränge, letzte Nacht, nur wenn
+  # FBH-Pumpe > 10 W jetzt und vor 60 min (eingeschwungen). Zustand = Anzahl 5-min-Werte; Attribute je Strang + hub_<strang>.
+  - name: FBH Strang Abweichung
+    unique_id: fbh_strang_abweichung_letzte_nacht
+    icon: mdi:valve
+    column: n_werte
+    query: >
+      WITH p AS (
+        SELECT CAST(strftime('%s', CASE WHEN strftime('%H', 'now', 'localtime') >= '08'
+              THEN date('now', 'localtime') ELSE date('now', 'localtime', '-1 day') END || ' 08:00:00', 'utc') AS INTEGER) AS e
+      ), r AS (
+        SELECT s.start_ts AS t,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7ecf_temperatur' THEN s.mean END) AS kueche,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab561c0b7_temperatur_2' THEN s.mean END) AS wohnen1,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7ecf_temperatur_2' THEN s.mean END) AS wohnen2,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7ecf_temperatur_3' THEN s.mean END) AS wohnen3,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab56147d3_temperatur' THEN s.mean END) AS essen,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab56147d3_temperatur_2' THEN s.mean END) AS spielen,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab56147d3_temperatur_3' THEN s.mean END) AS gaestewc,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab561c0b7_temperatur' THEN s.mean END) AS entree,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab561c0b7_temperatur_3' THEN s.mean END) AS galerie,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_c45bbe570c30_temperatur' THEN s.mean END) AS eltern,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_c45bbe570c30_temperatur_2' THEN s.mean END) AS dusche,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_c45bbe570c30_temperatur_3' THEN s.mean END) AS hobby,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7177_temperatur' THEN s.mean END) AS yanik,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7177_temperatur_2' THEN s.mean END) AS bad,
+          MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7177_temperatur_3' THEN s.mean END) AS mael,
+          MAX(CASE WHEN m.statistic_id='sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2' THEN s.mean END) AS rl_hk2,
+          MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_fbh_pumpe_hk_ii_leistung' THEN s.mean END) AS pw
+        FROM statistics_short_term s JOIN statistics_meta m ON s.metadata_id = m.id, p
+        WHERE m.statistic_id IN ('sensor.shelly1_8caab55d7ecf_temperatur','sensor.shelly1_8caab561c0b7_temperatur_2','sensor.shelly1_8caab55d7ecf_temperatur_2','sensor.shelly1_8caab55d7ecf_temperatur_3','sensor.shelly1_8caab56147d3_temperatur','sensor.shelly1_8caab56147d3_temperatur_2','sensor.shelly1_8caab56147d3_temperatur_3','sensor.shelly1_8caab561c0b7_temperatur','sensor.shelly1_8caab561c0b7_temperatur_3','sensor.shelly1_c45bbe570c30_temperatur','sensor.shelly1_c45bbe570c30_temperatur_2','sensor.shelly1_c45bbe570c30_temperatur_3','sensor.shelly1_8caab55d7177_temperatur','sensor.shelly1_8caab55d7177_temperatur_2','sensor.shelly1_8caab55d7177_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.homematic_ip_fbh_pumpe_hk_ii_leistung') AND s.start_ts BETWEEN p.e - 54000 AND p.e
+        GROUP BY s.start_ts
+      ), z AS (
+        SELECT r.*, (kueche + wohnen1 + wohnen2 + wohnen3 + essen + spielen + gaestewc + entree + galerie + eltern + dusche + hobby + yanik + bad + mael) / 15.0 AS mw, LAG(pw, 12) OVER (ORDER BY t) AS pw60 FROM r
+      ), n AS (
+        SELECT z.* FROM z, p WHERE t BETWEEN p.e - 50400 AND p.e AND pw > 10 AND pw60 > 10 AND mw IS NOT NULL
+      )
+      SELECT
+        COUNT(*) AS n_werte,
+        strftime('%d.%m. %H:%M', MIN(t), 'unixepoch', 'localtime') || ' – ' || strftime('%H:%M', MAX(t) + 300, 'unixepoch', 'localtime') AS fenster,
+        ROUND(AVG(kueche - mw), 2) AS kueche,
+        ROUND(AVG(wohnen1 - mw), 2) AS wohnen1,
+        ROUND(AVG(wohnen2 - mw), 2) AS wohnen2,
+        ROUND(AVG(wohnen3 - mw), 2) AS wohnen3,
+        ROUND(AVG(essen - mw), 2) AS essen,
+        ROUND(AVG(spielen - mw), 2) AS spielen,
+        ROUND(AVG(gaestewc - mw), 2) AS gaestewc,
+        ROUND(AVG(entree - mw), 2) AS entree,
+        ROUND(AVG(galerie - mw), 2) AS galerie,
+        ROUND(AVG(eltern - mw), 2) AS eltern,
+        ROUND(AVG(dusche - mw), 2) AS dusche,
+        ROUND(AVG(hobby - mw), 2) AS hobby,
+        ROUND(AVG(yanik - mw), 2) AS yanik,
+        ROUND(AVG(bad - mw), 2) AS bad,
+        ROUND(AVG(mael - mw), 2) AS mael,
+        ROUND(AVG(rl_hk2 - mw), 2) AS rl_hk2,
+        ROUND(MAX(kueche) - MIN(kueche), 1) AS hub_kueche,
+        ROUND(MAX(wohnen1) - MIN(wohnen1), 1) AS hub_wohnen1,
+        ROUND(MAX(wohnen2) - MIN(wohnen2), 1) AS hub_wohnen2,
+        ROUND(MAX(wohnen3) - MIN(wohnen3), 1) AS hub_wohnen3,
+        ROUND(MAX(essen) - MIN(essen), 1) AS hub_essen,
+        ROUND(MAX(spielen) - MIN(spielen), 1) AS hub_spielen,
+        ROUND(MAX(gaestewc) - MIN(gaestewc), 1) AS hub_gaestewc,
+        ROUND(MAX(entree) - MIN(entree), 1) AS hub_entree,
+        ROUND(MAX(galerie) - MIN(galerie), 1) AS hub_galerie,
+        ROUND(MAX(eltern) - MIN(eltern), 1) AS hub_eltern,
+        ROUND(MAX(dusche) - MIN(dusche), 1) AS hub_dusche,
+        ROUND(MAX(hobby) - MIN(hobby), 1) AS hub_hobby,
+        ROUND(MAX(yanik) - MIN(yanik), 1) AS hub_yanik,
+        ROUND(MAX(bad) - MIN(bad), 1) AS hub_bad,
+        ROUND(MAX(mael) - MIN(mael), 1) AS hub_mael,
+        ROUND(MAX(rl_hk2) - MIN(rl_hk2), 1) AS hub_rl_hk2
+      FROM n
+  # Energie-Tageswerte (Ansicht «Tabelle»): aus der Langzeitstatistik (Stundenwerte, dauerhaft gespeichert),
+  # daher keine Verluste um 23:59. Zustand = Anzahl Tage; Attribute: tage (letzte 14 Tage, JSON),
+  # monate / jahre (Summen je Monat / Jahr), avg7 / avg30 (Summen der letzten 7 / 30 vollen Tage), monat, vormonat, jahr, gesamt.
+  # ht / nt = Netzbezug Hoch-/Niedertarif (Primeo HT Mo–Fr 06–21 Uhr, aus Stundenwerten).
+  # Quellen: PV SMA total_yield, Einspeisung netz_ruckspeisung_kwh, Netzbezug energie_saldierung (Saldierung),
+  # Haus verbrauch_haus_kwh, WP verbrauch_wp_heizung_kwh.
+  - name: Energie Tageswerte
+    unique_id: energie_tageswerte_langzeit
+    icon: mdi:table-clock
+    column: tage_gesamt
+    query: >
+      WITH h AS (
+        SELECT date(s.start_ts, 'unixepoch', 'localtime') AS d, m.statistic_id AS sid,
+          MAX(s.sum) * (CASE WHEN m.unit_of_measurement = 'MWh' THEN 1000.0 WHEN m.unit_of_measurement = 'Wh' THEN 0.001 ELSE 1.0 END) AS sm
+        FROM statistics s JOIN statistics_meta m ON s.metadata_id = m.id
+        WHERE m.statistic_id IN ('sensor.stp4_0_3av_40_930_total_yield','sensor.netz_ruckspeisung_kwh','sensor.energie_saldierung','sensor.verbrauch_haus_kwh','sensor.verbrauch_wp_heizung_kwh') AND s.start_ts >= CAST(strftime('%s', 'now', '-430 days') AS INTEGER)
+        GROUP BY d, sid
+      ), dd AS (
+        SELECT d, sid, sm - LAG(sm) OVER (PARTITION BY sid ORDER BY d) AS v FROM h
+      ), hb AS (
+        SELECT s.start_ts AS ts,
+          (s.sum - LAG(s.sum) OVER (ORDER BY s.start_ts)) * (CASE WHEN m.unit_of_measurement = 'MWh' THEN 1000.0 WHEN m.unit_of_measurement = 'Wh' THEN 0.001 ELSE 1.0 END) AS v
+        FROM statistics s JOIN statistics_meta m ON s.metadata_id = m.id
+        WHERE m.statistic_id = 'sensor.energie_saldierung' AND s.start_ts >= CAST(strftime('%s', 'now', '-431 days') AS INTEGER)
+      ), htnt AS (
+        SELECT date(ts, 'unixepoch', 'localtime') AS d,
+          SUM(CASE WHEN CAST(strftime('%w', ts, 'unixepoch', 'localtime') AS INTEGER) BETWEEN 1 AND 5
+                    AND CAST(strftime('%H', ts, 'unixepoch', 'localtime') AS INTEGER) BETWEEN 6 AND 20 THEN v ELSE 0 END) AS bez_ht,
+          SUM(CASE WHEN CAST(strftime('%w', ts, 'unixepoch', 'localtime') AS INTEGER) BETWEEN 1 AND 5
+                    AND CAST(strftime('%H', ts, 'unixepoch', 'localtime') AS INTEGER) BETWEEN 6 AND 20 THEN 0 ELSE v END) AS bez_nt
+        FROM hb WHERE v IS NOT NULL AND v >= 0 GROUP BY 1
+      ), t0 AS (
+        SELECT d,
+          MAX(CASE WHEN sid = 'sensor.stp4_0_3av_40_930_total_yield' THEN v END) AS pv,
+          MAX(CASE WHEN sid = 'sensor.netz_ruckspeisung_kwh' THEN v END) AS ein,
+          MAX(CASE WHEN sid = 'sensor.energie_saldierung' THEN v END) AS bez,
+          MAX(CASE WHEN sid = 'sensor.verbrauch_haus_kwh' THEN v END) AS haus,
+          MAX(CASE WHEN sid = 'sensor.verbrauch_wp_heizung_kwh' THEN v END) AS wp
+        FROM dd WHERE v IS NOT NULL GROUP BY d
+      ), t AS (
+        SELECT t0.*, htnt.bez_ht, htnt.bez_nt FROM t0 LEFT JOIN htnt USING (d)
+      ), a7 AS (SELECT COUNT(*) AS n, SUM(pv) AS pv, SUM(ein) AS ein, SUM(bez) AS bez, SUM(haus) AS haus, SUM(wp) AS wp, SUM(bez_ht) AS bez_ht, SUM(bez_nt) AS bez_nt
+        FROM t WHERE d BETWEEN date(date('now', 'localtime'), '-7 days') AND date(date('now', 'localtime'), '-1 day')),
+      a30 AS (SELECT COUNT(*) AS n, SUM(pv) AS pv, SUM(ein) AS ein, SUM(bez) AS bez, SUM(haus) AS haus, SUM(wp) AS wp, SUM(bez_ht) AS bez_ht, SUM(bez_nt) AS bez_nt
+        FROM t WHERE d BETWEEN date(date('now', 'localtime'), '-30 days') AND date(date('now', 'localtime'), '-1 day')),
+      mo AS (SELECT COUNT(*) AS n, SUM(pv) AS pv, SUM(ein) AS ein, SUM(bez) AS bez, SUM(haus) AS haus, SUM(wp) AS wp, SUM(bez_ht) AS bez_ht, SUM(bez_nt) AS bez_nt
+        FROM t WHERE strftime('%Y-%m', d) = strftime('%Y-%m', date('now', 'localtime'))),
+      vm AS (SELECT COUNT(*) AS n, SUM(pv) AS pv, SUM(ein) AS ein, SUM(bez) AS bez, SUM(haus) AS haus, SUM(wp) AS wp, SUM(bez_ht) AS bez_ht, SUM(bez_nt) AS bez_nt
+        FROM t WHERE strftime('%Y-%m', d) = strftime('%Y-%m', date('now', 'localtime'), 'start of month', '-1 month')),
+      ja AS (SELECT COUNT(*) AS n, SUM(pv) AS pv, SUM(ein) AS ein, SUM(bez) AS bez, SUM(haus) AS haus, SUM(wp) AS wp, SUM(bez_ht) AS bez_ht, SUM(bez_nt) AS bez_nt
+        FROM t WHERE strftime('%Y', d) = strftime('%Y', date('now', 'localtime'))),
+      al AS (SELECT COUNT(*) AS n, SUM(pv) AS pv, SUM(ein) AS ein, SUM(bez) AS bez, SUM(haus) AS haus, SUM(wp) AS wp, SUM(bez_ht) AS bez_ht, SUM(bez_nt) AS bez_nt
+        FROM t WHERE 1 = 1),
+      l AS (SELECT * FROM t ORDER BY d DESC LIMIT 14),
+      mm AS (SELECT strftime('%Y-%m', d) AS p, COUNT(*) AS n, SUM(pv) AS pv, SUM(ein) AS ein, SUM(bez) AS bez, SUM(haus) AS haus,
+               SUM(wp) AS wp, SUM(bez_ht) AS ht, SUM(bez_nt) AS nt FROM t GROUP BY 1
+               HAVING MIN(d) <= date(strftime('%Y-%m', MIN(d)) || '-02') ORDER BY 1 DESC LIMIT 13),
+      yy AS (SELECT strftime('%Y', d) || CASE WHEN MIN(d) > strftime('%Y', d) || '-01-02' THEN ' (ab ' || strftime('%d.%m.', MIN(d)) || ')' ELSE '' END AS p, COUNT(*) AS n, SUM(pv) AS pv, SUM(ein) AS ein, SUM(bez) AS bez, SUM(haus) AS haus,
+               SUM(wp) AS wp, SUM(bez_ht) AS ht, SUM(bez_nt) AS nt FROM t GROUP BY strftime('%Y', d) ORDER BY 1)
+      SELECT
+        (SELECT COUNT(*) FROM t) AS tage_gesamt,
+        (SELECT MIN(d) FROM t) AS ab,
+        (SELECT json_group_array(json_object('d', d, 'pv', ROUND(pv, 1), 'ein', ROUND(ein, 1), 'bez', ROUND(bez, 1),
+            'haus', ROUND(haus, 1), 'wp', ROUND(wp, 1), 'ht', ROUND(bez_ht, 2), 'nt', ROUND(bez_nt, 2), 'verbr', ROUND(haus + wp, 1),
+            'autarkie', ROUND(100.0 * (pv - ein) / NULLIF(haus + wp, 0), 1), 'eigen', ROUND(100.0 * (pv - ein) / NULLIF(pv, 0), 1))) FROM l) AS tage,
+        (SELECT json_group_array(json_object('p', p, 'n', n, 'pv', ROUND(pv, 1), 'ein', ROUND(ein, 1), 'bez', ROUND(bez, 1), 'haus', ROUND(haus, 1), 'wp', ROUND(wp, 1), 'ht', ROUND(ht, 1), 'nt', ROUND(nt, 1))) FROM (SELECT * FROM mm ORDER BY p)) AS monate,
+        (SELECT json_group_array(json_object('p', p, 'n', n, 'pv', ROUND(pv, 1), 'ein', ROUND(ein, 1), 'bez', ROUND(bez, 1), 'haus', ROUND(haus, 1), 'wp', ROUND(wp, 1), 'ht', ROUND(ht, 1), 'nt', ROUND(nt, 1))) FROM yy) AS jahre,
+        (SELECT json_object('n', a7.n, 'pv', ROUND(a7.pv, 1), 'ein', ROUND(a7.ein, 1), 'bez', ROUND(a7.bez, 1),
+          'haus', ROUND(a7.haus, 1), 'wp', ROUND(a7.wp, 1), 'ht', ROUND(a7.bez_ht, 2), 'nt', ROUND(a7.bez_nt, 2), 'verbr', ROUND(a7.haus + a7.wp, 1),
+          'autarkie', ROUND(100.0 * (a7.pv - a7.ein) / NULLIF(a7.haus + a7.wp, 0), 1),
+          'eigen', ROUND(100.0 * (a7.pv - a7.ein) / NULLIF(a7.pv, 0), 1)) FROM a7) AS avg7,
+        (SELECT json_object('n', a30.n, 'pv', ROUND(a30.pv, 1), 'ein', ROUND(a30.ein, 1), 'bez', ROUND(a30.bez, 1),
+          'haus', ROUND(a30.haus, 1), 'wp', ROUND(a30.wp, 1), 'ht', ROUND(a30.bez_ht, 2), 'nt', ROUND(a30.bez_nt, 2), 'verbr', ROUND(a30.haus + a30.wp, 1),
+          'autarkie', ROUND(100.0 * (a30.pv - a30.ein) / NULLIF(a30.haus + a30.wp, 0), 1),
+          'eigen', ROUND(100.0 * (a30.pv - a30.ein) / NULLIF(a30.pv, 0), 1)) FROM a30) AS avg30,
+        (SELECT json_object('n', mo.n, 'pv', ROUND(mo.pv, 1), 'ein', ROUND(mo.ein, 1), 'bez', ROUND(mo.bez, 1),
+          'haus', ROUND(mo.haus, 1), 'wp', ROUND(mo.wp, 1), 'ht', ROUND(mo.bez_ht, 2), 'nt', ROUND(mo.bez_nt, 2), 'verbr', ROUND(mo.haus + mo.wp, 1),
+          'autarkie', ROUND(100.0 * (mo.pv - mo.ein) / NULLIF(mo.haus + mo.wp, 0), 1),
+          'eigen', ROUND(100.0 * (mo.pv - mo.ein) / NULLIF(mo.pv, 0), 1)) FROM mo) AS monat,
+        (SELECT json_object('n', vm.n, 'pv', ROUND(vm.pv, 1), 'ein', ROUND(vm.ein, 1), 'bez', ROUND(vm.bez, 1),
+          'haus', ROUND(vm.haus, 1), 'wp', ROUND(vm.wp, 1), 'ht', ROUND(vm.bez_ht, 2), 'nt', ROUND(vm.bez_nt, 2), 'verbr', ROUND(vm.haus + vm.wp, 1),
+          'autarkie', ROUND(100.0 * (vm.pv - vm.ein) / NULLIF(vm.haus + vm.wp, 0), 1),
+          'eigen', ROUND(100.0 * (vm.pv - vm.ein) / NULLIF(vm.pv, 0), 1)) FROM vm) AS vormonat,
+        (SELECT json_object('n', ja.n, 'pv', ROUND(ja.pv, 1), 'ein', ROUND(ja.ein, 1), 'bez', ROUND(ja.bez, 1),
+          'haus', ROUND(ja.haus, 1), 'wp', ROUND(ja.wp, 1), 'ht', ROUND(ja.bez_ht, 2), 'nt', ROUND(ja.bez_nt, 2), 'verbr', ROUND(ja.haus + ja.wp, 1),
+          'autarkie', ROUND(100.0 * (ja.pv - ja.ein) / NULLIF(ja.haus + ja.wp, 0), 1),
+          'eigen', ROUND(100.0 * (ja.pv - ja.ein) / NULLIF(ja.pv, 0), 1)) FROM ja) AS jahr,
+        (SELECT json_object('n', al.n, 'pv', ROUND(al.pv, 1), 'ein', ROUND(al.ein, 1), 'bez', ROUND(al.bez, 1),
+          'haus', ROUND(al.haus, 1), 'wp', ROUND(al.wp, 1), 'ht', ROUND(al.bez_ht, 2), 'nt', ROUND(al.bez_nt, 2), 'verbr', ROUND(al.haus + al.wp, 1),
+          'autarkie', ROUND(100.0 * (al.pv - al.ein) / NULLIF(al.haus + al.wp, 0), 1),
+          'eigen', ROUND(100.0 * (al.pv - al.ein) / NULLIF(al.pv, 0), 1)) FROM al) AS gesamt
+
+# Aktueller Tarif für das HA-Energy-Dashboard (Kostenberechnung): Primeo HT Mo–Fr 06–21 Uhr, sonst NT
+template:
+  - sensor:
+      - name: Strompreis aktuell
+        unique_id: strompreis_aktuell_chf_kwh
+        icon: mdi:cash-clock
+        unit_of_measurement: CHF/kWh
+        state: >
+          {% set ht = now().weekday() < 5 and 6 <= now().hour < 21 %}
+          {{ states('input_number.energy_manager_strompreis_hochtarif' if ht else 'input_number.energy_manager_strompreis_niedertarif') | float(0) }}
+        attributes:
+          tarif: "{{ 'HT' if (now().weekday() < 5 and 6 <= now().hour < 21) else 'NT' }}"
+      - name: Einspeiseverguetung aktuell
+        unique_id: einspeiseverguetung_aktuell_chf_kwh
+        icon: mdi:cash-refund
+        unit_of_measurement: CHF/kWh
+        state: "{{ states('input_number.energy_manager_einspeiseverguetung') | float(0) }}"

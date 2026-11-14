@@ -103,7 +103,7 @@ template:
         state_class: measurement
         state: >
           {% set eigen = states('sensor.energy_manager_eigenverbrauch_monat_kwh') | float(0) %}
-          {% set haus = states('sensor.energy_manager_hausverbrauch_monat_kwh') | float(0) %}
+          {% set haus = states('sensor.energy_manager_hausverbrauch_monat_kwh') | float(0) + states('sensor.energy_manager_wp_monat_kwh') | float(0) %}
           {{ (100 * eigen / haus) | round(1) if haus > 0 else 0 }}
       - name: Energy Manager Autarkiegrad Jahr
         unique_id: energy_manager_autarkiegrad_jahr
@@ -111,7 +111,7 @@ template:
         state_class: measurement
         state: >
           {% set eigen = states('sensor.energy_manager_eigenverbrauch_jahr_kwh') | float(0) %}
-          {% set haus = states('sensor.energy_manager_hausverbrauch_jahr_kwh') | float(0) %}
+          {% set haus = states('sensor.energy_manager_hausverbrauch_jahr_kwh') | float(0) + states('sensor.energy_manager_wp_jahr_kwh') | float(0) %}
           {{ (100 * eigen / haus) | round(1) if haus > 0 else 0 }}
       - name: Energy Manager Eigenverbrauchsquote Monat
         unique_id: energy_manager_eigenverbrauchsquote_monat
@@ -142,4 +142,4 @@ template:
         unit_of_measurement: kWh
         device_class: energy
         state_class: total
-        state: "{{ states('sensor.boiler_energie_jahr_total') | float(0) | round(3) }}"
+        state: "{{ states('input_number.boiler_kapazitaet_total') | float(0) | round(3) }}"
