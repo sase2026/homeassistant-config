@@ -518,14 +518,16 @@ views:
       # ── Grafik Strang-Abgleich: Ø Abweichung jedes Strang-RL vom Mittel aller Stränge (letzte Nacht, eingeschwungen) ──
       # Quelle: SQL-Sensor sensor.fbh_strang_abweichung (packages/wp_nacht_kennzahlen.yaml); gleiche Grösse wie Excel Nacht_13_14 Spalte H
       # orange ≥ +0.4 K = eher viel Durchfluss · blau ≤ −0.4 K = eher wenig · grün = ok
+      # Vergleich (15.11.2026): grauer Balken = Ø 7 Nächte davor, Raute = Vornacht (sensor.fbh_strang_abweichung_7_naechte,
+      # Kriterium VL−RL HK-II > 2.5 K); Balkenwert letzte Nacht aus demselben Sensor (l_*), Fallback fbh_strang_abweichung
       - type: custom:plotly-graph
         hours_to_show: 1
         refresh_interval: 300
         layout:
-          height: 560
+          height: 680
           margin:
             t: 80
-            b: 40
+            b: 70
             l: 115
             r: 20
           paper_bgcolor: "rgba(0,0,0,0)"
@@ -535,7 +537,7 @@ views:
             size: 11
           xaxis:
             type: linear
-            range: [-1.8, 1.8]
+            range: [-2.2, 2.2]
             ticksuffix: " K"
             dtick: 0.4
             showgrid: true
@@ -547,7 +549,17 @@ views:
             type: category
             autorange: reversed
             color: "#cccccc"
-          showlegend: false
+          showlegend: true
+          barmode: group
+          bargap: 0.25
+          bargroupgap: 0.05
+          legend:
+            orientation: h
+            x: 0
+            "y": -0.04
+            yanchor: top
+            font:
+              size: 11
           shapes:
             - type: rect
               xref: x
@@ -572,7 +584,7 @@ views:
                 size: 18
                 color: "#9e9e9e"
             - text: |
-                $fn ({hass}) => { const s = hass.states['sensor.fbh_strang_abweichung']; const a = (s || {}).attributes || {}; return a.fenster ? ('Nacht ' + a.fenster + ' · ' + s.state + ' Werte') : 'keine Daten (FBH-Pumpe lief letzte Nacht nicht eingeschwungen)'; }
+                $fn ({hass}) => { const s = hass.states['sensor.fbh_strang_abweichung']; const a = (s || {}).attributes || {}; const b = (hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}; return a.fenster ? ('Nacht ' + a.fenster + ' · ' + s.state + ' Werte' + (b.zeitraum ? ' · Vergleich Ø ' + b.zeitraum + ' (' + hass.states['sensor.fbh_strang_abweichung_7_naechte'].state + ' Nächte) · Klammer = Δ zum Ø' : '')) : 'keine Daten (FBH-Pumpe lief letzte Nacht nicht eingeschwungen)'; }
               xref: paper
               yref: paper
               x: 0
@@ -585,23 +597,49 @@ views:
                 color: "#22c55e"
         entities:
           - entity: ""
-            name: Abweichung vom Mittel
+            name: Letzte Nacht
             type: bar
             orientation: h
             yaxis: "y"
             "y": ["Küche", "Wohnen 1", "Wohnen 2", "Wohnen 3", "Essen", "Spielen", "Gäste WC", "Entrée", "Galerie", "Eltern", "Dusche", "Hobby (Radiator)", "Yanik", "Bad", "Mael", "RL HK-II gesamt"]
             x: |
-              $ex (['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2']).map(k => { const a = (hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}; return (typeof a[k] === 'number') ? a[k] : null; })
+              $ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : (typeof a[k] === 'number' ? a[k] : null); })
             text: |
-              $ex (['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2']).map(k => { const a = (hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}; return (typeof a[k] === 'number') ? a[k] : null; }).map(v => v === null ? '–' : (v > 0 ? '+' : '') + v.toFixed(2) + ' K')
+              $ex (() => { const l = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : (typeof a[k] === 'number' ? a[k] : null); }), m = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b[k] === 'number' ? b[k] : null); }); return l.map((v, i) => v === null ? '–' : (v > 0 ? '+' : '') + v.toFixed(2) + ' K' + (m[i] === null ? '' : ' (' + (v - m[i] >= 0 ? '+' : '−') + Math.abs(v - m[i]).toFixed(2) + ')')); })()
             customdata: |
-              $ex (['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2']).map(k => { const a = (hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}; return (typeof a['hub_' + k] === 'number') ? a['hub_' + k] : null; })
+              $ex (() => { const m = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b[k] === 'number' ? b[k] : null); }), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map((k, i) => [m[i], typeof a['hub_' + k] === 'number' ? a['hub_' + k] : null]); })()
             textposition: outside
             cliponaxis: false
             marker:
               color: |
-                $ex (['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2']).map(k => { const a = (hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}; return (typeof a[k] === 'number') ? a[k] : null; }).map((v, i) => i === 15 ? '#ffffff' : v === null ? '#555555' : v >= 0.4 ? '#f97316' : v <= -0.4 ? '#3b82f6' : '#22c55e')
-            hovertemplate: "%{y}: %{x:+.2f} K · Hub je Takt %{customdata:.1f} K<extra></extra>"
+                $ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : (typeof a[k] === 'number' ? a[k] : null); }).map((v, i) => i === 15 ? '#ffffff' : v === null ? '#555555' : v >= 0.4 ? '#f97316' : v <= -0.4 ? '#3b82f6' : '#22c55e')
+            hovertemplate: "%{y}: %{x:+.2f} K · Ø 7 Nächte %{customdata[0]:+.2f} K · Hub je Takt %{customdata[1]:.1f} K<extra>Letzte Nacht</extra>"
+          - entity: ""
+            name: Ø 7 Nächte davor
+            type: bar
+            orientation: h
+            yaxis: "y"
+            "y": ["Küche", "Wohnen 1", "Wohnen 2", "Wohnen 3", "Essen", "Spielen", "Gäste WC", "Entrée", "Galerie", "Eltern", "Dusche", "Hobby (Radiator)", "Yanik", "Bad", "Mael", "RL HK-II gesamt"]
+            x: |
+              $ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b[k] === 'number' ? b[k] : null); })
+            marker:
+              color: "rgba(158,158,158,0.45)"
+            hovertemplate: "%{y}: %{x:+.2f} K<extra>Ø 7 Nächte davor</extra>"
+          - entity: ""
+            name: Vornacht
+            type: scatter
+            mode: markers
+            yaxis: "y"
+            "y": ["Küche", "Wohnen 1", "Wohnen 2", "Wohnen 3", "Essen", "Spielen", "Gäste WC", "Entrée", "Galerie", "Eltern", "Dusche", "Hobby (Radiator)", "Yanik", "Bad", "Mael", "RL HK-II gesamt"]
+            x: |
+              $ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b['v_' + k] === 'number' ? b['v_' + k] : null); })
+            marker:
+              symbol: diamond-open
+              size: 9
+              color: "#e5e7eb"
+              line:
+                width: 1.5
+            hovertemplate: "%{y}: %{x:+.2f} K<extra>Vornacht</extra>"
 
   # ═══════════════════════════════════════════════════════════
   # VIEW 2: RAUMTEMPERATUREN VERLAUF

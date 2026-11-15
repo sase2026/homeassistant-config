@@ -363,9 +363,9 @@
       },
       {
        "type": "custom:mushroom-template-card",
-       "primary": "Räume Ø",
-       "secondary": "{% set v = ['sensor.shelly1_8caab56147d3_temperatur', 'sensor.shelly1_8caab56147d3_temperatur_2', 'sensor.shelly1_8caab56147d3_temperatur_3', 'sensor.shelly1_8caab55d7177_temperatur', 'sensor.shelly1_8caab55d7177_temperatur_2', 'sensor.shelly1_8caab55d7177_temperatur_3', 'sensor.shelly1_8caab55d7ecf_temperatur', 'sensor.shelly1_8caab55d7ecf_temperatur_2', 'sensor.shelly1_8caab55d7ecf_temperatur_3', 'sensor.shelly1_8caab561c0b7_temperatur', 'sensor.shelly1_8caab561c0b7_temperatur_2', 'sensor.shelly1_8caab561c0b7_temperatur_3', 'sensor.shelly1_c45bbe570c30_temperatur', 'sensor.shelly1_c45bbe570c30_temperatur_2', 'sensor.shelly1_c45bbe570c30_temperatur_3'] | map('states') | reject('in',['unknown','unavailable']) | map('float') | list %}{{ (v | sum / v | count) | round(1) if v | count else '–' }} °C (15 Räume)",
-       "icon": "mdi:floor-plan",
+       "primary": "Strang FBH-Temp. Durchschnitt",
+       "secondary": "{% set v = ['sensor.shelly1_8caab56147d3_temperatur', 'sensor.shelly1_8caab56147d3_temperatur_2', 'sensor.shelly1_8caab56147d3_temperatur_3', 'sensor.shelly1_8caab55d7177_temperatur', 'sensor.shelly1_8caab55d7177_temperatur_2', 'sensor.shelly1_8caab55d7177_temperatur_3', 'sensor.shelly1_8caab55d7ecf_temperatur', 'sensor.shelly1_8caab55d7ecf_temperatur_2', 'sensor.shelly1_8caab55d7ecf_temperatur_3', 'sensor.shelly1_8caab561c0b7_temperatur', 'sensor.shelly1_8caab561c0b7_temperatur_2', 'sensor.shelly1_8caab561c0b7_temperatur_3', 'sensor.shelly1_c45bbe570c30_temperatur', 'sensor.shelly1_c45bbe570c30_temperatur_2', 'sensor.shelly1_c45bbe570c30_temperatur_3'] | map('states') | reject('in',['unknown','unavailable']) | map('float') | list %}{{ (v | sum / v | count) | round(1) if v | count else '–' }} °C (15 Stränge)",
+       "icon": "mdi:heating-coil",
        "icon_color": "orange",
        "layout": "vertical",
        "fill_container": true,
@@ -589,12 +589,12 @@
       },
       {
        "type": "custom:plotly-graph",
-       "hours_to_show": 48,
+       "hours_to_show": 24,
        "refresh_interval": 300,
        "grid_options": {
         "columns": "full"
        },
-       "title": "Temperaturen 48 h",
+       "title": "Temperaturen 24 h",
        "defaults": {
         "entity": {
          "line": {
@@ -625,8 +625,8 @@
          }
         },
         {
-         "entity": "sensor.shelly1_8caab561c0b7_temperatur_2",
-         "name": "Wohnen 1",
+         "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
+         "name": "VL HK-II",
          "yaxis": "y1",
          "line": {
           "color": "#ef4444",

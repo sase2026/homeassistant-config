@@ -208,6 +208,101 @@ sql:
         ROUND(MAX(mael) - MIN(mael), 1) AS hub_mael,
         ROUND(MAX(rl_hk2) - MIN(rl_hk2), 1) AS hub_rl_hk2
       FROM n
+  # FBH-Strang-Abgleich Vergleich: Ø Abweichung je Strang über die 7 Nächte VOR der letzten Nacht (jede Nacht gleich
+  # gewichtet, FBH aktiv = VL HK-II - RL HK-II > 2.5 K jetzt und vor 60 min, da Pumpen-Leistung erst ab 13.11. Statistik hat) + Attribute v_<strang> = Vornacht. Zustand = Anzahl Nächte.
+  # Benötigt Kurzzeitstatistik ≥ 9 Tage (Recorder purge_keep_days ≥ 10). Erstellt 15.11.2026 (Claude).
+  - name: FBH Strang Abweichung 7 Naechte
+    unique_id: fbh_strang_abweichung_7_naechte
+    icon: mdi:valve
+    column: naechte
+    query: >
+      WITH p AS (
+        SELECT CAST(strftime('%s', CASE WHEN strftime('%H', 'now', 'localtime') >= '08'
+              THEN date('now', 'localtime') ELSE date('now', 'localtime', '-1 day') END || ' 08:00:00', 'utc') AS INTEGER) AS e
+      ), r AS (
+        SELECT s.start_ts AS t,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7ecf_temperatur' THEN s.mean END) AS kueche,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab561c0b7_temperatur_2' THEN s.mean END) AS wohnen1,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7ecf_temperatur_2' THEN s.mean END) AS wohnen2,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7ecf_temperatur_3' THEN s.mean END) AS wohnen3,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab56147d3_temperatur' THEN s.mean END) AS essen,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab56147d3_temperatur_2' THEN s.mean END) AS spielen,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab56147d3_temperatur_3' THEN s.mean END) AS gaestewc,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab561c0b7_temperatur' THEN s.mean END) AS entree,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab561c0b7_temperatur_3' THEN s.mean END) AS galerie,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_c45bbe570c30_temperatur' THEN s.mean END) AS eltern,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_c45bbe570c30_temperatur_2' THEN s.mean END) AS dusche,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_c45bbe570c30_temperatur_3' THEN s.mean END) AS hobby,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7177_temperatur' THEN s.mean END) AS yanik,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7177_temperatur_2' THEN s.mean END) AS bad,
+        MAX(CASE WHEN m.statistic_id='sensor.shelly1_8caab55d7177_temperatur_3' THEN s.mean END) AS mael,
+        MAX(CASE WHEN m.statistic_id='sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2' THEN s.mean END) AS rl_hk2,
+        MAX(CASE WHEN m.statistic_id='sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3' THEN s.mean END) AS pw
+        FROM statistics_short_term s JOIN statistics_meta m ON s.metadata_id = m.id, p
+        WHERE m.statistic_id IN ('sensor.shelly1_8caab55d7ecf_temperatur','sensor.shelly1_8caab561c0b7_temperatur_2','sensor.shelly1_8caab55d7ecf_temperatur_2','sensor.shelly1_8caab55d7ecf_temperatur_3','sensor.shelly1_8caab56147d3_temperatur','sensor.shelly1_8caab56147d3_temperatur_2','sensor.shelly1_8caab56147d3_temperatur_3','sensor.shelly1_8caab561c0b7_temperatur','sensor.shelly1_8caab561c0b7_temperatur_3','sensor.shelly1_c45bbe570c30_temperatur','sensor.shelly1_c45bbe570c30_temperatur_2','sensor.shelly1_c45bbe570c30_temperatur_3','sensor.shelly1_8caab55d7177_temperatur','sensor.shelly1_8caab55d7177_temperatur_2','sensor.shelly1_8caab55d7177_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3') AND s.start_ts BETWEEN p.e - 8 * 86400 - 54000 AND p.e
+        GROUP BY s.start_ts
+      ), z AS (
+        SELECT r.*, (kueche + wohnen1 + wohnen2 + wohnen3 + essen + spielen + gaestewc + entree + galerie + eltern + dusche + hobby + yanik + bad + mael) / 15.0 AS mw, pw - rl_hk2 AS dt, LAG(pw - rl_hk2, 12) OVER (ORDER BY t) AS dt60,
+          CAST((p.e - t) / 86400 AS INTEGER) AS k, (p.e - t) % 86400 AS o FROM r, p
+      ), nn AS (
+        SELECT k, COUNT(*) AS nw, MIN(t) AS t0, AVG(kueche - mw) AS kueche, AVG(wohnen1 - mw) AS wohnen1, AVG(wohnen2 - mw) AS wohnen2, AVG(wohnen3 - mw) AS wohnen3, AVG(essen - mw) AS essen, AVG(spielen - mw) AS spielen, AVG(gaestewc - mw) AS gaestewc, AVG(entree - mw) AS entree, AVG(galerie - mw) AS galerie, AVG(eltern - mw) AS eltern, AVG(dusche - mw) AS dusche, AVG(hobby - mw) AS hobby, AVG(yanik - mw) AS yanik, AVG(bad - mw) AS bad, AVG(mael - mw) AS mael, AVG(rl_hk2 - mw) AS rl_hk2
+        FROM z WHERE k BETWEEN 0 AND 7 AND o <= 50400 AND dt > 2.5 AND dt60 > 2.5 AND mw IS NOT NULL
+        GROUP BY k HAVING COUNT(*) >= 12
+      )
+      SELECT
+        SUM(CASE WHEN k >= 1 THEN 1 ELSE 0 END) AS naechte,
+        strftime('%d.%m.', MAX(CASE WHEN k = 0 THEN t0 END), 'unixepoch', 'localtime') AS letzte_nacht,
+        strftime('%d.%m.', MIN(t0), 'unixepoch', 'localtime') || '–' || strftime('%d.%m.', MAX(CASE WHEN k >= 1 THEN t0 END), 'unixepoch', 'localtime') AS zeitraum,
+        strftime('%d.%m.', MAX(CASE WHEN k = 1 THEN t0 END), 'unixepoch', 'localtime') AS vornacht,
+        ROUND(AVG(CASE WHEN k >= 1 THEN kueche END), 2) AS kueche,
+        ROUND(AVG(CASE WHEN k >= 1 THEN wohnen1 END), 2) AS wohnen1,
+        ROUND(AVG(CASE WHEN k >= 1 THEN wohnen2 END), 2) AS wohnen2,
+        ROUND(AVG(CASE WHEN k >= 1 THEN wohnen3 END), 2) AS wohnen3,
+        ROUND(AVG(CASE WHEN k >= 1 THEN essen END), 2) AS essen,
+        ROUND(AVG(CASE WHEN k >= 1 THEN spielen END), 2) AS spielen,
+        ROUND(AVG(CASE WHEN k >= 1 THEN gaestewc END), 2) AS gaestewc,
+        ROUND(AVG(CASE WHEN k >= 1 THEN entree END), 2) AS entree,
+        ROUND(AVG(CASE WHEN k >= 1 THEN galerie END), 2) AS galerie,
+        ROUND(AVG(CASE WHEN k >= 1 THEN eltern END), 2) AS eltern,
+        ROUND(AVG(CASE WHEN k >= 1 THEN dusche END), 2) AS dusche,
+        ROUND(AVG(CASE WHEN k >= 1 THEN hobby END), 2) AS hobby,
+        ROUND(AVG(CASE WHEN k >= 1 THEN yanik END), 2) AS yanik,
+        ROUND(AVG(CASE WHEN k >= 1 THEN bad END), 2) AS bad,
+        ROUND(AVG(CASE WHEN k >= 1 THEN mael END), 2) AS mael,
+        ROUND(AVG(CASE WHEN k >= 1 THEN rl_hk2 END), 2) AS rl_hk2,
+        ROUND(MAX(CASE WHEN k = 1 THEN kueche END), 2) AS v_kueche,
+        ROUND(MAX(CASE WHEN k = 1 THEN wohnen1 END), 2) AS v_wohnen1,
+        ROUND(MAX(CASE WHEN k = 1 THEN wohnen2 END), 2) AS v_wohnen2,
+        ROUND(MAX(CASE WHEN k = 1 THEN wohnen3 END), 2) AS v_wohnen3,
+        ROUND(MAX(CASE WHEN k = 1 THEN essen END), 2) AS v_essen,
+        ROUND(MAX(CASE WHEN k = 1 THEN spielen END), 2) AS v_spielen,
+        ROUND(MAX(CASE WHEN k = 1 THEN gaestewc END), 2) AS v_gaestewc,
+        ROUND(MAX(CASE WHEN k = 1 THEN entree END), 2) AS v_entree,
+        ROUND(MAX(CASE WHEN k = 1 THEN galerie END), 2) AS v_galerie,
+        ROUND(MAX(CASE WHEN k = 1 THEN eltern END), 2) AS v_eltern,
+        ROUND(MAX(CASE WHEN k = 1 THEN dusche END), 2) AS v_dusche,
+        ROUND(MAX(CASE WHEN k = 1 THEN hobby END), 2) AS v_hobby,
+        ROUND(MAX(CASE WHEN k = 1 THEN yanik END), 2) AS v_yanik,
+        ROUND(MAX(CASE WHEN k = 1 THEN bad END), 2) AS v_bad,
+        ROUND(MAX(CASE WHEN k = 1 THEN mael END), 2) AS v_mael,
+        ROUND(MAX(CASE WHEN k = 1 THEN rl_hk2 END), 2) AS v_rl_hk2,
+        ROUND(MAX(CASE WHEN k = 0 THEN kueche END), 2) AS l_kueche,
+        ROUND(MAX(CASE WHEN k = 0 THEN wohnen1 END), 2) AS l_wohnen1,
+        ROUND(MAX(CASE WHEN k = 0 THEN wohnen2 END), 2) AS l_wohnen2,
+        ROUND(MAX(CASE WHEN k = 0 THEN wohnen3 END), 2) AS l_wohnen3,
+        ROUND(MAX(CASE WHEN k = 0 THEN essen END), 2) AS l_essen,
+        ROUND(MAX(CASE WHEN k = 0 THEN spielen END), 2) AS l_spielen,
+        ROUND(MAX(CASE WHEN k = 0 THEN gaestewc END), 2) AS l_gaestewc,
+        ROUND(MAX(CASE WHEN k = 0 THEN entree END), 2) AS l_entree,
+        ROUND(MAX(CASE WHEN k = 0 THEN galerie END), 2) AS l_galerie,
+        ROUND(MAX(CASE WHEN k = 0 THEN eltern END), 2) AS l_eltern,
+        ROUND(MAX(CASE WHEN k = 0 THEN dusche END), 2) AS l_dusche,
+        ROUND(MAX(CASE WHEN k = 0 THEN hobby END), 2) AS l_hobby,
+        ROUND(MAX(CASE WHEN k = 0 THEN yanik END), 2) AS l_yanik,
+        ROUND(MAX(CASE WHEN k = 0 THEN bad END), 2) AS l_bad,
+        ROUND(MAX(CASE WHEN k = 0 THEN mael END), 2) AS l_mael,
+        ROUND(MAX(CASE WHEN k = 0 THEN rl_hk2 END), 2) AS l_rl_hk2
+      FROM nn
   # Energie-Tageswerte (Ansicht «Tabelle»): aus der Langzeitstatistik (Stundenwerte, dauerhaft gespeichert),
   # daher keine Verluste um 23:59. Zustand = Anzahl Tage; Attribute: tage (letzte 14 Tage, JSON),
   # monate / jahre (Summen je Monat / Jahr), avg7 / avg30 (Summen der letzten 7 / 30 vollen Tage), monat, vormonat, jahr, gesamt.
