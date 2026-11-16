@@ -24,7 +24,7 @@ views:
             card_mod:
               style: "ha-card { border-left: 3px solid #ef4444; }"
           - type: custom:mushroom-template-card
-            primary: WW Mitte
+            primary: Speicher unter VL
             secondary: "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur') | float(0) | round(1) }} °C"
             icon: mdi:thermometer-water
             icon_color: >
@@ -156,7 +156,7 @@ views:
               color: "#ef4444"
               width: 2
           - entity: sensor.ww_mitte_rl_ist_ww_oben_temperatur
-            name: WW mitte
+            name: Speicher unter VL
             yaxis: "y"
             line:
               color: "#f97316"

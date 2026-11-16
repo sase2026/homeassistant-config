@@ -2103,7 +2103,7 @@
       {
        "type": "tile",
        "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
-       "name": "WW Mitte °C",
+       "name": "Speicher unter VL °C",
        "grid_options": {
         "columns": 6
        },
