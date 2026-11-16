@@ -1,7 +1,8 @@
 # ════════════════════════════════════════════════════════════════════════
 # WP – Nacht-Kennzahlen (wie Excel WP_Verbrauchsanalyse_2026, Blatt Nacht_xx, Abschnitt A)
 # Quelle: HA-Kurzzeitstatistik (5-min-Mittel, ca. 10 Tage) aus der Recorder-DB.
-# Nacht = 18:00–08:00 (169 Werte). «Letzte Nacht» = zuletzt um 08:00 abgeschlossene Nacht.
+# Nacht = 18:00–11:00 (205 Werte; seit 16.11.2026, vorher 18–08). «Letzte Nacht» = zuletzt um 11:00 abgeschlossene Nacht.
+# Zusatz: strom_bis08_kwh (Vergleich mit Nächten vor 16.11.), strom_ht_kwh (Mo–Fr 06–21 Uhr), letzter_lauf (Ende letzter WP-Lauf).
 # Zustand je 5 min: Aus < 200 W; WW = WP läuft und RL Ist ≥ 38 °C; sonst Heizen.
 # FBH aktiv = VL HK-II − RL HK-II > 2.5 K. Zustand = strom_kwh, alle weiteren Kennzahlen als Attribute.
 # Erstellt 14.11.2026 (Claude); Test gegen Excel: Nacht 13./14.11. 16.5 kWh / 0 WW / 6 Takte – identisch.
@@ -14,8 +15,8 @@ sql:
     column: strom_kwh
     query: >
       WITH p AS (
-        SELECT CAST(strftime('%s', CASE WHEN strftime('%H', 'now', 'localtime') >= '08'
-              THEN date('now', 'localtime') ELSE date('now', 'localtime', '-1 day') END || ' 08:00:00', 'utc') AS INTEGER)
+        SELECT CAST(strftime('%s', CASE WHEN strftime('%H', 'now', 'localtime') >= '11'
+              THEN date('now', 'localtime') ELSE date('now', 'localtime', '-1 day') END || ' 11:00:00', 'utc') AS INTEGER)
               - 0 AS e
       ), r AS (
         SELECT s.start_ts AS t,
@@ -29,7 +30,7 @@ sql:
           MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur' THEN s.mean END) AS ti,
           MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_fbh_pumpe_hk_ii_leistung' THEN s.mean END) AS pw
         FROM statistics_short_term s JOIN statistics_meta m ON s.metadata_id = m.id, p
-        WHERE m.statistic_id IN ('sensor.energy_manager_wp_aktuell_w','sensor.ww_mitte_rl_ist_ww_oben_temperatur_2','sensor.ww_mitte_rl_ist_ww_oben_temperatur','sensor.ww_mitte_rl_ist_ww_oben_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_fbh_pumpe_hk_ii_leistung') AND s.start_ts BETWEEN p.e - 50700 AND p.e + 300
+        WHERE m.statistic_id IN ('sensor.energy_manager_wp_aktuell_w','sensor.ww_mitte_rl_ist_ww_oben_temperatur_2','sensor.ww_mitte_rl_ist_ww_oben_temperatur','sensor.ww_mitte_rl_ist_ww_oben_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_fbh_pumpe_hk_ii_leistung') AND s.start_ts BETWEEN p.e - 61500 AND p.e + 300
         GROUP BY s.start_ts
       ), z AS (
         SELECT r.*,
@@ -41,9 +42,13 @@ sql:
       ), y AS (
         SELECT z.*, LAG(st) OVER (ORDER BY t) AS pst FROM z
       ), n AS (
-        SELECT y.* FROM y, p WHERE t BETWEEN p.e - 50400 AND p.e
+        SELECT y.* FROM y, p WHERE t BETWEEN p.e - 61200 AND p.e
       )
       SELECT
+        ROUND(COALESCE(SUM(CASE WHEN t < (SELECT e FROM p) - 10800 THEN w END), 0) / 12000.0, 1) AS strom_bis08_kwh,
+        ROUND(COALESCE(SUM(CASE WHEN CAST(strftime('%w', t, 'unixepoch', 'localtime') AS INTEGER) BETWEEN 1 AND 5
+          AND CAST(strftime('%H', t, 'unixepoch', 'localtime') AS INTEGER) BETWEEN 6 AND 20 THEN w END), 0) / 12000.0, 1) AS strom_ht_kwh,
+        strftime('%H:%M', MAX(CASE WHEN w >= 200 THEN t END) + 300, 'unixepoch', 'localtime') AS letzter_lauf,
         ROUND(SUM(w) / 12000.0, 1) AS strom_kwh,
         strftime('%d.%m.', MIN(t) + 0, 'unixepoch', 'localtime') || '/' || strftime('%d.%m.', MAX(t), 'unixepoch', 'localtime') AS nacht,
         ROUND(COALESCE(SUM(CASE WHEN st = 'WW' THEN w END), 0) / 12000.0, 1) AS ww_kwh,
@@ -54,10 +59,10 @@ sql:
         ROUND(SUM(CASE WHEN st = 'Heizen' THEN 1 ELSE 0 END) / 12.0, 1) AS heiz_h,
         ROUND(SUM(fbh) / 12.0, 1) AS fbh_aktiv_h,
         ROUND(MAX(CASE WHEN st <> 'Aus' THEN rl END), 1) AS rl_max_betrieb,
-        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN c END), 1) AS mitte_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 61200 THEN c END), 1) AS mitte_start,
         ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN c END), 1) AS mitte_ende,
         ROUND(MIN(c), 1) AS mitte_min,
-        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN b END), 1) AS oben_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 61200 THEN b END), 1) AS oben_start,
         ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN b END), 1) AS oben_ende,
         ROUND(MIN(b), 1) AS oben_min,
         ROUND(AVG(CASE WHEN st = 'Aus' AND fbh = 1 THEN dc END), 2) AS dmitte_aus_fbh,
@@ -68,7 +73,7 @@ sql:
         strftime('%H:%M', MIN(CASE WHEN pw > 10 THEN t END), 'unixepoch', 'localtime') AS pumpe_ein,
         ROUND(MIN(ta), 1) AS aussen_min,
         ROUND(AVG(ta), 1) AS aussen_mittel,
-        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN ti END), 1) AS innen_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 61200 THEN ti END), 1) AS innen_start,
         ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN ti END), 1) AS innen_ende
       FROM n
   - name: WP Vornacht Kennzahlen
@@ -78,8 +83,8 @@ sql:
     column: strom_kwh
     query: >
       WITH p AS (
-        SELECT CAST(strftime('%s', CASE WHEN strftime('%H', 'now', 'localtime') >= '08'
-              THEN date('now', 'localtime') ELSE date('now', 'localtime', '-1 day') END || ' 08:00:00', 'utc') AS INTEGER)
+        SELECT CAST(strftime('%s', CASE WHEN strftime('%H', 'now', 'localtime') >= '11'
+              THEN date('now', 'localtime') ELSE date('now', 'localtime', '-1 day') END || ' 11:00:00', 'utc') AS INTEGER)
               - 86400 AS e
       ), r AS (
         SELECT s.start_ts AS t,
@@ -93,7 +98,7 @@ sql:
           MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur' THEN s.mean END) AS ti,
           MAX(CASE WHEN m.statistic_id='sensor.homematic_ip_fbh_pumpe_hk_ii_leistung' THEN s.mean END) AS pw
         FROM statistics_short_term s JOIN statistics_meta m ON s.metadata_id = m.id, p
-        WHERE m.statistic_id IN ('sensor.energy_manager_wp_aktuell_w','sensor.ww_mitte_rl_ist_ww_oben_temperatur_2','sensor.ww_mitte_rl_ist_ww_oben_temperatur','sensor.ww_mitte_rl_ist_ww_oben_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_fbh_pumpe_hk_ii_leistung') AND s.start_ts BETWEEN p.e - 50700 AND p.e + 300
+        WHERE m.statistic_id IN ('sensor.energy_manager_wp_aktuell_w','sensor.ww_mitte_rl_ist_ww_oben_temperatur_2','sensor.ww_mitte_rl_ist_ww_oben_temperatur','sensor.ww_mitte_rl_ist_ww_oben_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_fbh_pumpe_hk_ii_leistung') AND s.start_ts BETWEEN p.e - 61500 AND p.e + 300
         GROUP BY s.start_ts
       ), z AS (
         SELECT r.*,
@@ -105,9 +110,13 @@ sql:
       ), y AS (
         SELECT z.*, LAG(st) OVER (ORDER BY t) AS pst FROM z
       ), n AS (
-        SELECT y.* FROM y, p WHERE t BETWEEN p.e - 50400 AND p.e
+        SELECT y.* FROM y, p WHERE t BETWEEN p.e - 61200 AND p.e
       )
       SELECT
+        ROUND(COALESCE(SUM(CASE WHEN t < (SELECT e FROM p) - 10800 THEN w END), 0) / 12000.0, 1) AS strom_bis08_kwh,
+        ROUND(COALESCE(SUM(CASE WHEN CAST(strftime('%w', t, 'unixepoch', 'localtime') AS INTEGER) BETWEEN 1 AND 5
+          AND CAST(strftime('%H', t, 'unixepoch', 'localtime') AS INTEGER) BETWEEN 6 AND 20 THEN w END), 0) / 12000.0, 1) AS strom_ht_kwh,
+        strftime('%H:%M', MAX(CASE WHEN w >= 200 THEN t END) + 300, 'unixepoch', 'localtime') AS letzter_lauf,
         ROUND(SUM(w) / 12000.0, 1) AS strom_kwh,
         strftime('%d.%m.', MIN(t) + 0, 'unixepoch', 'localtime') || '/' || strftime('%d.%m.', MAX(t), 'unixepoch', 'localtime') AS nacht,
         ROUND(COALESCE(SUM(CASE WHEN st = 'WW' THEN w END), 0) / 12000.0, 1) AS ww_kwh,
@@ -118,10 +127,10 @@ sql:
         ROUND(SUM(CASE WHEN st = 'Heizen' THEN 1 ELSE 0 END) / 12.0, 1) AS heiz_h,
         ROUND(SUM(fbh) / 12.0, 1) AS fbh_aktiv_h,
         ROUND(MAX(CASE WHEN st <> 'Aus' THEN rl END), 1) AS rl_max_betrieb,
-        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN c END), 1) AS mitte_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 61200 THEN c END), 1) AS mitte_start,
         ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN c END), 1) AS mitte_ende,
         ROUND(MIN(c), 1) AS mitte_min,
-        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN b END), 1) AS oben_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 61200 THEN b END), 1) AS oben_start,
         ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN b END), 1) AS oben_ende,
         ROUND(MIN(b), 1) AS oben_min,
         ROUND(AVG(CASE WHEN st = 'Aus' AND fbh = 1 THEN dc END), 2) AS dmitte_aus_fbh,
@@ -132,7 +141,7 @@ sql:
         strftime('%H:%M', MIN(CASE WHEN pw > 10 THEN t END), 'unixepoch', 'localtime') AS pumpe_ein,
         ROUND(MIN(ta), 1) AS aussen_min,
         ROUND(AVG(ta), 1) AS aussen_mittel,
-        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 50400 THEN ti END), 1) AS innen_start,
+        ROUND(MAX(CASE WHEN t = (SELECT e FROM p) - 61200 THEN ti END), 1) AS innen_start,
         ROUND(MAX(CASE WHEN t = (SELECT e FROM p) THEN ti END), 1) AS innen_ende
       FROM n
   # FBH-Strang-Abgleich: Ø Abweichung jedes Strang-RL vom Mittel aller 15 Stränge, letzte Nacht, nur wenn
