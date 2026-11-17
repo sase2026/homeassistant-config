@@ -310,3 +310,252 @@
       entity_id: input_number.boiler_ladezeit_monat
     action: input_number.set_value
   mode: single
+- id: '1794905257688'
+  alias: Batterie Simulation 10 kWh
+  description: 'Virtuelle 10-kWh-Batterie (9 kWh nutzbar, 90 % Wirkungsgrad, max.
+    2,5 kW). Rechnet jede Zählerbewegung von Netzbezug und Rückspeisung um: Überschuss
+    lädt die Batterie, Bezug entlädt sie. Ergebnis in input_number.batterie_sim_*.'
+  triggers:
+  - entity_id: sensor.energie_saldierung
+    id: bezug
+    note: Netzbezug, Einheit MWh
+    trigger: state
+  - entity_id: sensor.netz_ruckspeisung_kwh
+    id: einspeisung
+    note: Rückspeisung, Einheit kWh
+    trigger: state
+  conditions:
+  - '{{ 0 < delta | float(0) < 5 }}'
+  actions:
+  - variables:
+      eta: 0.9
+      kap: 9
+      leistung: '{{ states(''sensor.leistung_saldierung'') | float(0) | abs }}'
+      soc: '{{ states(''input_number.batterie_sim_ladestand'') | float(0) }}'
+  - note: Leistungsbegrenzung 2,5 kW
+    variables:
+      menge: '{{ (delta * ([1, 2500 / leistung] | min)) if leistung > 0 else delta
+        }}'
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: bezug
+      sequence:
+      - variables:
+          entladen: '{{ [menge, soc] | min }}'
+      - action: input_number.set_value
+        data:
+          value: '{{ [soc - entladen, 0] | max | round(4) }}'
+        target:
+          entity_id: input_number.batterie_sim_ladestand
+      - action: input_number.set_value
+        data:
+          value: '{{ (states(''input_number.batterie_sim_netzbezug_zaehler'') | float(0)
+            + delta - entladen) | round(4) }}'
+        target:
+          entity_id: input_number.batterie_sim_netzbezug_zaehler
+    - conditions:
+      - condition: trigger
+        id: einspeisung
+      sequence:
+      - variables:
+          laden: '{{ [menge, (kap - soc) / eta] | min }}'
+      - action: input_number.set_value
+        data:
+          value: '{{ [soc + laden * eta, kap] | min | round(4) }}'
+        target:
+          entity_id: input_number.batterie_sim_ladestand
+      - action: input_number.set_value
+        data:
+          value: '{{ (states(''input_number.batterie_sim_einspeisung_zaehler'') |
+            float(0) + delta - laden) | round(4) }}'
+        target:
+          entity_id: input_number.batterie_sim_einspeisung_zaehler
+  max: 50
+  max_exceeded: silent
+  mode: queued
+  variables:
+    delta: '{% set a = trigger.from_state.state | float(none) %}{% set b = trigger.to_state.state
+      | float(none) %}{% if a is none or b is none %}0{% else %}{{ ((b - a) * (1000
+      if trigger.id == ''bezug'' else 1)) | round(5) }}{% endif %}'
+- id: '1794906157684'
+  alias: 'Batterie Simulation: autarken Tag zählen'
+  description: Zählt kurz vor Mitternacht einen autarken Tag, wenn der simulierte
+    Netzbezug des Tages unter 0,5 kWh liegt.
+  triggers:
+  - at: '23:59:30'
+    trigger: time
+  conditions:
+  - below: 0.5
+    condition: numeric_state
+    entity_id: sensor.batterie_sim_netzbezug_heute
+  actions:
+  - action: counter.increment
+    target:
+      entity_id: counter.batterie_sim_autarke_tage
+  mode: single
+- id: '1794924627199'
+  alias: FBH Smart – Wetterprognose aktualisieren
+  description: Holt alle 30 min die met.no-Stundenprognose und schreibt Aussen-Mittel
+    6 h, Min 12 h und Max morgen in Helfer (für FBH Smart-Steuerung).
+  triggers:
+  - minutes: /30
+    trigger: time_pattern
+  - event: start
+    trigger: homeassistant
+  conditions: []
+  actions:
+  - action: weather.get_forecasts
+    data:
+      type: hourly
+    response_variable: fc
+    target:
+      entity_id: weather.zuhause
+  - variables:
+      fl: '{{ fc[''weather.zuhause''].forecast }}'
+      morgen: '{{ (now() + timedelta(days=1)).date() | string }}'
+      tmax_morgen: '{% set ns = namespace(v=[]) %}{% for f in fl %}{% if (as_local(as_datetime(f.datetime)).date()
+        | string) == morgen %}{% set ns.v = ns.v + [f.temperature] %}{% endif %}{%
+        endfor %}{{ (ns.v | max) if ns.v | count > 0 else none }}'
+  - action: input_number.set_value
+    data:
+      value: '{{ (fl[:6] | map(attribute=''temperature'') | list | average) | round(1)
+        }}'
+    target:
+      entity_id: input_number.aussen_prognose_mittel_6h
+  - action: input_number.set_value
+    data:
+      value: '{{ fl[:12] | map(attribute=''temperature'') | min }}'
+    target:
+      entity_id: input_number.aussen_prognose_min_12h
+  - if:
+    - condition: template
+      value_template: '{{ tmax_morgen is number }}'
+    then:
+    - action: input_number.set_value
+      data:
+        value: '{{ tmax_morgen }}'
+      target:
+        entity_id: input_number.aussen_prognose_max_morgen
+  mode: single
+- id: '1794924729759'
+  alias: FBH Smart – Steuerung
+  description: Schaltet die FBH-Pumpe nach sensor.fbh_smart_entscheid. Nur aktiv,
+    wenn input_boolean.fbh_smart_aktiv EIN ist und keine Hand-Pause läuft (Beobachtungsmodus
+    = Schalter AUS).
+  triggers:
+  - entity_id: sensor.fbh_smart_entscheid
+    trigger: state
+  - minutes: /5
+    trigger: time_pattern
+  - entity_id: input_boolean.fbh_smart_aktiv
+    to: 'on'
+    trigger: state
+  - entity_id: timer.fbh_hand_pause
+    to: idle
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.fbh_smart_aktiv
+    state: 'on'
+  - condition: state
+    entity_id: timer.fbh_hand_pause
+    state: idle
+  - condition: state
+    entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+    state:
+    - 'on'
+    - 'off'
+  actions:
+  - variables:
+      ist_ein: '{{ is_state(''switch.homematic_ip_fbh_pumpe_hk_ii'', ''on'') }}'
+      soll_ein: '{{ states(''sensor.fbh_smart_entscheid'').startswith(''EIN'') }}'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ soll_ein and not ist_ein }}'
+      sequence:
+      - action: switch.turn_on
+        target:
+          entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+      - action: logbook.log
+        data:
+          entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+          message: 'EIN: {{ states(''sensor.fbh_smart_entscheid'') }}'
+          name: FBH Smart
+    - conditions:
+      - condition: template
+        value_template: '{{ not soll_ein and ist_ein }}'
+      sequence:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+      - action: logbook.log
+        data:
+          entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+          message: 'AUS: {{ states(''sensor.fbh_smart_entscheid'') }}'
+          name: FBH Smart
+  mode: single
+- id: '1794924734262'
+  alias: FBH Smart – Hand erkannt
+  description: Wird die FBH-Pumpe ausserhalb von HA (HmIP-App, Taster, HmIP-Notregel)
+    entgegen dem Smart-Entscheid geschaltet, pausiert die Smart-Steuerung 3 h.
+  triggers:
+  - entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+    from:
+    - 'on'
+    - 'off'
+    to:
+    - 'on'
+    - 'off'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.fbh_smart_aktiv
+    state: 'on'
+  - condition: template
+    value_template: '{{ trigger.to_state.context.parent_id is none and trigger.to_state.context.user_id
+      is none and (trigger.to_state.state == ''on'') != states(''sensor.fbh_smart_entscheid'').startswith(''EIN'')
+      }}'
+  actions:
+  - action: timer.start
+    target:
+      entity_id: timer.fbh_hand_pause
+  - action: logbook.log
+    data:
+      entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+      message: Hand-Eingriff erkannt ({{ trigger.to_state.state }}), Automatik pausiert
+        3 h
+      name: FBH Smart
+  mode: single
+- id: '1794924738474'
+  alias: FBH Smart – Watchdog
+  description: 'Innenfühler oder Prognose länger als 30 min nicht verfügbar: Meldung;
+    bei aktiver Smart-Steuerung FBH sicherheitshalber EIN.'
+  triggers:
+  - entity_id:
+    - sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur
+    - sensor.wohnraum_prognose
+    for:
+      minutes: 30
+    to:
+    - unavailable
+    - unknown
+    trigger: state
+  conditions: []
+  actions:
+  - action: persistent_notification.create
+    data:
+      message: '{{ trigger.to_state.name }} seit 30 min nicht verfügbar. Smart-Steuerung
+        kann nicht sicher entscheiden.'
+      notification_id: fbh_smart_watchdog
+      title: FBH Smart – Watchdog
+  - if:
+    - condition: state
+      entity_id: input_boolean.fbh_smart_aktiv
+      state: 'on'
+    then:
+    - action: switch.turn_on
+      target:
+        entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+  mode: single

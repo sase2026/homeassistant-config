@@ -1,17 +1,107 @@
 {
-  "sensor.shelly1_8caab55d7ecf_temperatur": "FBH Küche",
-  "sensor.shelly1_8caab55d7ecf_temperatur_2": "FBH Wohnen 2",
-  "sensor.shelly1_8caab55d7ecf_temperatur_3": "FBH Wohnen 3",
-  "sensor.shelly1_8caab56147d3_temperatur": "FBH Essen",
-  "sensor.shelly1_8caab56147d3_temperatur_2": "FBH Spielen",
-  "sensor.shelly1_8caab56147d3_temperatur_3": "FBH Gäste WC",
-  "sensor.shelly1_8caab55d7177_temperatur": "FBH Yanik",
-  "sensor.shelly1_8caab55d7177_temperatur_2": "FBH Bad",
-  "sensor.shelly1_8caab55d7177_temperatur_3": "FBH Mael",
-  "sensor.shelly1_c45bbe570c30_temperatur": "FBH Eltern",
-  "sensor.shelly1_c45bbe570c30_temperatur_2": "FBH Dusche",
-  "sensor.shelly1_c45bbe570c30_temperatur_3": "FBH Hobby",
-  "sensor.shelly1_8caab561c0b7_temperatur": "FBH Entrée",
-  "sensor.shelly1_8caab561c0b7_temperatur_2": "FBH Wohnen 1",
-  "sensor.shelly1_8caab561c0b7_temperatur_3": "FBH Galerie"
+  "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur": {
+    "geraet": "FBH 16 WaKü / HK-II RL/VL",
+    "name": "WaKü °C",
+    "anzeige": "FBH 16 WaKü / HK-II RL/VL WaKü °C"
+  },
+  "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2": {
+    "geraet": "FBH 16 WaKü / HK-II RL/VL",
+    "name": "RL °C",
+    "anzeige": "FBH 16 WaKü / HK-II RL/VL RL °C"
+  },
+  "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3": {
+    "geraet": "FBH 16 WaKü / HK-II RL/VL",
+    "name": "VL °C",
+    "anzeige": "FBH 16 WaKü / HK-II RL/VL VL °C"
+  },
+  "sensor.shelly1_8caab55d7177_temperatur": {
+    "geraet": "FBH 10-12 (Yanik, Bad, Mael)",
+    "name": "Yanik",
+    "anzeige": "FBH 10-12 (Yanik, Bad, Mael) Yanik"
+  },
+  "sensor.shelly1_8caab55d7177_temperatur_2": {
+    "geraet": "FBH 10-12 (Yanik, Bad, Mael)",
+    "name": "Bad",
+    "anzeige": "FBH 10-12 (Yanik, Bad, Mael) Bad"
+  },
+  "sensor.shelly1_8caab55d7177_temperatur_3": {
+    "geraet": "FBH 10-12 (Yanik, Bad, Mael)",
+    "name": "Mael",
+    "anzeige": "FBH 10-12 (Yanik, Bad, Mael) Mael"
+  },
+  "sensor.shelly1_8caab55d7ecf_temperatur": {
+    "geraet": "FBH 1-3 (Küche, Wo2, Wo3)",
+    "name": "Küche",
+    "anzeige": "FBH 1-3 (Küche, Wo2, Wo3) Küche"
+  },
+  "sensor.shelly1_8caab55d7ecf_temperatur_2": {
+    "geraet": "FBH 1-3 (Küche, Wo2, Wo3)",
+    "name": "Wohnen 2",
+    "anzeige": "FBH 1-3 (Küche, Wo2, Wo3) Wohnen 2"
+  },
+  "sensor.shelly1_8caab55d7ecf_temperatur_3": {
+    "geraet": "FBH 1-3 (Küche, Wo2, Wo3)",
+    "name": "Wohnen 3",
+    "anzeige": "FBH 1-3 (Küche, Wo2, Wo3) Wohnen 3"
+  },
+  "sensor.shelly1_8caab56147d3_temperatur": {
+    "geraet": "FBH 4-6 (Essen, Spielen, WC)",
+    "name": "Essen",
+    "anzeige": "FBH 4-6 (Essen, Spielen, WC) Essen"
+  },
+  "sensor.shelly1_8caab56147d3_temperatur_2": {
+    "geraet": "FBH 4-6 (Essen, Spielen, WC)",
+    "name": "Spielen",
+    "anzeige": "FBH 4-6 (Essen, Spielen, WC) Spielen"
+  },
+  "sensor.shelly1_8caab56147d3_temperatur_3": {
+    "geraet": "FBH 4-6 (Essen, Spielen, WC)",
+    "name": "Gäste WC",
+    "anzeige": "FBH 4-6 (Essen, Spielen, WC) Gäste WC"
+  },
+  "sensor.shelly1_8caab561c0b7_temperatur": {
+    "geraet": "FBH 7-9 (Entrée,Wo1,Galerie)",
+    "name": "Entrée",
+    "anzeige": "FBH 7-9 (Entrée,Wo1,Galerie) Entrée"
+  },
+  "sensor.shelly1_8caab561c0b7_temperatur_2": {
+    "geraet": "FBH 7-9 (Entrée,Wo1,Galerie)",
+    "name": "Wohnen 1",
+    "anzeige": "FBH 7-9 (Entrée,Wo1,Galerie) Wohnen 1"
+  },
+  "sensor.shelly1_8caab561c0b7_temperatur_3": {
+    "geraet": "FBH 7-9 (Entrée,Wo1,Galerie)",
+    "name": "Galerie",
+    "anzeige": "FBH 7-9 (Entrée,Wo1,Galerie) Galerie"
+  },
+  "sensor.shelly1_c45bbe570c30_temperatur": {
+    "geraet": "FBH 13-15 (Eltern,Du.,Hobby)",
+    "name": "Eltern",
+    "anzeige": "FBH 13-15 (Eltern,Du.,Hobby) Eltern"
+  },
+  "sensor.shelly1_c45bbe570c30_temperatur_2": {
+    "geraet": "FBH 13-15 (Eltern,Du.,Hobby)",
+    "name": "Dusche",
+    "anzeige": "FBH 13-15 (Eltern,Du.,Hobby) Dusche"
+  },
+  "sensor.shelly1_c45bbe570c30_temperatur_3": {
+    "geraet": "FBH 13-15 (Eltern,Du.,Hobby)",
+    "name": "Hobby",
+    "anzeige": "FBH 13-15 (Eltern,Du.,Hobby) Hobby"
+  },
+  "sensor.ww_mitte_rl_ist_ww_oben_temperatur": {
+    "geraet": "WW-Speicher",
+    "name": "unter VL °C",
+    "anzeige": "WW-Speicher unter VL °C"
+  },
+  "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2": {
+    "geraet": "WW-Speicher",
+    "name": "RL Ist °C",
+    "anzeige": "WW-Speicher RL Ist °C"
+  },
+  "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3": {
+    "geraet": "WW-Speicher",
+    "name": "oben °C",
+    "anzeige": "WW-Speicher oben °C"
+  }
 }
