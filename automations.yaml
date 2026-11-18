@@ -268,7 +268,32 @@
         | float(0) | round(1) }} C
 
         Solcast morgen:  {{ states(''sensor.solcast_pv_forecast_prognose_morgen'')
-        | float(0) | round(1) }} kWh'
+        | float(0) | round(1) }} kWh
+
+
+        Waermepumpe heute:
+
+        WP-Strom:        {{ states(''sensor.energy_manager_wp_heute_kwh'') | float(0)
+        | round(1) }} kWh
+
+        Takte (Starts):  {{ states(''sensor.wp_starts_heute'') | int(0) }}{% set st
+        = states(''sensor.wp_starts_heute'') | float(0) %}{% if st > 0 %} | Oe {{
+        (states(''sensor.wp_laufzeit_heute'') | float(0) * 60 / st) | round(0) | int
+        }} min/Lauf{% endif %}
+
+        Laufzeit:        {{ states(''sensor.wp_laufzeit_heute'') | float(0) | round(1)
+        }} h
+
+        Kurztakte:       {{ states(''sensor.wp_kurztakte_heute'') | int(0) }}{% set
+        w = [''binary_sensor.warnung_hmip_batterie_schwach'', ''binary_sensor.warnung_sd_karte_voll'',
+        ''binary_sensor.warnung_wp_taktet'', ''binary_sensor.alarm_wp_heizt_nicht'',
+        ''binary_sensor.alarm_wohnraum_zu_kalt'', ''binary_sensor.alarm_warmwasser_zu_kalt'',
+        ''binary_sensor.alarm_fuhler_ausgefallen'', ''binary_sensor.alarm_heizstab_ohne_pv'']
+        | select(''is_state'', ''on'') | list %}{% if w | count > 0 %}
+
+
+        Aktiv: {% for x in w %}{{ state_attr(x, ''friendly_name'') }}{{ '', '' if
+        not loop.last }}{% endfor %}{% endif %}'
       title: Tagesabschluss Energie
     action: notify.mobile_app_iphone_12_sse
   mode: single
@@ -579,4 +604,242 @@
       datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
     target:
       entity_id: input_datetime.fbh_lueften_zuletzt_geschlossen
+  mode: queued
+- id: '1795023607622'
+  alias: WP Kennzahlen – Takte zählen
+  description: Zählt jeden Verdichterstart (binary_sensor.wp_verdichter_lauft aus
+    → ein) und jeden Kurztakt (Laufzeit kürzer als input_number.wp_kurztakt_grenze).
+    Quelle für die Kennzahlen im Solar Manager, Register WP.
+  triggers:
+  - entity_id: binary_sensor.wp_verdichter_lauft
+    from: 'off'
+    id: start
+    to: 'on'
+    trigger: state
+  - entity_id: binary_sensor.wp_verdichter_lauft
+    from: 'on'
+    id: stopp
+    to: 'off'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: start
+      sequence:
+      - action: counter.increment
+        target:
+          entity_id: counter.wp_verdichter_starts
+    - conditions:
+      - condition: trigger
+        id: stopp
+      - condition: template
+        value_template: '{{ (now() - trigger.from_state.last_changed).total_seconds()
+          < states(''input_number.wp_kurztakt_grenze'') | float(20) * 60 }}'
+      sequence:
+      - action: counter.increment
+        target:
+          entity_id: counter.wp_kurztakte
+      - action: logbook.log
+        data:
+          entity_id: binary_sensor.wp_verdichter_lauft
+          message: 'Kurztakt: {{ ((now() - trigger.from_state.last_changed).total_seconds()
+            / 60) | round(1) }} min'
+          name: WP Kennzahlen
+  mode: queued
+- id: '1795023621272'
+  alias: Gebäude – Auskühlrate messen
+  description: 'Misst, wie schnell der Wohnraum auskühlt, solange die FBH-Pumpe steht
+    (inkl. Nachwärme des Estrichs). Pumpe AUS: Startwerte merken. Pumpe EIN: Auskühlrate
+    K/h und Zeitkonstante τ = (Ti−Ta)/Rate berechnen. Gewertet nur bei Pause 2–24
+    h und PV-Ertrag < 0.3 kWh (keine Sonnengewinne).'
+  triggers:
+  - entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+    from: 'on'
+    id: aus
+    to: 'off'
+    trigger: state
+  - entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+    from: 'off'
+    id: ein
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: template
+    value_template: '{{ has_value(''sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur'')
+      and has_value(''sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur'')
+      }}'
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: aus
+      sequence:
+      - action: input_datetime.set_datetime
+        data:
+          timestamp: '{{ now().timestamp() }}'
+        target:
+          entity_id: input_datetime.auskuhlung_start
+      - action: input_number.set_value
+        data:
+          value: '{{ states(''sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur'')
+            | float }}'
+        target:
+          entity_id: input_number.auskuhlung_start_innen
+      - action: input_number.set_value
+        data:
+          value: '{{ states(''sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur'')
+            | float }}'
+        target:
+          entity_id: input_number.auskuhlung_start_aussen
+      - action: input_number.set_value
+        data:
+          value: '{{ states(''sensor.energy_manager_pv_produktion_monat_kwh'') | float(0)
+            }}'
+        target:
+          entity_id: input_number.auskuhlung_start_pv
+    - conditions:
+      - condition: trigger
+        id: ein
+      sequence:
+      - variables:
+          t0: '{{ state_attr(''input_datetime.auskuhlung_start'', ''timestamp'') |
+            float(0) }}'
+          ti0: '{{ states(''input_number.auskuhlung_start_innen'') | float(0) }}'
+          ti1: '{{ states(''sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur'')
+            | float(0) }}'
+          ta_m: '{{ ((states(''input_number.auskuhlung_start_aussen'') | float(0)
+            + states(''sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur'')
+            | float(0)) / 2) | round(2) }}'
+          pv: '{{ (states(''sensor.energy_manager_pv_produktion_monat_kwh'') | float(0)
+            - states(''input_number.auskuhlung_start_pv'') | float(0)) | round(2)
+            }}'
+      - variables:
+          h: '{{ ((now().timestamp() - t0) / 3600) | round(3) }}'
+      - variables:
+          rate: '{{ ((ti0 - ti1) / h) | round(3) if h > 0 else 0 }}'
+      - variables:
+          tau: '{{ (((ti0 + ti1) / 2 - ta_m) / rate) | round(1) if rate > 0.005 else
+            0 }}'
+      - else:
+        - action: logbook.log
+          data:
+            entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
+            message: 'nicht gewertet: Pause {{ h | round(1) }} h, PV {{ pv }} kWh,
+              Rate {{ rate }} K/h'
+            name: Gebäude Auskühlung
+        if:
+        - condition: template
+          value_template: '{{ t0 > 0 and 2 <= h <= 24 and 0 <= pv < 0.3 and rate >
+            0.005 }}'
+        then:
+        - action: input_number.set_value
+          data:
+            value: '{{ rate }}'
+          target:
+            entity_id: input_number.gebaude_auskuhlrate_letzte
+        - action: input_number.set_value
+          data:
+            value: '{{ [tau, 5000] | min }}'
+          target:
+            entity_id: input_number.gebaude_zeitkonstante_letzte
+        - action: input_text.set_value
+          data:
+            value: '{{ as_timestamp(t0 | int) | timestamp_custom(''%d.%m. %H:%M'')
+              }}–{{ now().strftime(''%H:%M'') }} · {{ h | round(1) }} h · {{ ti0 }}→{{
+              ti1 }} °C · aussen Ø {{ ta_m }} °C · {{ rate }} K/h · τ {{ tau }} h'
+          target:
+            entity_id: input_text.auskuhlung_letzte_messung
+  mode: queued
+- id: '1795023623829'
+  alias: Gebäude Tageswerte aktualisieren
+  description: 'Aktualisiert den SQL-Sensor sensor.gebaude_tageswerte (Polling ist
+    abgeschaltet, um den Raspberry zu schonen): nach Mitternacht, stündlich und beim
+    Start.'
+  triggers:
+  - event: start
+    trigger: homeassistant
+  - minutes: 7
+    trigger: time_pattern
+  conditions: []
+  actions:
+  - delay:
+      seconds: 30
+  - action: homeassistant.update_entity
+    target:
+      entity_id: sensor.gebaude_tageswerte
+  mode: single
+- id: '1795028456596'
+  alias: Alarm – kritisch aufs Handy
+  description: 'Sendet eine Push-Meldung (zeitkritisch), sobald ein kritischer Alarm
+    aktiv wird, und eine Entwarnung, wenn er wieder weg ist. Alarme: binary_sensor.alarm_*
+    (Dashboard «Alarme & Warnungen»).'
+  triggers:
+  - entity_id:
+    - binary_sensor.alarm_wp_heizt_nicht
+    - binary_sensor.alarm_wohnraum_zu_kalt
+    - binary_sensor.alarm_warmwasser_zu_kalt
+    - binary_sensor.alarm_fuhler_ausgefallen
+    - binary_sensor.alarm_heizstab_ohne_pv
+    from: 'off'
+    id: ein
+    to: 'on'
+    trigger: state
+  - entity_id:
+    - binary_sensor.alarm_wp_heizt_nicht
+    - binary_sensor.alarm_wohnraum_zu_kalt
+    - binary_sensor.alarm_warmwasser_zu_kalt
+    - binary_sensor.alarm_fuhler_ausgefallen
+    - binary_sensor.alarm_heizstab_ohne_pv
+    from: 'on'
+    id: aus
+    to: 'off'
+    trigger: state
+  conditions: []
+  actions:
+  - variables:
+      details: '{% set e = trigger.entity_id %}{% if e == ''binary_sensor.alarm_wp_heizt_nicht''
+        %}FBH-Pumpe läuft seit ≥ 90 min, Verdichter steht, Speicher unter VL {{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur'')
+        }} °C. WP-Display auf Störung prüfen.{% elif e == ''binary_sensor.alarm_wohnraum_zu_kalt''
+        %}Wohnraum {{ states(''sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur'')
+        }} °C (< 21.8 °C seit 15 min). FBH-Pumpe: {{ states(''switch.homematic_ip_fbh_pumpe_hk_ii'')
+        }}.{% elif e == ''binary_sensor.alarm_warmwasser_zu_kalt'' %}Speicher oben
+        {{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'') }} °C (< 40 °C
+        seit 30 min).{% elif e == ''binary_sensor.alarm_fuhler_ausgefallen'' %}{%
+        set f = [''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'', ''sensor.ww_mitte_rl_ist_ww_oben_temperatur'',
+        ''sensor.ww_mitte_rl_ist_ww_oben_temperatur_2'', ''sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3'',
+        ''sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2'', ''sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur'',
+        ''sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur'',
+        ''sensor.heizung_verbrauch_w''] %}Betroffen: {% for x in f if states[x] is
+        none or not has_value(x) or (now() - states[x].last_reported).total_seconds()
+        > 1800 %}{{ state_attr(x, ''friendly_name'') or x }}{{ '', '' if not loop.last
+        }}{% endfor %}. FBH-Smart-Steuerung prüfen.{% elif e == ''binary_sensor.alarm_heizstab_ohne_pv''
+        %}Heizstab EIN bei {{ states(''sensor.energy_manager_netz_aktuell_w'') | int(0)
+        }} W Netzbezug seit 10 min.{% else %}{{ e }}{% endif %}'
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: ein
+      sequence:
+      - action: notify.mobile_app_iphone_12_sse
+        data:
+          data:
+            push:
+              interruption-level: time-sensitive
+            tag: '{{ trigger.entity_id }}'
+            url: /alarme-a/alarme
+          message: '{{ details }}'
+          title: "\U0001F6A8 {{ trigger.to_state.name }}"
+    - conditions:
+      - condition: trigger
+        id: aus
+      sequence:
+      - action: notify.mobile_app_iphone_12_sse
+        data:
+          data:
+            tag: '{{ trigger.entity_id }}'
+          message: Alarm seit {{ ((now() - trigger.from_state.last_changed).total_seconds()
+            / 60) | round(0) | int }} min aktiv, jetzt wieder normal.
+          title: '✅ Entwarnung: {{ trigger.to_state.name }}'
   mode: queued

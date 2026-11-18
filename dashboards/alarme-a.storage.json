@@ -1,0 +1,331 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.alarme_a",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "badges": [
+            {
+              "entity": "binary_sensor.alarme_kritisch",
+              "name": "Kritisch",
+              "show_name": true,
+              "type": "entity"
+            },
+            {
+              "entity": "binary_sensor.warnungen",
+              "name": "Warnungen",
+              "show_name": true,
+              "type": "entity"
+            }
+          ],
+          "max_columns": 3,
+          "path": "alarme",
+          "sections": [
+            {
+              "cards": [
+                {
+                  "badges": [
+                    {
+                      "entity": "binary_sensor.alarme_kritisch",
+                      "type": "entity"
+                    }
+                  ],
+                  "heading": "Kritisch – Push aufs Handy",
+                  "icon": "mdi:alarm-light-outline",
+                  "type": "heading"
+                },
+                {
+                  "entity": "binary_sensor.alarm_wp_heizt_nicht",
+                  "grid_options": {
+                    "columns": 12
+                  },
+                  "name": "WP heizt nicht",
+                  "type": "tile"
+                },
+                {
+                  "entity": "binary_sensor.alarm_wohnraum_zu_kalt",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Wohnraum < 21.8 °C",
+                  "type": "tile"
+                },
+                {
+                  "entity": "binary_sensor.alarm_warmwasser_zu_kalt",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Warmwasser < 40 °C",
+                  "type": "tile"
+                },
+                {
+                  "entity": "binary_sensor.alarm_fuhler_ausgefallen",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Fühler ausgefallen",
+                  "type": "tile"
+                },
+                {
+                  "entity": "binary_sensor.alarm_heizstab_ohne_pv",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Heizstab ohne PV",
+                  "type": "tile"
+                },
+                {
+                  "content": "<sub>**WP heizt nicht:** FBH-Pumpe EIN, Verdichter AUS und Speicher unter VL < 28 °C, 90 min lang · **Wohnraum:** Innenfühler < 21.8 °C, 15 min (vor der HmIP-Notregel) · **Warmwasser:** Speicher oben < 40 °C, 30 min · **Fühler:** einer der 8 Regelfühler (Speicher oben/unter VL/RL, VL/RL HK-II, HmIP innen/aussen, WP-Leistung) seit 30 min ohne Meldung oder nicht erreichbar · **Heizstab:** EIN bei > 500 W Netzbezug, 10 min. Bei Auftreten und bei Entwarnung kommt je eine Push-Meldung.</sub>",
+                  "type": "markdown"
+                }
+              ],
+              "type": "grid"
+            },
+            {
+              "cards": [
+                {
+                  "badges": [
+                    {
+                      "entity": "binary_sensor.warnungen",
+                      "type": "entity"
+                    }
+                  ],
+                  "heading": "Warnungen – nur hier",
+                  "icon": "mdi:alert-outline",
+                  "type": "heading"
+                },
+                {
+                  "entity": "binary_sensor.warnung_wp_taktet",
+                  "grid_options": {
+                    "columns": 12
+                  },
+                  "name": "WP taktet",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.wp_kurztakte_heute",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "name": "Kurztakte heute",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.wp_starts_heute",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "name": "Starts heute",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.wp_starts_letzte_stunde",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "name": "Starts 1 h",
+                  "type": "tile"
+                },
+                {
+                  "entity": "binary_sensor.warnung_hmip_batterie_schwach",
+                  "grid_options": {
+                    "columns": 12
+                  },
+                  "name": "HmIP-Batterie schwach",
+                  "type": "tile"
+                },
+                {
+                  "entity": "binary_sensor.warnung_sd_karte_voll",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "SD-Karte > 80 %",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.sd_karte_belegt",
+                  "features": [
+                    {
+                      "max": 100,
+                      "min": 0,
+                      "type": "bar-gauge"
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "SD belegt",
+                  "type": "tile"
+                },
+                {
+                  "content": "<sub>**Takten:** ≥ 3 Kurztakte (< {{ states('input_number.wp_kurztakt_grenze') | int(20) }} min) heute, mehr als 3 Starts in der letzten Stunde oder ab 4 Starts Ø Laufzeit < 20 min · **HmIP-Batterie:** einer der 15 Homematic-Sensoren meldet «Batterie schwach» (Antippen zeigt welcher) · **SD-Karte:** {{ states('sensor.home_assistant_host_disk_used') }} von {{ states('sensor.home_assistant_host_disk_total') }} GB belegt.</sub>",
+                  "type": "markdown"
+                }
+              ],
+              "type": "grid"
+            },
+            {
+              "cards": [
+                {
+                  "heading": "Messwerte zur Kontrolle",
+                  "icon": "mdi:gauge",
+                  "type": "heading"
+                },
+                {
+                  "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Wohnraum",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Aussen",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Speicher oben (WW)",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Speicher unter VL",
+                  "type": "tile"
+                },
+                {
+                  "entity": "binary_sensor.wp_verdichter_lauft",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Verdichter",
+                  "type": "tile"
+                },
+                {
+                  "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "FBH-Pumpe",
+                  "tap_action": {
+                    "action": "more-info"
+                  },
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.heizung_verbrauch_w",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "WP-Leistung",
+                  "type": "tile"
+                },
+                {
+                  "entity": "switch.haus_verbauch",
+                  "grid_options": {
+                    "columns": 6
+                  },
+                  "name": "Heizstab",
+                  "tap_action": {
+                    "action": "more-info"
+                  },
+                  "type": "tile"
+                }
+              ],
+              "type": "grid"
+            },
+            {
+              "cards": [
+                {
+                  "heading": "Verlauf Alarme & Warnungen (7 Tage)",
+                  "icon": "mdi:history",
+                  "type": "heading"
+                },
+                {
+                  "grid_options": {
+                    "columns": "full",
+                    "rows": 6
+                  },
+                  "hours_to_show": 168,
+                  "target": {
+                    "entity_id": [
+                      "binary_sensor.alarm_wp_heizt_nicht",
+                      "binary_sensor.alarm_wohnraum_zu_kalt",
+                      "binary_sensor.alarm_warmwasser_zu_kalt",
+                      "binary_sensor.alarm_fuhler_ausgefallen",
+                      "binary_sensor.alarm_heizstab_ohne_pv",
+                      "binary_sensor.warnung_wp_taktet",
+                      "binary_sensor.warnung_hmip_batterie_schwach",
+                      "binary_sensor.warnung_sd_karte_voll"
+                    ]
+                  },
+                  "type": "logbook"
+                }
+              ],
+              "column_span": 2,
+              "type": "grid"
+            },
+            {
+              "cards": [
+                {
+                  "heading": "Push-Meldungen",
+                  "icon": "mdi:cellphone-message",
+                  "type": "heading"
+                },
+                {
+                  "entity": "automation.alarm_kritisch_aufs_handy",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": 12
+                  },
+                  "name": "Kritische Alarme aufs Handy",
+                  "type": "tile"
+                },
+                {
+                  "entity": "automation.boiler_tagesbericht",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": 12
+                  },
+                  "name": "Tagesabschluss inkl. WP-Takte & kWh",
+                  "type": "tile"
+                },
+                {
+                  "entity": "input_datetime.tagesabschluss_push_zeit",
+                  "grid_options": {
+                    "columns": 12
+                  },
+                  "name": "Push-Zeit Tagesabschluss",
+                  "type": "tile"
+                }
+              ],
+              "type": "grid"
+            }
+          ],
+          "title": "Alarme",
+          "type": "sections"
+        }
+      ]
+    }
+  }
+}
