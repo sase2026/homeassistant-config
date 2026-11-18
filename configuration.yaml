@@ -19,22 +19,3 @@ lovelace:
       type: module
     - url: /local/community/apexcharts-card/apexcharts-card.js
       type: module
-  dashboards:
-    solar-a:
-      mode: yaml
-      title: Solar Manager
-      icon: mdi:solar-power-variant
-      show_in_sidebar: true
-      filename: dashboards/solar_manager_dashboard.yaml
-    boiler-a:
-      mode: yaml
-      title: Boiler PV-Ueberschuss laden
-      icon: mdi:water-boiler-auto
-      show_in_sidebar: true
-      filename: dashboards/boiler_pv_ueberschuss_dashboard.yaml
-    fbh-a:
-      mode: yaml
-      title: FBH Temperatur
-      icon: mdi:thermometer-lines
-      show_in_sidebar: true
-      filename: dashboards/fbh_temperatur_dashboard.yaml

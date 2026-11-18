@@ -888,3 +888,185 @@ views:
             line:
               color: "#8b5cf6"
               width: 1.4
+
+  # Smarte FBH Temperatur Steuerung (18.11.2026)
+  - title: Smarte FBH Temperatur Steuerung
+    path: fbh-smart
+    icon: mdi:home-thermometer-outline
+    cards:
+    - type: markdown
+      content: "{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set p = states('sensor.wohnraum_prognose') | float(0) -%}\n{%- set mn = states('input_number.fbh_raum_minimum') | float(22.3) -%}\n{%- set nt = is_state('schedule.niedertarif', 'on') -%}\n{%- if now().hour >= 12 -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_morgen') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_max_morgen') | float(99) -%}{%- else -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_heute') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}{%- endif -%}\n{%- set vorladen = nt and pvm < states('input_number.fbh_vorladen_pv_morgen_unter') | float(0) and tm < states('input_number.fbh_vorladen_tmax_morgen_unter') | float(-99) -%}\n{%- set ein = states('input_number.fbh_prognose_ein_unter') | float(22.4) + (0.2 if vorladen else 0) -%}\n{%- set aus = states('input_number.fbh_prognose_aus_ueber') | float(22.7) + (0.2 if vorladen else 0) -%}\n{%- set pumpe = states.switch.homematic_ip_fbh_pumpe_hk_ii -%}\n{%- set on = pumpe is not none and pumpe.state == 'on' -%}\n{%- set dur = ((now() - pumpe.last_changed).total_seconds() / 60) if pumpe is not none else 999 -%}\n{%- set mlz = states('input_number.fbh_mindestlaufzeit') | float(0) -%}\n{%- set mp = states('input_number.fbh_mindestpause') | float(0) -%}\n{%- set pvrest = states('sensor.fbh_pv_rest_heute') | float(0) -%}\n{%- set sschw = states('input_number.fbh_sonnensperre_ab_kwh') | float(99) -%}\n{%- set sonne = is_state('sun.sun', 'above_horizon') -%}\n{%- set sperre = sonne and now().hour < 13 and pvrest >= sschw -%}\n{%- set aktiv = is_state('input_boolean.fbh_smart_aktiv', 'on') -%}\n{%- set hand = not is_state('timer.fbh_hand_pause', 'idle') -%}\n{%- set ok = '✅' -%}{%- set no = '❌' -%}{%- set wait = '⏳' -%}\n{%- macro z(b) -%}{{ ok if b else no }}{%- endmacro -%}\n{%- macro hm(m) -%}{%- set m = [m, 0] | max | int -%}{{ '%d:%02d' | format(m // 60, m % 60) }} h{%- endmacro -%}\n## {{ '\U0001F7E2 FBH-Pumpe läuft' if on else '⚪ FBH-Pumpe steht' }} seit {{ hm(dur) }}\n**Entscheid:** {{ states('sensor.fbh_smart_entscheid') }}  \n**Modus:** {{ '\U0001F7E2 LIVE – Smart schaltet die Pumpe' if aktiv else '\U0001F441️ Beobachtung – HmIP R1–R8 schalten, Smart rechnet nur mit' }}{{ '  \\n⏸️ **Hand-Pause läuft** bis ' ~ (as_datetime(state_attr('timer.fbh_hand_pause','finishes_at')) | as_local).strftime('%H:%M') if hand and state_attr('timer.fbh_hand_pause','finishes_at') else '' }}\n\n{% if not on -%}\n### Einschalten – Voraussetzungen\n| | Bedingung | Ist | Soll |\n|:-:|---|---|---|\n| {{ z(aktiv) }} | Smart-Steuerung live | {{ 'EIN' if aktiv else 'Beobachtung' }} | EIN |\n| {{ z(not hand) }} | Keine Hand-Pause | {{ 'läuft' if hand else 'keine' }} | keine |\n| {{ z(t < mn - 0.1) }} | **Weg A – Sicherheit:** Raum zu kalt | {{ t }} °C | < {{ (mn - 0.1) | round(1) }} °C |\n| {{ z(dur >= mp) if dur >= mp else wait }} | **Weg B – Prognose:** Mindestpause vorbei | {{ hm(dur) }} | ≥ {{ hm(mp) }} |\n| {{ z(not (sperre and t >= mn)) }} | Keine Sonnensperre | {{ 'Sperre aktiv (PV Rest ' ~ pvrest ~ ' kWh)' if sperre and t >= mn else ('PV Rest ' ~ pvrest ~ ' kWh' if sonne and now().hour < 13 else 'nicht relevant') }} | PV Rest < {{ sschw }} kWh oder ab 13:00 |\n| {{ z(p < ein) }} | Prognose in {{ states('input_number.fbh_vorhalt_stunden') | float(3) | round(1) }} h unter EIN-Schwelle | {{ p }} °C | < {{ ein | round(2) }} °C{{ ' (Vorladen NT +0.2)' if vorladen else '' }} |\n{%- else -%}\n### Ausschalten – Voraussetzungen\n| | Bedingung | Ist | Soll |\n|:-:|---|---|---|\n| {{ z(aktiv) }} | Smart-Steuerung live | {{ 'EIN' if aktiv else 'Beobachtung' }} | EIN |\n| {{ z(not hand) }} | Keine Hand-Pause | {{ 'läuft' if hand else 'keine' }} | keine |\n| {{ z(t >= mn - 0.1) }} | Raum nicht zu kalt (sonst Sicherheit EIN) | {{ t }} °C | ≥ {{ (mn - 0.1) | round(1) }} °C |\n| {{ ok if dur >= mlz\
+        \ else wait }} | Mindestlaufzeit vorbei | {{ hm(dur) }} | ≥ {{ hm(mlz) }} |\n| {{ z(sperre and t >= mn) }} | **Weg A – Sonnensperre** (vor 13:00, PV Rest) | {{ pvrest }} kWh | ≥ {{ sschw }} kWh |\n| {{ z(p > aus and t >= mn + 0.1) }} | **Weg B – Prognose** über AUS-Schwelle und Raum ≥ {{ (mn + 0.1) | round(1) }} °C | {{ p }} °C / {{ t }} °C | > {{ aus | round(2) }} °C |\n{%- endif %}\n\n{#- Countdown -#}\n{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n{%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}\n{%- set nwf = states('input_number.fbh_nachwaerme_faktor') | float(0) -%}\n{%- set rate = k * (t - ta) + (nwf * fa if l6 > 0 else 0) -%}\n{%- set rate = [rate, 0.02] | max -%}\n{%- if not on %}\n\n### ⏱️ Countdown bis Einschalten\n{%- if t < mn - 0.1 %}\n**Jetzt** – Sicherheitsregel greift.\n{%- else -%}\n{%- set m_pause = [mp - dur, 0] | max -%}\n{%- set m_prog = ([p - ein, 0] | max) / rate * 60 if p >= ein else 0 -%}\n{%- if sperre and t >= mn -%}{%- set m_sperre = (today_at('13:00') - now()).total_seconds() / 60 -%}{%- else -%}{%- set m_sperre = 0 -%}{%- endif -%}\n{%- set m = [m_pause, m_prog, m_sperre] | max -%}\n{%- set grund = 'Mindestpause' if m == m_pause and m > 0 else ('Sonnensperre bis 13:00' if m == m_sperre and m > 0 else 'Prognose sinkt unter ' ~ ein | round(2) ~ ' °C') -%}\n{%- if m <= 0 %}\n**Jetzt** – alle Bedingungen für EIN erfüllt{{ '' if aktiv else ' (im Beobachtungsmodus schaltet Smart nicht)' }}.\n{%- elif m > 720 %}\n**> 12 h** – Raum bleibt laut Prognose warm genug.\n{%- else %}\n## ≈ {{ hm(m) }} → ca. {{ (now() + timedelta(minutes=m)).strftime('%H:%M') }} Uhr\n<sub>Massgebend: {{ grund }} · geschätzt mit Abkühlung ≈ {{ rate | round(2) }} K/h (Aussen {{ ta | round(1) }} °C){{ ' · Niedertarif' if is_state('schedule.niedertarif','on') else '' }}</sub>\n{%- endif -%}\n{%- endif -%}\n{%- else %}\n\n### ⏱️ Restlaufzeit\n{%- set m_mlz = [mlz - dur, 0] | max %}\n{{ 'Mindestlaufzeit noch **' ~ hm(m_mlz) ~ '** (bis ca. ' ~ (now() + timedelta(minutes=m_mlz)).strftime('%H:%M') ~ ' Uhr), danach entscheidet die Prognose.' if m_mlz > 0 else 'Mindestlaufzeit erfüllt – AUS, sobald Prognose > ' ~ aus | round(2) ~ ' °C oder Sonnensperre greift.' }}\n{%- endif %}\n"
+    - type: custom:plotly-graph
+      hours_to_show: 24
+      refresh_interval: 120
+      layout:
+        height: 420
+        margin:
+          t: 70
+          b: 90
+          l: 45
+          r: 10
+        paper_bgcolor: rgba(0,0,0,0)
+        plot_bgcolor: rgba(0,0,0,0)
+        font:
+          color: '#9e9e9e'
+          size: 11
+        xaxis:
+          showgrid: false
+          color: '#9e9e9e'
+          tickformat: '%H:%M'
+        yaxis:
+          showgrid: true
+          gridcolor: '#2a2a2a'
+          color: '#9e9e9e'
+          ticksuffix: °
+          range:
+          - 21.4
+          - 23.6
+        yaxis2:
+          overlaying: y
+          visible: false
+          range:
+          - 0
+          - 1
+          fixedrange: true
+        showlegend: true
+        legend:
+          orientation: h
+          x: 0
+          y: -0.1
+          yanchor: top
+          font:
+            size: 10
+        annotations:
+        - text: Raum Ist vs. Prognose (um Vorhalt verschoben)
+          xref: paper
+          yref: paper
+          x: 0
+          y: 1.08
+          xanchor: left
+          yanchor: bottom
+          showarrow: false
+          font:
+            size: 18
+            color: '#9e9e9e'
+      entities:
+      - entity: switch.homematic_ip_fbh_pumpe_hk_ii
+        name: FBH-Pumpe EIN
+        yaxis: y2
+        fill: tozeroy
+        fillcolor: rgba(34,197,94,0.10)
+        line:
+          color: rgba(34,197,94,0.3)
+          width: 0.5
+          shape: hv
+        filters:
+        - map_y: 'y === "on" ? 1 : 0'
+      - entity: sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur
+        name: Raum Ist
+        yaxis: y
+        line:
+          color: '#ffffff'
+          width: 2.5
+          shape: hv
+      - entity: sensor.wohnraum_prognose
+        name: Prognose (+3 h verschoben)
+        offset: 3h
+        yaxis: y
+        line:
+          color: '#f59e0b'
+          width: 1.5
+          dash: dot
+      - entity: input_number.fbh_raum_minimum
+        name: Minimum
+        yaxis: y
+        line:
+          color: '#ef4444'
+          width: 1
+          dash: dash
+          shape: hv
+      - entity: input_number.fbh_prognose_ein_unter
+        name: EIN-Schwelle
+        yaxis: y
+        line:
+          color: '#3b82f6'
+          width: 1
+          dash: dash
+          shape: hv
+      - entity: input_number.fbh_prognose_aus_ueber
+        name: AUS-Schwelle
+        yaxis: y
+        line:
+          color: '#22c55e'
+          width: 1
+          dash: dash
+          shape: hv
+    - type: markdown
+      content: |
+        {%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}
+        {%- set H = states('input_number.fbh_vorhalt_stunden') | float(3) -%}
+        {%- set tr = [[states('sensor.wohnzimmer_homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_wohnraum_trend') | float(0), -0.5] | max, 0.5] | min -%}
+        {%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}
+        {%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}
+        {%- set s = states('input_number.fbh_sonnenfaktor') | float(0) -%}
+        {%- set pv = states('sensor.fbh_pv_prognose_vorhalt') | float(0) -%}
+        {%- set ein = is_state('switch.homematic_ip_fbh_pumpe_hk_ii', 'on') -%}
+        {%- set hb = states('input_number.fbh_heizbeitrag') | float(0) if ein else 0 -%}
+        {%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}
+        {%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}
+        {%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}
+        {%- set nw = 0 if ein else states('input_number.fbh_nachwaerme_faktor') | float(0) * ([l6, 4] | min) * fa -%}
+        {%- macro v(x) -%}{{ ('+' if x >= 0 else '−') ~ '%.2f' | format(x | abs) }} K{%- endmacro -%}
+        ### 🧮 Prognose in {{ H | round(1) }} h – Bausteine
+        | Baustein | Grundlage | Beitrag |
+        |---|---|---|
+        | Raum jetzt | HmIP Innen | **{{ t }} °C** |
+        | Trend | {{ '%+.2f' | format(tr) }} K/h (60 min, max ±0.5) × {{ H }} h × 0.5 | {{ v(tr * H * 0.5) }} |
+        | Auskühlung | k {{ k }} × (Raum − Aussen {{ ta | round(1) }} °C) × {{ H }} h | {{ v(- k * (t - ta) * H) }} |
+        | Sonne | {{ pv | round(2) }} kWh PV (nächste {{ H }} h) × {{ s }} | {{ v(s * pv) }} |
+        | Heizbeitrag | {{ 'Pumpe EIN' if ein else 'Pumpe AUS → 0' }} | {{ v(hb) }} |
+        | Nachwärme Estrich | {{ 'Pumpe EIN → 0' if ein else (l6 | round(1) ~ ' h Laufzeit (6 h, max 4) × ' ~ states('input_number.fbh_nachwaerme_faktor') ~ ' × Aussenfaktor ' ~ fa | round(2)) }} | {{ v(nw) }} |
+        | **Prognose** | Summe | **{{ states('sensor.wohnraum_prognose') }} °C** |
+    - type: entities
+      title: Steuerung & Parameter
+      show_header_toggle: false
+      entities:
+      - entity: input_boolean.fbh_smart_aktiv
+        name: Smart LIVE (AUS = Beobachtung)
+      - entity: switch.homematic_ip_fbh_pumpe_hk_ii
+        name: FBH-Pumpe (HK II)
+      - entity: timer.fbh_hand_pause
+        name: Hand-Pause
+      - type: section
+        label: Schwellen
+      - entity: input_number.fbh_raum_minimum
+        name: Raum-Minimum
+      - entity: input_number.fbh_prognose_ein_unter
+        name: EIN wenn Prognose <
+      - entity: input_number.fbh_prognose_aus_ueber
+        name: AUS wenn Prognose >
+      - entity: input_number.fbh_mindestlaufzeit
+        name: Mindestlaufzeit
+      - entity: input_number.fbh_mindestpause
+        name: Mindestpause
+      - entity: input_number.fbh_sonnensperre_ab_kwh
+        name: Sonnensperre ab PV-Rest
+      - type: section
+        label: Modell
+      - entity: input_number.fbh_vorhalt_stunden
+        name: Vorhalt H
+      - entity: input_number.fbh_auskuehlfaktor_k
+        name: Auskühlfaktor k
+      - entity: input_number.fbh_sonnenfaktor
+        name: Sonnenfaktor s
+      - entity: input_number.fbh_heizbeitrag
+        name: Heizbeitrag
+      - entity: input_number.fbh_nachwaerme_faktor
+        name: Nachwärme-Faktor
+      - entity: input_number.fbh_nachwaerme_referenz_aussen
+        name: Nachwärme Referenz aussen
+      - entity: input_number.fbh_vorladen_pv_morgen_unter
+        name: Vorladen wenn PV morgen <
+      - entity: input_number.fbh_vorladen_tmax_morgen_unter
+        name: Vorladen wenn Tmax morgen <

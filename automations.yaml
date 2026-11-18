@@ -559,3 +559,24 @@
       target:
         entity_id: switch.homematic_ip_fbh_pumpe_hk_ii
   mode: single
+- id: '1795003456305'
+  alias: FBH Smart – Lüften erkannt
+  description: Stempelt den Zeitpunkt, an dem eine der Lüftungs-Türen/Fenster (Hibiscus,
+    Kräuter, Küche) nach dem Öffnen wieder geschlossen wurde. Die FBH-Smart-Steuerung
+    hält danach den Nachlauf (input_number.fbh_lueften_nachlauf) lang ihren Zustand.
+  triggers:
+  - entity_id:
+    - binary_sensor.homematic_ip_turkontakt_hibiscus_tur
+    - binary_sensor.homematic_ip_turkontakt_krauter_tur
+    - binary_sensor.homematic_ip_fensterkontakt_kuche_tur
+    to: 'off'
+    trigger: state
+    from: 'on'
+  conditions: []
+  actions:
+  - action: input_datetime.set_datetime
+    data:
+      datetime: '{{ now().strftime(''%Y-%m-%d %H:%M:%S'') }}'
+    target:
+      entity_id: input_datetime.fbh_lueften_zuletzt_geschlossen
+  mode: queued
