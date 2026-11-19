@@ -1,0 +1,297 @@
+{
+ "views": [
+  {
+   "max_columns": 3,
+   "path": "simulation",
+   "sections": [
+    {
+     "cards": [
+      {
+       "heading": "Live",
+       "icon": "mdi:battery-sync",
+       "type": "heading"
+      },
+      {
+       "entity": "sensor.batterie_sim_ladestand",
+       "name": "Ladestand",
+       "type": "tile"
+      },
+      {
+       "entity": "sensor.batterie_sim_netzbezug_heute",
+       "name": "Netzbezug sim. heute",
+       "type": "tile"
+      },
+      {
+       "entity": "sensor.batterie_sim_autarke_tage_gesamt",
+       "name": "Autarke Tage (live)",
+       "type": "tile"
+      },
+      {
+       "entity": "sensor.batterie_sim_einspeisung_heute",
+       "name": "Rückspeisung sim. heute",
+       "type": "tile"
+      },
+      {
+       "content": "## Heute (bis jetzt)\n{% set ri = states('sensor.haus_saldierung_netzbezug_heute_real') | float(0) * 1000 %}{% set si = states('sensor.batterie_sim_netzbezug_heute') | float(0) %}{% set re = states('sensor.haus_saldierung_einspeisung_heute_real') | float(0) %}{% set se = states('sensor.batterie_sim_einspeisung_heute') | float(0) %}{% set v = states('sensor.haus_haus_verbauch_verbrauch_haus_heute') | float(0) + states('sensor.heizung_heizung_verbrauch_verbrauch_wp_heute') | float(0) %}{% set ar = ((1 - ri / v) * 100) if v > 0 else 0 %}{% set asim = ((1 - si / v) * 100) if v > 0 else 0 %}\n| | Real | Mit Batterie | Differenz |\n|:--|--:|--:|--:|\n| Verbrauch | {{ v | round(1) }} kWh | {{ v | round(1) }} kWh | |\n| Netzbezug | {{ ri | round(1) }} kWh | {{ si | round(1) }} kWh | {{ (si - ri) | round(1) }} kWh ({{ ((si - ri) / ri * 100) | round(0) if ri > 0 else 0 }} %) |\n| Rückspeisung | {{ re | round(1) }} kWh | {{ se | round(1) }} kWh | {{ (se - re) | round(1) }} kWh |\n| Autarkiegrad | {{ [ar, 0] | max | round(0) }} % | {{ [asim, 0] | max | round(0) }} % | +{{ ([asim, 0] | max - [ar, 0] | max) | round(0) }} %-Pkt. |\n\n{{ '✅ **autark**' if si < 0.5 else '⚡ nicht autark' }} (Schwelle 0,5 kWh Restbezug)",
+       "type": "markdown"
+      },
+      {
+       "content": "## Gestern\n{% set ri = state_attr('sensor.haus_saldierung_netzbezug_heute_real','last_period') | float(0) * 1000 %}{% set si = state_attr('sensor.batterie_sim_netzbezug_heute','last_period') | float(0) %}{% set re = state_attr('sensor.haus_saldierung_einspeisung_heute_real','last_period') | float(0) %}{% set se = state_attr('sensor.batterie_sim_einspeisung_heute','last_period') | float(0) %}{% set v = state_attr('sensor.haus_haus_verbauch_verbrauch_haus_heute','last_period') | float(0) + state_attr('sensor.heizung_heizung_verbrauch_verbrauch_wp_heute','last_period') | float(0) %}{% set ar = ((1 - ri / v) * 100) if v > 0 else 0 %}{% set asim = ((1 - si / v) * 100) if v > 0 else 0 %}\n| | Real | Mit Batterie | Differenz |\n|:--|--:|--:|--:|\n| Verbrauch | {{ v | round(1) }} kWh | {{ v | round(1) }} kWh | |\n| Netzbezug | {{ ri | round(1) }} kWh | {{ si | round(1) }} kWh | {{ (si - ri) | round(1) }} kWh ({{ ((si - ri) / ri * 100) | round(0) if ri > 0 else 0 }} %) |\n| Rückspeisung | {{ re | round(1) }} kWh | {{ se | round(1) }} kWh | {{ (se - re) | round(1) }} kWh |\n| Autarkiegrad | {{ [ar, 0] | max | round(0) }} % | {{ [asim, 0] | max | round(0) }} % | +{{ ([asim, 0] | max - [ar, 0] | max) | round(0) }} %-Pkt. |\n\n{{ '✅ **autark**' if si < 0.5 else '⚡ nicht autark' }} (Schwelle 0,5 kWh Restbezug)",
+       "type": "markdown"
+      }
+     ],
+     "type": "grid"
+    },
+    {
+     "cards": [
+      {
+       "heading": "Verlauf",
+       "icon": "mdi:chart-bar",
+       "type": "heading"
+      },
+      {
+       "entities": [
+        {
+         "entity": "sensor.netzbezug_real_kwh",
+         "filters": [
+          "delta"
+         ],
+         "marker": {
+          "color": "#e45756"
+         },
+         "name": "Real",
+         "period": "day",
+         "statistic": "sum",
+         "type": "bar"
+        },
+        {
+         "entity": "sensor.batterie_sim_netzbezug",
+         "filters": [
+          "delta"
+         ],
+         "marker": {
+          "color": "#4c9a2a"
+         },
+         "name": "Mit Batterie",
+         "period": "day",
+         "statistic": "sum",
+         "type": "bar"
+        }
+       ],
+       "hours_to_show": 720,
+       "layout": {
+        "barmode": "group",
+        "legend": {
+         "orientation": "h"
+        },
+        "yaxis": {
+         "rangemode": "tozero",
+         "title": "kWh"
+        }
+       },
+       "refresh_interval": 600,
+       "title": "Netzbezug pro Tag: real vs. mit Batterie",
+       "type": "custom:plotly-graph"
+      },
+      {
+       "entities": [
+        {
+         "entity": "sensor.netz_ruckspeisung_kwh",
+         "filters": [
+          "delta"
+         ],
+         "marker": {
+          "color": "#f2a93b"
+         },
+         "name": "Real",
+         "period": "day",
+         "statistic": "sum",
+         "type": "bar"
+        },
+        {
+         "entity": "sensor.batterie_sim_einspeisung",
+         "filters": [
+          "delta"
+         ],
+         "marker": {
+          "color": "#4c78a8"
+         },
+         "name": "Mit Batterie",
+         "period": "day",
+         "statistic": "sum",
+         "type": "bar"
+        }
+       ],
+       "hours_to_show": 720,
+       "layout": {
+        "barmode": "group",
+        "legend": {
+         "orientation": "h"
+        },
+        "yaxis": {
+         "rangemode": "tozero",
+         "title": "kWh"
+        }
+       },
+       "refresh_interval": 600,
+       "title": "Rückspeisung pro Tag: real vs. mit Batterie",
+       "type": "custom:plotly-graph"
+      },
+      {
+       "entities": [
+        {
+         "entity": "sensor.batterie_sim_ladestand",
+         "fill": "tozeroy",
+         "line": {
+          "color": "#4c9a2a",
+          "shape": "hv"
+         },
+         "name": "Ladestand"
+        }
+       ],
+       "hours_to_show": 48,
+       "layout": {
+        "yaxis": {
+         "range": [
+          0,
+          100
+         ],
+         "title": "%"
+        }
+       },
+       "refresh_interval": 60,
+       "title": "Ladestand virtuelle Batterie",
+       "type": "custom:plotly-graph"
+      }
+     ],
+     "type": "grid"
+    },
+    {
+     "cards": [
+      {
+       "heading": "Autarke Tage",
+       "icon": "mdi:home-battery",
+       "type": "heading"
+      },
+      {
+       "entities": [
+        {
+         "entity": "sensor.batterie_sim_autarke_tage_gesamt",
+         "filters": [
+          "delta"
+         ],
+         "marker": {
+          "color": "#4c9a2a"
+         },
+         "name": "Autarke Tage",
+         "period": "month",
+         "statistic": "sum",
+         "type": "bar"
+        }
+       ],
+       "hours_to_show": 8760,
+       "layout": {
+        "yaxis": {
+         "range": [
+          0,
+          31
+         ],
+         "title": "Tage"
+        }
+       },
+       "refresh_interval": 3600,
+       "title": "Autarke Tage pro Monat (live ab 17.11.2026)",
+       "type": "custom:plotly-graph"
+      },
+      {
+       "entities": [
+        {
+         "entity": "sensor.batterie_sim_ladestand",
+         "hovertemplate": "%{y} %<extra>real</extra>",
+         "marker": {
+          "color": "#e45756"
+         },
+         "name": "Autarkiegrad real",
+         "type": "bar",
+         "x": "$ex ['2026-02-15','2026-03-15','2026-04-15','2026-05-15','2026-06-15','2026-07-15','2026-08-15','2026-09-15','2026-10-15','2026-11-08']",
+         "y": "$ex [6,10,20,25,33,39,31,26,12,5]"
+        },
+        {
+         "entity": "sensor.batterie_sim_ladestand",
+         "hovertemplate": "%{y} %<extra>mit Batterie</extra>",
+         "marker": {
+          "color": "#4c9a2a"
+         },
+         "name": "Autarkiegrad mit Batterie",
+         "type": "bar",
+         "x": "$ex ['2026-02-15','2026-03-15','2026-04-15','2026-05-15','2026-06-15','2026-07-15','2026-08-15','2026-09-15','2026-10-15','2026-11-08']",
+         "y": "$ex [15,32,63,73,96,100,93,94,35,11]"
+        },
+        {
+         "entity": "sensor.batterie_sim_autarke_tage_gesamt",
+         "hovertemplate": "%{y} Tage<extra>autark</extra>",
+         "line": {
+          "color": "#4c78a8",
+          "width": 2
+         },
+         "marker": {
+          "size": 7
+         },
+         "mode": "lines+markers+text",
+         "name": "Autarke Tage",
+         "text": "$ex ['0','1','11','11','23','31','23','19','3','0']",
+         "textposition": "top center",
+         "x": "$ex ['2026-02-15','2026-03-15','2026-04-15','2026-05-15','2026-06-15','2026-07-15','2026-08-15','2026-09-15','2026-10-15','2026-11-08']",
+         "y": "$ex [0,1,11,11,23,31,23,19,3,0]",
+         "yaxis": "y2"
+        }
+       ],
+       "hours_to_show": 8760,
+       "layout": {
+        "barmode": "group",
+        "legend": {
+         "orientation": "h",
+         "y": -0.2
+        },
+        "xaxis": {
+         "range": [
+          "2026-01-25",
+          "2026-11-30"
+         ],
+         "tickformat": "%b"
+        },
+        "yaxis": {
+         "range": [
+          0,
+          105
+         ],
+         "title": "Autarkiegrad %"
+        },
+        "yaxis2": {
+         "overlaying": "y",
+         "range": [
+          0,
+          35
+         ],
+         "showgrid": false,
+         "side": "right",
+         "title": "Autarke Tage"
+        }
+       },
+       "refresh_interval": 0,
+       "title": "Rückblick 2026: Autarkiegrad & autarke Tage (10 kWh)",
+       "type": "custom:plotly-graph"
+      },
+      {
+       "content": "## Rückblick: Stundensimulation 10 kWh\n*28.01.–16.11.2026 · 9 kWh nutzbar · 90 % Wirkungsgrad · max. 2,5 kW*\n\n| Monat | Autarke Tage | Netzbezug real → sim. | Rückspeisung real → sim. |\n|:--|--:|--:|--:|\n| Jan (ab 28.) | 0 / 4 | 150 → 146 kWh | 6 → 0 kWh |\n| Feb | 0 / 28 | 899 → 807 kWh | 103 → 0 kWh |\n| Mär | 1 / 31 | 790 → 595 kWh | 226 → 9 kWh |\n| Apr | 11 / 30 | 422 → 194 kWh | 296 → 36 kWh |\n| Mai | 11 / 31 | 414 → 149 kWh | 313 → 24 kWh |\n| Jun | 23 / 30 | 292 → 18 kWh | 332 → 23 kWh |\n| Jul | 31 / 31 | 185 → 0 kWh | 406 → 201 kWh |\n| Aug | 23 / 31 | 267 → 28 kWh | 312 → 47 kWh |\n| Sep | 19 / 30 | 268 → 23 kWh | 296 → 26 kWh |\n| Okt | 3 / 31 | 435 → 323 kWh | 131 → 8 kWh |\n| Nov (bis 16.) | 0 / 16 | 447 → 421 kWh | 28 → 0 kWh |\n| **Total** | **122 / 293** | **4'569 → 2'703 kWh (−41 %)** | **2'447 → 374 kWh (−85 %)** |\n\nLängste autarke Serie: **58 Tage** (14.06.–10.08.)",
+       "type": "markdown"
+      }
+     ],
+     "type": "grid"
+    }
+   ],
+   "title": "Batterie-Simulation",
+   "type": "sections"
+  }
+ ]
+}

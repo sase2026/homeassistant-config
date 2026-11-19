@@ -12,7 +12,7 @@
      "cards": [
       {
        "type": "custom:mushroom-template-card",
-       "primary": "WW Oben",
+       "primary": "Speicher WW",
        "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C",
        "icon": "mdi:water-thermometer",
        "icon_color": "{% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %} {% if t >= 55 %}red{% elif t >= 45 %}orange{% else %}blue{% endif %}\n",
@@ -23,7 +23,7 @@
       },
       {
        "type": "custom:mushroom-template-card",
-       "primary": "Speicher unter VL",
+       "primary": "Speicher bei VL",
        "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur') | float(0) | round(1) }} °C",
        "icon": "mdi:thermometer-water",
        "icon_color": "{% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur') | float(0) %} {% if t >= 50 %}red{% elif t >= 40 %}orange{% else %}blue{% endif %}\n",
@@ -31,7 +31,7 @@
       },
       {
        "type": "custom:mushroom-template-card",
-       "primary": "RL Ist",
+       "primary": "Speicher bei RL",
        "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_2') | float(0) | round(1) }} °C",
        "icon": "mdi:thermometer-chevron-down",
        "icon_color": "blue",
@@ -95,7 +95,8 @@
         15,
         60
        ],
-       "fixedrange": true
+       "fixedrange": true,
+       "dtick": 5
       },
       "yaxis2": {
        "overlaying": "y",
@@ -103,13 +104,15 @@
        "visible": true,
        "showgrid": false,
        "color": "#06b6d4",
-       "tickformat": "~s",
+       "tickformat": ".2s",
        "ticksuffix": "W",
        "range": [
         0,
         7000
        ],
-       "fixedrange": true
+       "fixedrange": true,
+       "hoverformat": ".1f",
+       "dtick": 1000
       },
       "showlegend": true,
       "legend": {
@@ -138,7 +141,7 @@
         }
        },
        {
-        "text": "$fn ({hass}) => 'Warmwasser ' + (Math.round((parseFloat(hass.states['sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'].state)||0)*10)/10).toFixed(1) + ' °C'\n",
+        "text": "$fn ({hass}) => 'Speicher WW ' + (Math.round((parseFloat(hass.states['sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'].state)||0)*10)/10).toFixed(1) + ' °C'\n",
         "xref": "paper",
         "yref": "paper",
         "x": 0,
@@ -178,11 +181,12 @@
         "color": "rgba(6,182,212,0.5)",
         "width": 0.5,
         "shape": "hv"
-       }
+       },
+       "hovertemplate": "WP Leistung: %{y:.1f} W<extra></extra>"
       },
       {
        "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
-       "name": "Warmwasser",
+       "name": "Speicher WW",
        "yaxis": "y",
        "line": {
         "color": "#ef4444",
@@ -191,7 +195,7 @@
       },
       {
        "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
-       "name": "Speicher unter VL",
+       "name": "Speicher bei VL",
        "yaxis": "y",
        "line": {
         "color": "#f97316",
@@ -200,7 +204,7 @@
       },
       {
        "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
-       "name": "RL Ist WP",
+       "name": "Speicher bei RL",
        "yaxis": "y",
        "line": {
         "color": "#3b82f6",
@@ -683,11 +687,11 @@
       "xaxis": {
        "type": "linear",
        "range": [
-        -2.2,
-        2.2
+        -1,
+        1
        ],
        "ticksuffix": " K",
-       "dtick": 0.4,
+       "dtick": 0.2,
        "showgrid": true,
        "gridcolor": "#2a2a2a",
        "zeroline": true,
@@ -1233,7 +1237,8 @@
        "range": [
         21.4,
         23.6
-       ]
+       ],
+       "dtick": 0.2
       },
       "yaxis2": {
        "overlaying": "y",
@@ -1385,7 +1390,7 @@
     },
     {
      "type": "markdown",
-     "content": "{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set H = states('input_number.fbh_vorhalt_stunden') | float(3) -%}\n{%- set tr = [[states('sensor.wohnzimmer_homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_wohnraum_trend') | float(0), -0.5] | max, 0.5] | min -%}\n{%- set tr = [tr, 0] | max if is_state('binary_sensor.fbh_lueften_aktiv', 'on') else tr -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}\n{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}\n{%- set s = states('input_number.fbh_sonnenfaktor') | float(0) -%}\n{%- set pv = states('sensor.fbh_pv_prognose_vorhalt') | float(0) -%}\n{%- set ein = is_state('switch.homematic_ip_fbh_pumpe_hk_ii', 'on') -%}\n{%- set hb = states('input_number.fbh_heizbeitrag') | float(0) if ein else 0 -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n{%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}\n{%- set nw = 0 if ein else states('input_number.fbh_nachwaerme_faktor') | float(0) * ([l6, 4] | min) * fa -%}\n{%- macro v(x) -%}{{ ('+' if x >= 0 else '−') ~ '%.2f' | format(x | abs) }} K{%- endmacro -%}\n### 🧮 Prognose in {{ H | round(1) }} h – Bausteine\n| Baustein | Grundlage | Beitrag |\n|---|---|---|\n| Raum jetzt | HmIP Innen | **{{ t }} °C** |\n| Trend | {{ '%+.2f' | format(tr) }} K/h (60 min, max ±0.5{{ ', Lüften: nur ≥ 0' if is_state('binary_sensor.fbh_lueften_aktiv','on') else '' }}) × {{ H }} h × 0.5 | {{ v(tr * H * 0.5) }} |\n| Auskühlung | k {{ k }} × (Raum − Aussen {{ ta | round(1) }} °C) × {{ H }} h | {{ v(- k * (t - ta) * H) }} |\n| Sonne | {{ pv | round(2) }} kWh PV (nächste {{ H }} h) × {{ s }} | {{ v(s * pv) }} |\n| Heizbeitrag | {{ 'Pumpe EIN' if ein else 'Pumpe AUS → 0' }} | {{ v(hb) }} |\n| Nachwärme Estrich | {{ 'Pumpe EIN → 0' if ein else (l6 | round(1) ~ ' h Laufzeit (6 h, max 4) × ' ~ states('input_number.fbh_nachwaerme_faktor') ~ ' × Aussenfaktor ' ~ fa | round(2)) }} | {{ v(nw) }} |\n| **Prognose** | Summe | **{{ states('sensor.wohnraum_prognose') }} °C** |\n"
+     "content": "{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set H = states('input_number.fbh_vorhalt_stunden') | float(3) -%}\n{%- set tr = [[states('sensor.wohnzimmer_homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_wohnraum_trend') | float(0), -0.5] | max, 0.5] | min -%}\n{%- set tr = [tr, 0] | max if is_state('binary_sensor.fbh_lueften_aktiv', 'on') else tr -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}\n{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}\n{%- set s = states('input_number.fbh_sonnenfaktor') | float(0) -%}\n{%- set pv = states('sensor.fbh_pv_prognose_vorhalt') | float(0) -%}\n{%- set ein = is_state('switch.homematic_ip_fbh_pumpe_hk_ii', 'on') -%}\n{%- set hb = states('input_number.fbh_heizbeitrag') | float(0) if ein else 0 -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n{%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}\n{%- set nw = 0 if ein else states('input_number.fbh_nachwaerme_faktor') | float(0) * ([l6, 6] | min) * fa -%}\n{%- macro v(x) -%}{{ ('+' if x >= 0 else '−') ~ '%.2f' | format(x | abs) }} K{%- endmacro -%}\n### 🧮 Prognose in {{ H | round(1) }} h – Bausteine\n| Baustein | Grundlage | Beitrag |\n|---|---|---|\n| Raum jetzt | HmIP Innen | **{{ t }} °C** |\n| Trend | {{ '%+.2f' | format(tr) }} K/h (60 min, max ±0.5{{ ', Lüften: nur ≥ 0' if is_state('binary_sensor.fbh_lueften_aktiv','on') else '' }}) × {{ H }} h × 0.5 | {{ v(tr * H * 0.5) }} |\n| Auskühlung | k {{ k }} × (Raum − Aussen {{ ta | round(1) }} °C) × {{ H }} h | {{ v(- k * (t - ta) * H) }} |\n| Sonne | {{ pv | round(2) }} kWh PV (nächste {{ H }} h) × {{ s }} | {{ v(s * pv) }} |\n| Heizbeitrag | {{ 'Pumpe EIN' if ein else 'Pumpe AUS → 0' }} | {{ v(hb) }} |\n| Nachwärme Estrich | {{ 'Pumpe EIN → 0' if ein else (l6 | round(1) ~ ' h Laufzeit (letzte 6 h) × ' ~ states('input_number.fbh_nachwaerme_faktor') ~ ' × Aussenfaktor ' ~ fa | round(2)) }} | {{ v(nw) }} |\n| **Prognose** | Summe | **{{ states('sensor.wohnraum_prognose') }} °C** |\n"
     },
     {
      "type": "entities",

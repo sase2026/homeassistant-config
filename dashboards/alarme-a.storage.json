@@ -77,7 +77,7 @@
                   "type": "tile"
                 },
                 {
-                  "content": "<sub>**WP heizt nicht:** FBH-Pumpe EIN, Verdichter AUS und Speicher unter VL < 28 °C, 90 min lang · **Wohnraum:** Innenfühler < 21.8 °C, 15 min (vor der HmIP-Notregel) · **Warmwasser:** Speicher oben < 40 °C, 30 min · **Fühler:** einer der 8 Regelfühler (Speicher oben/unter VL/RL, VL/RL HK-II, HmIP innen/aussen, WP-Leistung) seit 30 min ohne Meldung oder nicht erreichbar · **Heizstab:** EIN bei > 500 W Netzbezug, 10 min. Bei Auftreten und bei Entwarnung kommt je eine Push-Meldung.</sub>",
+                  "content": "<sub>**WP heizt nicht:** FBH-Pumpe EIN, Verdichter AUS und Speicher bei VL < 28 °C, 90 min lang · **Wohnraum:** Innenfühler < 21.8 °C, 15 min (vor der HmIP-Notregel) · **Warmwasser:** Speicher WW < 40 °C, 30 min · **Fühler:** einer der 8 Regelfühler (Speicher WW / bei VL / bei RL, VL/RL HK-II, HmIP innen/aussen, WP-Leistung) seit 30 min ohne Meldung oder nicht erreichbar · **Heizstab:** EIN bei > 500 W Netzbezug, 10 min. Bei Auftreten und bei Entwarnung kommt je eine Push-Meldung.</sub>",
                   "type": "markdown"
                 }
               ],
@@ -194,7 +194,7 @@
                   "grid_options": {
                     "columns": 6
                   },
-                  "name": "Speicher oben (WW)",
+                  "name": "Speicher WW",
                   "type": "tile"
                 },
                 {
@@ -202,7 +202,7 @@
                   "grid_options": {
                     "columns": 6
                   },
-                  "name": "Speicher unter VL",
+                  "name": "Speicher bei VL",
                   "type": "tile"
                 },
                 {

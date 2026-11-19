@@ -379,8 +379,8 @@
       },
       {
        "type": "custom:mushroom-template-card",
-       "primary": "Warmwasser",
-       "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C oben",
+       "primary": "Speicher WW",
+       "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C",
        "icon": "mdi:water-boiler",
        "icon_color": "{% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %}{{ 'red' if t >= 45 else ('orange' if t >= 38 else 'blue') }}",
        "layout": "vertical",
@@ -636,7 +636,7 @@
         },
         {
          "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
-         "name": "Warmwasser",
+         "name": "Speicher WW",
          "yaxis": "y2",
          "line": {
           "color": "#a855f7",
@@ -2076,7 +2076,7 @@
       {
        "type": "tile",
        "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
-       "name": "RL Ist °C",
+       "name": "Speicher bei RL °C",
        "grid_options": {
         "columns": 6
        },
@@ -2103,7 +2103,7 @@
       {
        "type": "tile",
        "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
-       "name": "Speicher unter VL °C",
+       "name": "Speicher bei VL °C",
        "grid_options": {
         "columns": 6
        },
@@ -2112,7 +2112,7 @@
       {
        "type": "tile",
        "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
-       "name": "WW Oben °C",
+       "name": "Speicher WW °C",
        "grid_options": {
         "columns": 6
        },

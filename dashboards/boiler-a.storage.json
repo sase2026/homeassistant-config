@@ -20,7 +20,7 @@
     {
      "title": "Status",
      "type": "markdown",
-     "content": "{% set pv_ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %} {% set leistung = states('input_number.boiler_leistung') | float(2300) %} {% set reserve = states('input_number.boiler_reserveleistung') | float(70) %} {% set ein_grenze = leistung + reserve %} {% set temp = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %} {% set max_temp = states('input_number.boiler_maximaltemperatur') | float(63) %}\n{% if is_state('switch.haus_verbauch', 'on') %} **Boiler laedt gerade.** Eingeschaltet seit {{ relative_time(states.switch.haus_verbauch.last_changed) }}. Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min. {% else %} **Boiler ist aus.** Letzter Wechsel vor {{ relative_time(states.switch.haus_verbauch.last_changed) }}. Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min. {% endif %}\nWW-Oben: **{{ temp | round(1) }} °C** von **{{ max_temp | round(1) }} °C** PV Überschuss aktuell: **{{ pv_ueberschuss | round(0) }} W** Einschaltgrenze: **{{ ein_grenze | round(0) }} W** Heute: **{{ states('input_number.boiler_kapazitaet_heute') | float(0) | round(2) }} kWh** Monat: **{{ states('input_number.boiler_kapazitaet_monat') | float(0) | round(2) }} kWh** Total: **{{ states('input_number.boiler_ladezeit_total') | float(0) | round(2) }} h**, **{{ states('input_number.boiler_kapazitaet_total') | float(0) | round(2) }} kWh**\n"
+     "content": "{% set pv_ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %} {% set leistung = states('input_number.boiler_leistung') | float(2300) %} {% set reserve = states('input_number.boiler_reserveleistung') | float(70) %} {% set ein_grenze = leistung + reserve %} {% set temp = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %} {% set max_temp = states('input_number.boiler_maximaltemperatur') | float(63) %}\n{% if is_state('switch.haus_verbauch', 'on') %} **Boiler laedt gerade.** Eingeschaltet seit {{ relative_time(states.switch.haus_verbauch.last_changed) }}. Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min. {% else %} **Boiler ist aus.** Letzter Wechsel vor {{ relative_time(states.switch.haus_verbauch.last_changed) }}. Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min. {% endif %}\nSpeicher WW: **{{ temp | round(1) }} °C** von **{{ max_temp | round(1) }} °C** PV Überschuss aktuell: **{{ pv_ueberschuss | round(0) }} W** Einschaltgrenze: **{{ ein_grenze | round(0) }} W** Heute: **{{ states('input_number.boiler_kapazitaet_heute') | float(0) | round(2) }} kWh** Monat: **{{ states('input_number.boiler_kapazitaet_monat') | float(0) | round(2) }} kWh** Total: **{{ states('input_number.boiler_ladezeit_total') | float(0) | round(2) }} h**, **{{ states('input_number.boiler_kapazitaet_total') | float(0) | round(2) }} kWh**\n"
     },
     {
      "hours_to_show": 48,
@@ -80,7 +80,7 @@
      "type": "markdown"
     },
     {
-     "name": "WW-Oben Temperatur",
+     "name": "Speicher WW",
      "needle": true,
      "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
      "min": 20,
@@ -120,7 +120,7 @@
        "entity": "switch.haus_verbauch"
       },
       {
-       "name": "WW-Oben",
+       "name": "Speicher WW",
        "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3"
       },
       {
