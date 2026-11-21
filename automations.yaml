@@ -47,12 +47,6 @@
       {% set min_runtime = states(''input_number.boiler_mindestlaufzeit'') | float(10)
       %} {{ (now() - changed).total_seconds() >= min_runtime * 60 }}'
   actions:
-  - data:
-      message: 'Boiler gestoppt wegen zu wenig PV-Ueberschuss. Saldierung: {{ states(''sensor.leistung_saldierung'')
-        | float(0) | round(0) }} W, WW-Oben: {{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'')
-        }} C.'
-      title: Boiler gestoppt
-    action: notify.mobile_app_iphone_12_sse
   - target:
       entity_id: switch.haus_verbauch
     action: switch.turn_off
@@ -178,12 +172,6 @@
     entity_id: switch.haus_verbauch
     state: 'on'
   actions:
-  - data:
-      message: 'Boiler gestoppt: {{ states(''input_number.boiler_maximaltemperatur'')
-        | float(63) | round(1) }} C Temperatur erreicht. WW-Oben: {{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'')
-        }} C.'
-      title: Boiler gestoppt
-    action: notify.mobile_app_iphone_12_sse
   - target:
       entity_id: switch.haus_verbauch
     action: switch.turn_off
@@ -202,11 +190,6 @@
     entity_id: switch.haus_verbauch
     state: 'on'
   actions:
-  - data:
-      message: 'Boiler gestoppt wegen Netzbezug-Schutz. Saldierung: {{ states(''sensor.leistung_saldierung'')
-        | float(0) | round(0) }} W.'
-      title: Boiler gestoppt
-    action: notify.mobile_app_iphone_12_sse
   - target:
       entity_id: switch.haus_verbauch
     action: switch.turn_off
@@ -225,12 +208,12 @@
       | float(2300) + states(''input_number.boiler_reserveleistung'') | float(70))
       * -1) }}'
   actions:
-  - data:
-      message: 'Boiler gestartet: genuegend PV-Ueberschuss. Saldierung: {{ states(''sensor.leistung_saldierung'')
+  - action: script.push_beide_handys
+    data:
+      titel: ☀️ Boiler gestartet
+      text: 'Boiler gestartet: genuegend PV-Ueberschuss. Saldierung: {{ states(''sensor.leistung_saldierung'')
         | float(0) | round(0) }} W, WW-Oben: {{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'')
         }} C.'
-      title: Boiler gestartet
-    action: notify.mobile_app_iphone_12_sse
   mode: single
 - id: boiler_tagesbericht
   alias: Tagesabschluss
@@ -240,8 +223,10 @@
     at: input_datetime.tagesabschluss_push_zeit
   conditions: []
   actions:
-  - data:
-      message: 'Tagesabschluss {{ now().strftime(''%d.%m.%Y'') }}
+  - action: script.push_beide_handys
+    data:
+      titel: "\U0001F4CA Tagesabschluss Energie"
+      text: 'Tagesabschluss {{ now().strftime(''%d.%m.%Y'') }}
 
 
         PV Produktion:   {{ states(''sensor.energy_manager_pv_produktion_heute_kwh'')
@@ -294,8 +279,6 @@
 
         Aktiv: {% for x in w %}{{ state_attr(x, ''friendly_name'') }}{{ '', '' if
         not loop.last }}{% endfor %}{% endif %}'
-      title: Tagesabschluss Energie
-    action: notify.mobile_app_iphone_12_sse
   mode: single
 - id: boiler_monatsbericht
   alias: Boiler Monatsbericht
@@ -307,12 +290,12 @@
   - condition: template
     value_template: '{{ (now() + timedelta(days=1)).month != now().month }}'
   actions:
-  - data:
-      message: 'Monat {{ now().strftime(''%m.%Y'') }}: {{ states(''input_number.boiler_kapazitaet_monat'')
+  - action: script.push_beide_handys
+    data:
+      titel: "\U0001F4C5 Boiler Monatsbericht"
+      text: 'Monat {{ now().strftime(''%m.%Y'') }}: {{ states(''input_number.boiler_kapazitaet_monat'')
         | float(0) | round(2) }} kWh mit PV-Ueberschuss geladen. Ladezeit: {{ states(''input_number.boiler_ladezeit_monat'')
         | float(0) | round(2) }} h.'
-      title: Boiler Monatsbericht
-    action: notify.mobile_app_iphone_12_sse
   mode: single
 - id: boiler_monatswerte_reset
   alias: Boiler Monatswerte reset
@@ -822,24 +805,851 @@
       - condition: trigger
         id: ein
       sequence:
-      - action: notify.mobile_app_iphone_12_sse
+      - action: script.push_beide_handys
         data:
-          data:
+          titel: "\U0001F6A8 {{ trigger.to_state.name }}"
+          text: '{{ details }}'
+          daten:
             push:
               interruption-level: time-sensitive
             tag: '{{ trigger.entity_id }}'
             url: /alarme-a/alarme
-          message: '{{ details }}'
-          title: "\U0001F6A8 {{ trigger.to_state.name }}"
     - conditions:
       - condition: trigger
         id: aus
       sequence:
-      - action: notify.mobile_app_iphone_12_sse
+      - action: script.push_beide_handys
         data:
-          data:
-            tag: '{{ trigger.entity_id }}'
-          message: Alarm seit {{ ((now() - trigger.from_state.last_changed).total_seconds()
+          titel: '✅ Entwarnung: {{ trigger.to_state.name }}'
+          text: Alarm seit {{ ((now() - trigger.from_state.last_changed).total_seconds()
             / 60) | round(0) | int }} min aktiv, jetzt wieder normal.
-          title: '✅ Entwarnung: {{ trigger.to_state.name }}'
+          daten:
+            tag: '{{ trigger.entity_id }}'
   mode: queued
+- id: '1795165701717'
+  alias: Tore & Haustür – Push bei Öffnen/Schliessen
+  description: Sendet an beide iPhones (12 und 17) eine Push-Meldung mit Text, wenn
+    Garagentor Auto, Garagentor Werkraum oder die Eingangstüre geöffnet oder geschlossen
+    wird.
+  triggers:
+  - id: offen
+    target:
+      entity_id:
+      - binary_sensor.homematic_ip_garagentor_auto_tur
+      - binary_sensor.homematic_ip_garagentor_werkraum_tur
+    trigger: garage_door.opened
+  - id: offen
+    target:
+      entity_id: binary_sensor.homematic_ip_eingangsture_tur
+    trigger: door.opened
+  - id: zu
+    target:
+      entity_id:
+      - binary_sensor.homematic_ip_garagentor_auto_tur
+      - binary_sensor.homematic_ip_garagentor_werkraum_tur
+    trigger: garage_door.closed
+  - id: zu
+    target:
+      entity_id: binary_sensor.homematic_ip_eingangsture_tur
+    trigger: door.closed
+  conditions: []
+  actions:
+  - variables:
+      aktion: '{{ ''geöffnet'' if trigger.id == ''offen'' else ''geschlossen'' }}'
+      icon: "{{ '\U0001F697' if 'garagentor' in (trigger.entity_id | string) else
+        '\U0001F6AA' }}"
+      name: '{% set n = {''binary_sensor.homematic_ip_garagentor_auto_tur'': ''Garagentor
+        Auto'', ''binary_sensor.homematic_ip_garagentor_werkraum_tur'': ''Garagentor
+        Werkraum'', ''binary_sensor.homematic_ip_eingangsture_tur'': ''Haustür''}
+        %}{{ n.get(trigger.entity_id, ''Tür'') }}'
+      zeit: '{{ now().strftime(''%H:%M'') }}'
+  - action: script.push_beide_handys
+    data:
+      titel: '{{ icon }} {{ name }} {{ aktion }}'
+      text: '{{ name }} wurde um {{ zeit }} Uhr {{ aktion }}.'
+  mode: parallel
+- id: '1795166098939'
+  alias: Tor offen – Erinnerung
+  description: Erinnert, wenn ein Garagentor oder die Haustür 15 min offen bleibt.
+    (Die 22:00-Meldung übernimmt neu «Alarm Tore/Haustür – Freigabe & Bedienung»,
+    inkl. Fenster.)
+  triggers:
+  - id: lange
+    options:
+      for: 00:15:00
+    target:
+      entity_id:
+      - binary_sensor.homematic_ip_garagentor_auto_tur
+      - binary_sensor.homematic_ip_garagentor_werkraum_tur
+    trigger: garage_door.opened
+  - id: lange
+    options:
+      for: 00:15:00
+    target:
+      entity_id: binary_sensor.homematic_ip_eingangsture_tur
+    trigger: door.opened
+  conditions: []
+  actions:
+  - variables:
+      namen:
+        binary_sensor.homematic_ip_eingangsture_tur: Haustür
+        binary_sensor.homematic_ip_garagentor_auto_tur: Garagentor Auto
+        binary_sensor.homematic_ip_garagentor_werkraum_tur: Garagentor Werkraum
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: lange
+      sequence:
+      - variables:
+          name: '{{ namen.get(trigger.entity_id, ''Tor'') }}'
+      - action: script.push_beide_handys
+        data:
+          text: '{{ name }} ist seit 15 Minuten offen.'
+          titel: "{{ '\U0001F697' if 'garagentor' in trigger.entity_id else '\U0001F6AA'
+            }} {{ name }} noch offen"
+  mode: parallel
+- id: '1795166113146'
+  alias: Bewegung nachts – Garage/Haustür
+  description: Meldet Bewegung bei der Garage oder Haustür zwischen 22:00 und 06:00.
+    Danach 10 min Pause, damit nicht jede Bewegung eine Meldung auslöst.
+  triggers:
+  - target:
+      entity_id:
+      - binary_sensor.homematic_ip_bewegungsmelder_garage_bewegung
+      - binary_sensor.homematic_ip_bewegungsmelder_hausture_bewegung
+    trigger: motion.detected
+  conditions:
+  - after: '22:00:00'
+    before: 06:00:00
+    condition: time
+  actions:
+  - variables:
+      ort: '{{ ''Garage'' if ''garage'' in trigger.entity_id else ''Haustür'' }}'
+  - action: script.push_beide_handys
+    data:
+      text: Bewegung bei {{ ort }} um {{ now().strftime('%H:%M') }} Uhr erkannt.
+      titel: "\U0001F463 Bewegung {{ ort }}"
+  - delay: 00:10:00
+  max_exceeded: silent
+  mode: single
+- id: '1795166119319'
+  alias: Türe offen bei Kälte
+  description: Meldet, wenn eine Aussen- oder Zimmertüre 20 min offen ist und es aussen
+    kälter als 12 °C ist (Wärmeverlust, WP läuft unnötig).
+  triggers:
+  - options:
+      for: 00:20:00
+    target:
+      entity_id:
+      - binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur
+      - binary_sensor.homematic_ip_turkontakt_cheminee_tur
+      - binary_sensor.homematic_ip_turkontakt_hibiscus_tur
+      - binary_sensor.homematic_ip_turkontakt_krauter_tur
+      - binary_sensor.homematic_ip_fensterkontakt_kuche_tur
+      - binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur
+      - binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur
+    trigger: door.opened
+  conditions:
+  - below: 12
+    condition: numeric_state
+    entity_id: sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur
+  actions:
+  - variables:
+      name: '{{ (state_attr(trigger.entity_id, ''friendly_name'') or trigger.entity_id)
+        | replace(''Homematic IP '','''') | replace(''Türkontakt '','''') | replace(''Fensterkontakt
+        '','''') | replace('' Tür'','''') }}'
+  - action: script.push_beide_handys
+    data:
+      text: '{{ name }} ist seit 20 Minuten offen, aussen {{ states(''sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur'')
+        }} °C.'
+      titel: "\U0001F976 {{ name }} offen"
+  mode: parallel
+- id: '1795166949079'
+  alias: Boiler gestoppt – Meldung
+  description: 'Nur Beobachtung: meldet, wenn der Boiler-Heizstab (switch.haus_verbauch)
+    ausgeht, mit Grund. Schaltet selbst nichts. Die Abschaltung machen die Steuer-Automationen
+    (PV, Max.-Temperatur, Netzbezug) unabhängig davon.'
+  triggers:
+  - entity_id: switch.haus_verbauch
+    from: 'on'
+    to: 'off'
+    trigger: state
+  conditions: []
+  actions:
+  - variables:
+      grund: '{% set ns = namespace(g=''manuell oder andere Ursache'') %}{% for e,
+        g in [(''automation.boiler_maximaltemperatur_erreicht'', ''Maximaltemperatur
+        erreicht''), (''automation.boiler_netzbezug_schutz'', ''Netzbezug-Schutz''),
+        (''automation.pv_boiler_ausschalten'', ''zu wenig PV-Überschuss'')] %}{% set
+        lt = state_attr(e, ''last_triggered'') %}{% if lt and (now() - lt).total_seconds()
+        < 60 %}{% set ns.g = g %}{% endif %}{% endfor %}{{ ns.g }}'
+      saldo: '{{ states(''sensor.leistung_saldierung'') | float(0) | round(0) | int
+        }}'
+      ww: '{{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'') }}'
+  - action: script.push_beide_handys
+    data:
+      text: 'Grund: {{ grund }}. Saldierung: {{ saldo }} W, WW-Oben: {{ ww }} °C.'
+      titel: "\U0001F6E2️ Boiler gestoppt"
+  mode: queued
+- id: '1795185734859'
+  alias: Alarm Tore/Haustür – Freigabe & Bedienung
+  description: Gibt die nächtliche Tor-/Haustür-Überwachung 5 min frei, wenn ein Garagentor
+    per Öffner (HmIP-App/HA) geöffnet, die Push-Taste «Ich bin's» oder der HA-Knopf
+    gedrückt wird. Solange ein Tor/die Haustür offen ist, bleibt die Freigabe aktiv;
+    1 min nach dem Schliessen aller drei ist die Überwachung wieder aktiv. Meldet
+    um 22:00 den Status (immer) und um 23:55 offene Tore/Fenster (nur wenn etwas offen
+    ist) und verarbeitet die Push-Taste «Jetzt scharf schalten».
+  triggers:
+  - entity_id:
+    - switch.homematic_ip_offner_garagentor_auto
+    - switch.homematic_ip_offner_garagentor_werkraum
+    id: oeffner
+    note: Impuls des HmIP-Öffners kommt ca. 1 s vor dem Torkontakt
+    to: 'on'
+    trigger: state
+  - event_data:
+      action: ALARM_TORE_FREIGABE
+    event_type: mobile_app_notification_action
+    id: push_freigabe
+    trigger: event
+  - entity_id: input_button.alarm_tore_freigabe_geben
+    id: knopf
+    not_from:
+    - unavailable
+    trigger: state
+  - entity_id: binary_sensor.tore_und_haustur
+    for: 00:01:00
+    id: alles_zu
+    note: 1 min nach dem Schliessen wieder scharf
+    to: 'off'
+    trigger: state
+  - id: abgelaufen
+    target:
+      entity_id: timer.alarm_tore_freigabe
+    trigger: timer.finished
+  - event_data:
+      action: ALARM_SCHARF
+    event_type: mobile_app_notification_action
+    id: push_scharf
+    trigger: event
+  - trigger: time
+    at: '22:00:00'
+    id: info_2230
+    note: Info, solange man noch wach ist
+  - trigger: time
+    at: '23:55:00'
+    id: check_2355
+    note: Letzte Kontrolle vor dem HmIP-Scharfschalten um 23:59:30
+  conditions: []
+  actions:
+  - variables:
+      alarm: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+      offen_fenster: '{{ expand(''binary_sensor.alarmzone_fenster_und_turen'') | selectattr(''state'',
+        ''eq'', ''on'') | map(attribute=''name'') | join('', '') }}'
+      offen_tore: '{{ expand(''binary_sensor.tore_und_haustur'') | selectattr(''state'',
+        ''eq'', ''on'') | map(attribute=''name'') | join('', '') }}'
+      zeit: '{{ now().strftime(''%H:%M'') }}'
+  - choose:
+    - conditions:
+      - condition: trigger
+        id:
+        - oeffner
+        - push_freigabe
+        - knopf
+      sequence:
+      - action: timer.start
+        data:
+          duration: 00:05:00
+        target:
+          entity_id: timer.alarm_tore_freigabe
+      - if:
+        - condition: state
+          entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+          state:
+          - armed_home
+          - armed_away
+        then:
+        - variables:
+            quelle: '{% if trigger.id == ''oeffner'' %}Öffner {{ trigger.to_state.name
+              | replace(''Homematic IP '', '''') }}{% elif trigger.id == ''push_freigabe''
+              %}Push-Taste «Ich bin''s»{% else %}HA-Knopf{% endif %}'
+        - action: script.push_beide_handys
+          data:
+            daten:
+              tag: alarm_tore
+            text: Freigabe um {{ zeit }} Uhr durch {{ quelle }}. Garagentore und Haustür
+              lösen jetzt keinen Alarm aus; 1 min nach dem Schliessen wieder überwacht.
+            titel: "\U0001F513 Freigabe Tore/Haustür"
+    - conditions:
+      - condition: trigger
+        id: alles_zu
+      - condition: state
+        entity_id: timer.alarm_tore_freigabe
+        state: active
+      sequence:
+      - action: timer.cancel
+        target:
+          entity_id: timer.alarm_tore_freigabe
+      - if:
+        - condition: state
+          entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+          state:
+          - armed_home
+          - armed_away
+        then:
+        - action: script.push_beide_handys
+          data:
+            daten:
+              tag: alarm_tore
+            text: Alles seit 1 min geschlossen ({{ zeit }} Uhr). Überwachung wieder
+              aktiv.
+            titel: "\U0001F512 Tore & Haustür wieder überwacht"
+    - conditions:
+      - condition: trigger
+        id: abgelaufen
+      sequence:
+      - if:
+        - condition: state
+          entity_id: binary_sensor.tore_und_haustur
+          state: 'on'
+        then:
+        - action: timer.start
+          data:
+            duration: 00:05:00
+          note: Freigabe verlängern, solange noch etwas offen ist
+          target:
+            entity_id: timer.alarm_tore_freigabe
+    - conditions:
+      - condition: trigger
+        id: push_scharf
+      sequence:
+      - else:
+        - action: alarm_control_panel.alarm_arm_home
+          target:
+            entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+        - action: script.push_beide_handys
+          data:
+            text: Hüllschutz um {{ zeit }} Uhr per Push-Taste scharf geschaltet.
+            titel: "\U0001F512 Alarm scharf"
+        if:
+        - condition: state
+          entity_id: binary_sensor.alarmzone_fenster_und_turen
+          state: 'on'
+        then:
+        - action: script.push_beide_handys
+          data:
+            text: 'Noch offen: {{ offen_fenster }}. Bitte schliessen und erneut versuchen.'
+            titel: ⚠️ Nicht scharf geschaltet
+    - conditions:
+      - condition: trigger
+        id: info_2230
+      sequence:
+      - if:
+        - condition: or
+          conditions:
+          - condition: state
+            entity_id: binary_sensor.tore_und_haustur
+            state: 'on'
+          - condition: state
+            entity_id: binary_sensor.alarmzone_fenster_und_turen
+            state: 'on'
+        then:
+        - action: script.push_beide_handys
+          data:
+            titel: "\U0001F319 Alarm-Info 22:00 – noch offen"
+            text: 'Noch offen: {{ [offen_tore, offen_fenster] | reject(''eq'', '''')
+              | join('', '') }}. Der Alarm (Hüllschutz) wird um 23:59 scharf.'
+        else:
+        - action: script.push_beide_handys
+          data:
+            titel: "\U0001F319 Alarm-Info 22:00"
+            text: Alle Fenster, Türen, Garagentore und die Haustür sind zu. Der Alarm
+              (Hüllschutz) wird um 23:59 scharf.
+    - conditions:
+      - condition: trigger
+        id: check_2355
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: binary_sensor.tore_und_haustur
+          state: 'on'
+        - condition: state
+          entity_id: binary_sensor.alarmzone_fenster_und_turen
+          state: 'on'
+      sequence:
+      - action: script.push_beide_handys
+        data:
+          titel: ⚠️ In 4 min scharf – noch offen
+          text: 'Noch offen: {{ [offen_tore, offen_fenster] | reject(''eq'', '''')
+            | join('', '') }}. Bitte schliessen.'
+          daten:
+            interruption-level: time-sensitive
+  max: 10
+  mode: queued
+- id: '1795185753657'
+  alias: Alarm Tore/Haustür – Überwachung bei scharfem HmIP-Alarm
+  description: 'Bindet Garagentor Auto, Garagentor Werkraum und Haustür in den HmIP-Alarm
+    ein (die drei Kontakte sind NICHT in der HmIP-Sicherheitszone). Ist der HmIP-Alarm
+    scharf und öffnet sich eins davon länger als 2 s ohne Freigabe, kommt sofort eine
+    Vorwarnung mit Taste «Ich bin''s»; ohne Freigabe/Ausschalten innert 2 min (Karenzzeit)
+    folgt der Einbruchalarm als kritische Push-Meldung (3× im Minutentakt). Testmodus:
+    gleicher Ablauf inkl. Taste, aber am Schluss nur Test-Meldung statt Alarm.'
+  triggers:
+  - note: 2 s Entprellung gegen Kontakt-Flattern
+    options:
+      for: 00:00:02
+    target:
+      entity_id: binary_sensor.homematic_ip_eingangsture_tur
+    trigger: door.opened
+  - options:
+      for: 00:00:02
+    target:
+      entity_id:
+      - binary_sensor.homematic_ip_garagentor_auto_tur
+      - binary_sensor.homematic_ip_garagentor_werkraum_tur
+    trigger: garage_door.opened
+  conditions:
+  - condition: state
+    entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+    state:
+    - armed_home
+    - armed_away
+  actions:
+  - variables:
+      namen:
+        binary_sensor.homematic_ip_eingangsture_tur: Haustür
+        binary_sensor.homematic_ip_garagentor_auto_tur: Garagentor Auto
+        binary_sensor.homematic_ip_garagentor_werkraum_tur: Garagentor Werkraum
+  - variables:
+      name: '{{ namen.get(trigger.entity_id, ''Tor/Tür'') }}'
+      test: '{{ ''TEST – '' if is_state(''input_boolean.alarm_tore_testmodus'', ''on'')
+        else '''' }}'
+      zeit: '{{ now().strftime(''%H:%M'') }}'
+  - if:
+    - condition: state
+      entity_id: timer.alarm_tore_freigabe
+      state: active
+    then:
+    - if:
+      - condition: state
+        entity_id: input_boolean.alarm_tore_testmodus
+        state: 'on'
+      then:
+      - action: script.push_beide_handys
+        data:
+          text: '{{ name }} um {{ zeit }} Uhr mit gültiger Freigabe geöffnet – kein
+            Alarm.'
+          titel: "\U0001F9EA Test OK: {{ name }}"
+    - stop: Freigabe aktiv – berechtigte Öffnung
+  - action: script.push_beide_handys
+    data:
+      daten:
+        actions:
+        - action: ALARM_TORE_FREIGABE
+          authenticationRequired: true
+          title: Ich bin's – Freigabe
+        interruption-level: time-sensitive
+        tag: alarm_tore
+      text: Alarm ist scharf, {{ name }} wurde um {{ zeit }} Uhr ohne Freigabe geöffnet.
+        Tippe «Ich bin's» oder schalte den Alarm in der HmIP-App aus, sonst wird in
+        2 min Einbruchalarm ausgelöst.
+      titel: '{{ test }}⚠️ {{ name }} geöffnet – Alarm in 2 min'
+    note: Sofort nach dem Öffnen (2 s Entprellung)
+  - continue_on_timeout: true
+    note: Karenzzeit 2 min
+    timeout: 00:02:00
+    wait_for_trigger:
+    - target:
+        entity_id: timer.alarm_tore_freigabe
+      trigger: timer.started
+    - entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+      to: disarmed
+      trigger: state
+  - if:
+    - '{{ wait.trigger is not none }}'
+    then:
+    - action: script.push_beide_handys
+      data:
+        daten:
+          tag: alarm_tore
+        text: Kein Alarm ausgelöst.
+        titel: '{{ test }}✅ {{ name }}: Freigabe erkannt'
+    - stop: Freigabe oder Alarm ausgeschaltet innert Karenzzeit
+  - if:
+    - condition: state
+      entity_id: input_boolean.alarm_tore_testmodus
+      state: 'on'
+    then:
+    - action: script.push_beide_handys
+      data:
+        daten:
+          tag: alarm_tore
+        text: '{{ name }} um {{ zeit }} Uhr geöffnet, 2 min keine Freigabe. Im Scharfbetrieb
+          käme jetzt der Einbruchalarm.'
+        titel: "\U0001F9EA Test: hier wäre EINBRUCHALARM"
+    - stop: Testmodus
+  - action: persistent_notification.create
+    data:
+      message: '{{ name }} um {{ zeit }} Uhr ohne Freigabe geöffnet.'
+      notification_id: alarm_tore
+      title: "\U0001F6A8 Einbruchalarm {{ name }}"
+  - note: Kritische Meldung 3× im Minutentakt, bis Freigabe oder HmIP-Alarm aus
+    repeat:
+      count: 3
+      sequence:
+      - action: script.push_beide_handys
+        data:
+          daten:
+            push:
+              sound:
+                critical: 1
+                name: default
+                volume: 1
+            tag: alarm_tore
+          text: '{{ name }} wurde um {{ zeit }} Uhr bei scharfem Alarm geöffnet –
+            keine Freigabe innert 2 min! ({{ repeat.index }}/3)'
+          titel: "\U0001F6A8 EINBRUCHALARM – {{ name }}"
+      - continue_on_timeout: true
+        timeout: 00:01:00
+        wait_for_trigger:
+        - target:
+            entity_id: timer.alarm_tore_freigabe
+          trigger: timer.started
+        - entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+          to: disarmed
+          trigger: state
+      - if:
+        - '{{ wait.trigger is not none }}'
+        then:
+        - action: script.push_beide_handys
+          data:
+            daten:
+              tag: alarm_tore
+            text: Einbruchalarm {{ name }} wurde quittiert.
+            titel: ✅ Alarm quittiert
+        - stop: Alarm quittiert
+  max_exceeded: silent
+  mode: single
+- id: '1795185779832'
+  alias: Alarm – nach nächtlichem Ausschalten wieder scharf
+  description: 'Wird der HmIP-Alarm in der Nacht (23:59–04:55) von Hand ausgeschaltet
+    (z. B. Heimkommen per HmIP-App), schaltet HA ihn wieder scharf (Hüllschutz), sobald
+    ein Garagentor/die Haustür geöffnet und danach alles 1 min geschlossen ist – aber
+    nur, wenn alle Fenster/Türen der Alarmzone zu sind. Ohne Tor-/Türöffnung nach
+    30 min nur Erinnerung mit Taste «Jetzt scharf schalten». Testmodus: meldet nur.'
+  triggers:
+  - entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+    from:
+    - armed_home
+    - armed_away
+    to: disarmed
+    trigger: state
+  conditions:
+  - after: '23:59:00'
+    before: 04:55:00
+    condition: time
+    note: 'HmIP-Zeitplan: scharf 23:59:30, aus 05:00 – bei Änderung im HmIP hier anpassen'
+  actions:
+  - variables:
+      zeit: '{{ now().strftime(''%H:%M'') }}'
+  - action: script.push_beide_handys
+    data:
+      daten:
+        actions:
+        - action: ALARM_SCHARF
+          authenticationRequired: true
+          title: Jetzt scharf schalten
+        tag: alarm_wieder_scharf
+      text: Alarm um {{ zeit }} Uhr ausgeschaltet. Er wird 1 min nach dem Schliessen
+        von Garagentor/Haustür automatisch wieder scharf.
+      titel: "\U0001F513 Alarm nachts ausgeschaltet"
+  - continue_on_timeout: true
+    timeout: 00:30:00
+    wait_for_trigger:
+    - entity_id: binary_sensor.tore_und_haustur
+      to: 'on'
+      trigger: state
+  - if:
+    - '{{ wait.trigger is none }}'
+    then:
+    - action: script.push_beide_handys
+      data:
+        daten:
+          actions:
+          - action: ALARM_SCHARF
+            authenticationRequired: true
+            title: Jetzt scharf schalten
+          tag: alarm_wieder_scharf
+        text: Der Alarm ist seit 30 min ausgeschaltet und wird nicht automatisch scharf
+          (kein Tor/keine Haustür bedient).
+        titel: ⏰ Alarm ist noch aus
+    - stop: Keine Tor-/Türöffnung – nur erinnert
+  - continue_on_timeout: true
+    timeout: 02:00:00
+    wait_for_trigger:
+    - entity_id: binary_sensor.tore_und_haustur
+      for: 00:01:00
+      to: 'off'
+      trigger: state
+  - if:
+    - '{{ wait.trigger is none }}'
+    then:
+    - action: script.push_beide_handys
+      data:
+        text: Alarm bleibt ausgeschaltet.
+        titel: ⚠️ Tor/Haustür seit 2 h offen
+    - stop: Tor/Haustür blieb offen
+  - condition: state
+    entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+    note: Inzwischen schon von Hand scharf? Dann nichts tun
+    state: disarmed
+  - after: '23:59:00'
+    before: 05:00:00
+    condition: time
+  - if:
+    - condition: state
+      entity_id: binary_sensor.alarmzone_fenster_und_turen
+      state: 'on'
+    then:
+    - action: script.push_beide_handys
+      data:
+        daten:
+          actions:
+          - action: ALARM_SCHARF
+            authenticationRequired: true
+            title: Jetzt scharf schalten
+          tag: alarm_wieder_scharf
+        text: 'Noch offen: {{ expand(''binary_sensor.alarmzone_fenster_und_turen'')
+          | selectattr(''state'', ''eq'', ''on'') | map(attribute=''name'') | join('',
+          '') }}.'
+        titel: ⚠️ Alarm NICHT wieder scharf
+    - stop: Fenster/Tür der Alarmzone offen
+  - else:
+    - action: alarm_control_panel.alarm_arm_home
+      target:
+        entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
+    - action: script.push_beide_handys
+      data:
+        daten:
+          tag: alarm_wieder_scharf
+        text: Hüllschutz um {{ now().strftime('%H:%M') }} Uhr automatisch wieder scharf
+          geschaltet.
+        titel: "\U0001F512 Alarm wieder scharf"
+    if:
+    - condition: state
+      entity_id: input_boolean.alarm_tore_testmodus
+      state: 'on'
+    then:
+    - action: script.push_beide_handys
+      data:
+        daten:
+          tag: alarm_wieder_scharf
+        text: Alles seit 1 min zu – im Scharfbetrieb würde der Alarm jetzt ({{ now().strftime('%H:%M')
+          }} Uhr) wieder scharf geschaltet.
+        titel: "\U0001F9EA Test: Alarm wäre wieder scharf"
+  mode: restart
+- id: '1795292506820'
+  alias: Sofalampe – Shelly-Button
+  description: Shelly Button1 steuert den Sofalampe-Dimmer direkt (Ersatz für den
+    nicht erreichbaren Shelly i3). Einfach = ein, Doppel = aus, Lang = umschalten.
+  triggers:
+  - event_data:
+      channel: 1
+      click_type: single
+      device: shellybutton1-98CDAC2DB0FF
+    event_type: shelly.click
+    id: single
+    trigger: event
+  - event_data:
+      channel: 1
+      click_type: double
+      device: shellybutton1-98CDAC2DB0FF
+    event_type: shelly.click
+    id: double
+    trigger: event
+  - event_data:
+      channel: 1
+      click_type: long
+      device: shellybutton1-98CDAC2DB0FF
+    event_type: shelly.click
+    id: long
+    trigger: event
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: single
+      sequence:
+      - action: light.turn_on
+        target:
+          entity_id: light.shellydimmer2_e8db84d2e240
+    - conditions:
+      - condition: trigger
+        id: double
+      sequence:
+      - action: light.turn_off
+        target:
+          entity_id: light.shellydimmer2_e8db84d2e240
+    - conditions:
+      - condition: trigger
+        id: long
+      sequence:
+      - action: light.toggle
+        target:
+          entity_id: light.shellydimmer2_e8db84d2e240
+  mode: queued
+- id: '1795294281119'
+  alias: WW-Ampel – Stufe bestimmen
+  description: 'Setzt die WW-Ampel-Stufe aus «Speicher WW °C»: Rot ab 48 °C, Gelb
+    45–47 °C, Violett darunter. Aufwärts wechselt die Stufe beim Erreichen der Grenze,
+    abwärts erst 0.5 °C darunter (kein Flackern). Beim Start und beim Einschalten
+    der Ampel wird ohne Spielraum neu eingestuft.'
+  triggers:
+  - above: 47.95
+    entity_id: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+    id: Rot
+    trigger: numeric_state
+  - below: 47.45
+    entity_id: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+    id: Gelb
+    trigger: numeric_state
+  - above: 44.95
+    entity_id: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+    id: Gelb
+    trigger: numeric_state
+  - below: 44.45
+    entity_id: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+    id: Violett
+    trigger: numeric_state
+  - event: start
+    id: neu
+    trigger: homeassistant
+  - entity_id: input_boolean.bad_led_ww_ampel
+    id: neu
+    to: 'on'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: neu
+      sequence:
+      - choose:
+        - conditions:
+          - above: 47.95
+            condition: numeric_state
+            entity_id: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+          sequence:
+          - action: input_select.select_option
+            data:
+              option: Rot
+            target:
+              entity_id: input_select.ww_ampel_stufe
+        - conditions:
+          - above: 44.95
+            condition: numeric_state
+            entity_id: sensor.ww_mitte_rl_ist_ww_oben_temperatur_3
+          sequence:
+          - action: input_select.select_option
+            data:
+              option: Gelb
+            target:
+              entity_id: input_select.ww_ampel_stufe
+        default:
+        - action: input_select.select_option
+          data:
+            option: Violett
+          target:
+            entity_id: input_select.ww_ampel_stufe
+    default:
+    - action: input_select.select_option
+      data:
+        option: '{{ trigger.id }}'
+      target:
+        entity_id: input_select.ww_ampel_stufe
+  mode: queued
+- id: '1795294294587'
+  alias: Bad-LED – WW-Ampel, Offen & Sabotage
+  description: 'Steuert die beiden LEDs am HmIP-BSL «WW Boiler Schalter». Sabotage
+    (wenn Schalter EIN): beide LEDs rot 100 % blinkend. Sonst obere LED = WW-Ampel
+    (Rot ab 48, Gelb 45–47, Violett darunter), untere LED = blau, solange ein Fenster,
+    eine Türe oder ein Garagentor offen ist. Beide 06–22 Uhr 20 %, nachts 5 %.'
+  triggers:
+  - entity_id:
+    - input_select.ww_ampel_stufe
+    - binary_sensor.warnung_hmip_sabotage
+    - input_boolean.bad_led_sabotage_anzeige
+    - input_boolean.bad_led_ww_ampel
+    - binary_sensor.fenster_turen_tore_offen
+    - input_boolean.bad_led_offen_anzeige
+    trigger: state
+  - at:
+    - 06:00:00
+    - '22:00:00'
+    trigger: time
+  - event: start
+    trigger: homeassistant
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: binary_sensor.warnung_hmip_sabotage
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.bad_led_sabotage_anzeige
+        state: 'on'
+      sequence:
+      - action: light.turn_on
+        data:
+          brightness_pct: 100
+          effect: BLINKING_MIDDLE
+          hs_color:
+          - 0
+          - 100
+        target:
+          entity_id:
+          - light.homematic_ip_ww_boiler_schalter_top
+          - light.homematic_ip_ww_boiler_schalter_bottom
+    default:
+    - if:
+      - condition: state
+        entity_id: input_boolean.bad_led_offen_anzeige
+        state: 'on'
+      - condition: state
+        entity_id: binary_sensor.fenster_turen_tore_offen
+        state: 'on'
+      then:
+      - action: light.turn_on
+        target:
+          entity_id: light.homematic_ip_ww_boiler_schalter_bottom
+        data:
+          hs_color:
+          - 240
+          - 100
+          brightness_pct: '{{ 5 if now().hour >= 22 or now().hour < 6 else 20 }}'
+          effect: 'ON'
+      else:
+      - action: light.turn_off
+        target:
+          entity_id: light.homematic_ip_ww_boiler_schalter_bottom
+    - else:
+      - action: light.turn_off
+        target:
+          entity_id: light.homematic_ip_ww_boiler_schalter_top
+      if:
+      - condition: state
+        entity_id: input_boolean.bad_led_ww_ampel
+        state: 'on'
+      then:
+      - action: light.turn_on
+        data:
+          brightness_pct: '{{ 5 if now().hour >= 22 or now().hour < 6 else 20 }}'
+          effect: 'ON'
+          hs_color: '{{ {''Rot'': [0, 100], ''Gelb'': [60, 100], ''Violett'': [300,
+            100]}[states(''input_select.ww_ampel_stufe'')] | default([300, 100]) }}'
+        target:
+          entity_id: light.homematic_ip_ww_boiler_schalter_top
+  mode: restart

@@ -137,6 +137,14 @@
                   "type": "tile"
                 },
                 {
+                  "type": "tile",
+                  "entity": "binary_sensor.warnung_hmip_sabotage",
+                  "name": "HmIP-Sabotage",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
                   "entity": "binary_sensor.warnung_sd_karte_voll",
                   "grid_options": {
                     "columns": 6
@@ -247,6 +255,87 @@
               "type": "grid"
             },
             {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Bad-LED (Boiler-Schalter OG)",
+                  "icon": "mdi:led-on"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.bad_led_sabotage_anzeige",
+                  "name": "Sabotage-Anzeige (beide LEDs rot blinkend)",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.bad_led_ww_ampel",
+                  "name": "WW-Ampel (obere LED)",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.bad_led_offen_anzeige",
+                  "name": "Offen-Anzeige (untere LED blau)",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "binary_sensor.fenster_turen_tore_offen",
+                  "name": "Fenster / Türen / Tore offen",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_select.ww_ampel_stufe",
+                  "name": "Ampel-Stufe",
+                  "grid_options": {
+                    "columns": 6
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+                  "name": "Speicher WW",
+                  "grid_options": {
+                    "columns": 6
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Obere LED (WW):** 🔴 ab 48 °C heiss, auch Baden · 🟡 45–47 °C gut · 🟣 41–44 °C reicht zum Duschen. Abwärts wechselt die Farbe erst 0.5 °C unter der Grenze (kein Flackern). **Untere LED:** 🔵 solange ein Fenster, eine Türe oder ein Garagentor offen ist (10 HmIP-Kontakte). Beide 06–22 Uhr 20 %, nachts 5 %. **Sabotage** an einem HmIP-Kontakt hat Vorrang: beide LEDs rot blinkend, bis HmIP die Sabotage zurücksetzt.</sub>"
+                }
+              ]
+            },
+            {
               "cards": [
                 {
                   "heading": "Verlauf Alarme & Warnungen (7 Tage)",
@@ -268,7 +357,8 @@
                       "binary_sensor.alarm_heizstab_ohne_pv",
                       "binary_sensor.warnung_wp_taktet",
                       "binary_sensor.warnung_hmip_batterie_schwach",
-                      "binary_sensor.warnung_sd_karte_voll"
+                      "binary_sensor.warnung_sd_karte_voll",
+                      "binary_sensor.warnung_hmip_sabotage"
                     ]
                   },
                   "type": "logbook"
@@ -323,6 +413,281 @@
             }
           ],
           "title": "Alarme",
+          "type": "sections"
+        },
+        {
+          "icon": "mdi:message-badge-outline",
+          "max_columns": 3,
+          "path": "meldungen",
+          "sections": [
+            {
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Türen & Tore",
+                  "icon": "mdi:garage-variant"
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.tore_haustur_push_bei_offnen_schliessen",
+                  "name": "🚗🚪 Geöffnet / geschlossen",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Überwacht:** Garagentor Auto, Garagentor Werkraum und Haustür. **Meldet:** jedes Öffnen und Schliessen mit Uhrzeit, z. B. «Garagentor Auto wurde um 10:05 Uhr geöffnet».</sub>"
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.tor_offen_erinnerung",
+                  "name": "⏱️ Tor 15 min offen + 22-Uhr-Check",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Überwacht:** dieselben drei Kontakte. **Meldet:** wenn ein Tor oder die Haustür 15 Minuten ununterbrochen offen ist, und um 22:00 die Liste aller noch offenen. Ist um 22:00 alles zu, kommt nichts.</sub>"
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.bewegung_nachts_garage_haustur",
+                  "name": "👣 Bewegung nachts (22–06 Uhr)",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Überwacht:** Bewegungsmelder Garage und Haustüre. **Meldet:** Bewegung zwischen 22:00 und 06:00 Uhr. Danach 10 Minuten Ruhe, damit nicht jede Bewegung eine Meldung auslöst.</sub>"
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.ture_offen_bei_kalte",
+                  "name": "🥶 Türe 20 min offen bei < 12 °C",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Überwacht:** Türkontakte Terrasse/Spielzimmer, Cheminée, Hibiscus, Kräuter, Küche, Kellertreppe, Gäste-WC und die Aussentemperatur. **Meldet:** wenn eine Türe 20 Minuten offen ist und es aussen kälter als 12 °C ist (Wärmeverlust, WP läuft unnötig).</sub>"
+                }
+              ],
+              "type": "grid"
+            },
+            {
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Boiler & Energie",
+                  "icon": "mdi:water-boiler"
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.boiler_benachrichtigung_gestartet",
+                  "name": "☀️ Boiler gestartet",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Überwacht:** Boiler-Heizstab (Shelly). **Meldet:** wenn er einschaltet und genug PV-Überschuss da ist, mit Saldierung und WW-Oben-Temperatur. Schaltet nichts.</sub>"
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.boiler_gestoppt_meldung",
+                  "name": "🛢️ Boiler gestoppt",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Überwacht:** Boiler-Heizstab. **Meldet:** wenn er ausschaltet, mit Grund (zu wenig PV, Maximaltemperatur, Netzbezug-Schutz oder manuell), Saldierung und WW-Oben. Schaltet nichts – die Boiler-Steuerung läuft unabhängig davon weiter.</sub>"
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.boiler_monatsbericht",
+                  "name": "📅 Boiler-Monatsbericht",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Überwacht:** Monatszähler Boiler. **Meldet:** am letzten Tag des Monats um 23:56 die mit PV-Überschuss geladenen kWh und die Ladezeit.</sub>"
+                }
+              ],
+              "type": "grid"
+            },
+            {
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Alarme & Berichte",
+                  "icon": "mdi:bell-ring-outline"
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.alarm_kritisch_aufs_handy",
+                  "name": "🚨 Kritische Alarme",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Überwacht:** WP heizt nicht, Wohnraum < 21.8 °C, Warmwasser < 40 °C, Fühler ausgefallen, Heizstab ohne PV (Details im Register Alarme). **Meldet:** zeitkritische Push bei Auftreten und eine Entwarnung, wenn der Alarm wieder weg ist. Antippen öffnet das Register Alarme.</sub>"
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.boiler_tagesbericht",
+                  "name": "📊 Tagesabschluss",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Überwacht:** PV, Einspeisung, Netzbezug, Haus & WP, Autarkie, Boiler, Solcast-Prognose, WP-Takte und Laufzeit. **Meldet:** einmal täglich zur eingestellten Zeit die Tageswerte plus aktive Warnungen.</sub>"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_datetime.tagesabschluss_push_zeit",
+                  "name": "Push-Zeit Tagesabschluss",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "script.push_beide_handys",
+                  "name": "📲 Testmeldung an beide Handys",
+                  "icon": "mdi:cellphone-message",
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "script.push_beide_handys",
+                    "data": {
+                      "titel": "📲 Testmeldung",
+                      "text": "Push-Test aus dem Dashboard – kommt an beiden Handys an."
+                    }
+                  },
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>Alle Meldungen gehen an iPhone 12 und iPhone 17. Der Schalter bei jeder Meldung schaltet nur die Meldung ein/aus.</sub>"
+                }
+              ],
+              "type": "grid"
+            },
+            {
+              "cards": [
+                {
+                  "heading": "Verlauf Türen, Tore & Bewegung (48 h)",
+                  "icon": "mdi:history",
+                  "type": "heading"
+                },
+                {
+                  "grid_options": {
+                    "columns": "full",
+                    "rows": 6
+                  },
+                  "hours_to_show": 48,
+                  "target": {
+                    "entity_id": [
+                      "binary_sensor.homematic_ip_garagentor_auto_tur",
+                      "binary_sensor.homematic_ip_garagentor_werkraum_tur",
+                      "binary_sensor.homematic_ip_eingangsture_tur",
+                      "binary_sensor.homematic_ip_bewegungsmelder_garage_bewegung",
+                      "binary_sensor.homematic_ip_bewegungsmelder_hausture_bewegung",
+                      "binary_sensor.homematic_ip_turkontakt_spielzimmer_terrasse_tur",
+                      "binary_sensor.homematic_ip_turkontakt_cheminee_tur",
+                      "binary_sensor.homematic_ip_turkontakt_hibiscus_tur",
+                      "binary_sensor.homematic_ip_turkontakt_krauter_tur",
+                      "binary_sensor.homematic_ip_fensterkontakt_kuche_tur",
+                      "binary_sensor.homematic_ip_fensterkontakt_kellertreppe_tur",
+                      "binary_sensor.homematic_ip_fensterkontakt_gaste_wc_tur"
+                    ]
+                  },
+                  "type": "logbook"
+                }
+              ],
+              "column_span": 3,
+              "type": "grid"
+            }
+          ],
+          "title": "Meldungen",
           "type": "sections"
         }
       ]

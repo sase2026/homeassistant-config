@@ -1484,6 +1484,165 @@
      ]
     }
    ]
+  },
+  {
+   "title": "FBH Lernphase Prognose",
+   "path": "fbh-lernphase",
+   "icon": "mdi:table-clock",
+   "cards": [
+    {
+     "type": "markdown",
+     "content": "{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}\n{%- set th = states('sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0) -%}\n{%- set band = '> 10 °C' if ta > 10 else ('5–10 °C' if ta >= 5 else ('0–5 °C' if ta >= 0 else '< 0 °C')) -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n## 🌡️ Aktueller Aussenbereich: **{{ band }}**\nmet.no-Mittel 6 h **{{ ta }} °C** · HmIP Unterstand {{ th }} °C · Raum {{ t }} °C\n\n| Modell jetzt | Wert |\n|---|---|\n| Auskühlfaktor k | {{ k }} K/h/K |\n| Auskühlung ohne FBH (Modell) | {{ (k * (t - ta)) | round(2) }} K/h |\n| Nachwärme-Aussenfaktor fa | {{ fa | round(2) }} → {{ (states('input_number.fbh_nachwaerme_faktor') | float(0) * fa) | round(3) }} K je h Laufzeit |\n| Vorhalt H | {{ states('input_number.fbh_vorhalt_stunden') }} h |\n| Modus | {{ '🟢 LIVE' if is_state('input_boolean.fbh_smart_aktiv','on') else '👁️ Beobachtung (HmIP schaltet)' }} |\n"
+    },
+    {
+     "type": "markdown",
+     "content": "{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}\n{%- set akt = 0 if ta > 10 else (1 if ta >= 5 else (2 if ta >= 0 else 3)) -%}\n{%- set rows = [\n ['> 10 °C', '0.008 (vorläufig)', '~0.08–0.1 K/h', '2–3 h', '0.1 K', '3 h', '16./17., 17./18., 18./19.11.'],\n ['5–10 °C', '0.008', '~0.1–0.12 K/h', '~4 h', '~0.08 K', '3 h (Kandidat 5 h)', '20./21.11.'],\n ['0–5 °C', 'offen (0.008)', '14.11. abends ~0.2 K/h', 'offen (> 4 h?)', '0.1 × fa', 'offen', 'fehlt'],\n ['< 0 °C', 'offen', 'offen', 'offen', '0.03 K', 'offen', 'fehlt']\n] -%}\n### 📋 Prognosetabelle je Aussenbereich (Lernphase)\n<sub>Aussen = met.no-Mittel 6 h · Zielband fix (Minimum 22.3, EIN 22.4, AUS 22.5 °C) · ▶ = aktueller Bereich · nachgeführt nach jeder Nachtauswertung</sub>\n\n| | Aussen | k (K/h/K) | Auskühlung ohne FBH | Totzeit FBH | Nachwärme je h Laufzeit | Vorhalt EIN | Messnächte |\n|:-:|---|---|---|---|---|---|---|\n{% for r in rows -%}\n| {{ '▶' if loop.index0 == akt else '' }} | {{ '**' ~ r[0] ~ '**' if loop.index0 == akt else r[0] }} | {{ r[1] }} | {{ r[2] }} | {{ r[3] }} | {{ r[4] }} | {{ r[5] }} | {{ r[6] }} |\n{% endfor %}"
+    },
+    {
+     "type": "markdown",
+     "content": "### 🌙 Messprotokoll Nächte\n| Nacht | Aussen met.no / HmIP | Auskühlung ohne FBH | Nachwärme nach AUS | Totzeit | Prognosefehler 3 h | WP kWh (NT-Anteil) | Raum min. |\n|---|---|---|---|---|---|---|---|\n| 18./19.11. | – / 9.5–11.9 °C | – | +0.2 K nach 6.5 h Laufzeit | > 3 h | Smart zu tief (hätte ab 04:00 unnötig EIN) | 13.0 (91 %) | 22.1 °C |\n| 20./21.11. | 6.0 / 8.2 °C | 0.1–0.12 K/h | +0.1 K (Peak nach 1.7 h), netto +0.3 K nach 3.5 h | ~4 h | −0.15 … −0.25 K (k 0.01) | 18.7 (83 %) | 22.1 °C |\n\n<sub>Änderungen: 21.11. 18:31 k 0.01 → 0.008. Nächste Ausbauschritte nach der Lernphase: Parameter je Bereich automatisch, Weitblick 6 h für EIN, lernende Korrektur.</sub>"
+    },
+    {
+     "type": "custom:plotly-graph",
+     "hours_to_show": 18,
+     "refresh_interval": 300,
+     "layout": {
+      "height": 380,
+      "margin": {
+       "t": 60,
+       "b": 80,
+       "l": 45,
+       "r": 45
+      },
+      "paper_bgcolor": "rgba(0,0,0,0)",
+      "plot_bgcolor": "rgba(0,0,0,0)",
+      "font": {
+       "color": "#9e9e9e",
+       "size": 11
+      },
+      "xaxis": {
+       "showgrid": false,
+       "color": "#9e9e9e",
+       "tickformat": "%H:%M"
+      },
+      "yaxis": {
+       "showgrid": true,
+       "gridcolor": "#2a2a2a",
+       "color": "#9e9e9e",
+       "ticksuffix": "°",
+       "title": {
+        "text": "Raum"
+       }
+      },
+      "yaxis2": {
+       "overlaying": "y",
+       "side": "right",
+       "color": "#9e9e9e",
+       "ticksuffix": "°",
+       "showgrid": false,
+       "title": {
+        "text": "Aussen"
+       }
+      },
+      "yaxis3": {
+       "overlaying": "y",
+       "visible": false,
+       "range": [
+        0,
+        1
+       ],
+       "fixedrange": true
+      },
+      "showlegend": true,
+      "legend": {
+       "orientation": "h",
+       "x": 0,
+       "y": -0.12,
+       "yanchor": "top",
+       "font": {
+        "size": 10
+       }
+      },
+      "annotations": [
+       {
+        "text": "Nacht: Raum, Aussen (met.no / HmIP) und FBH-Laufzeit",
+        "xref": "paper",
+        "yref": "paper",
+        "x": 0,
+        "y": 1.06,
+        "xanchor": "left",
+        "yanchor": "bottom",
+        "showarrow": false,
+        "font": {
+         "size": 16,
+         "color": "#9e9e9e"
+        }
+       }
+      ]
+     },
+     "entities": [
+      {
+       "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
+       "name": "FBH-Pumpe EIN",
+       "yaxis": "y3",
+       "fill": "tozeroy",
+       "fillcolor": "rgba(34,197,94,0.10)",
+       "line": {
+        "color": "rgba(34,197,94,0.3)",
+        "width": 0.5,
+        "shape": "hv"
+       },
+       "filters": [
+        {
+         "map_y": "y === \"on\" ? 1 : 0"
+        }
+       ]
+      },
+      {
+       "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur",
+       "name": "Raum Ist",
+       "yaxis": "y",
+       "line": {
+        "color": "#ffffff",
+        "width": 2.5,
+        "shape": "hv"
+       }
+      },
+      {
+       "entity": "input_number.fbh_raum_minimum",
+       "name": "Raum Minimum",
+       "yaxis": "y",
+       "line": {
+        "color": "#ef4444",
+        "width": 1,
+        "dash": "dash",
+        "shape": "hv"
+       },
+       "extend_to": "now"
+      },
+      {
+       "entity": "input_number.aussen_prognose_mittel_6h",
+       "name": "Aussen met.no 6 h",
+       "yaxis": "y2",
+       "line": {
+        "color": "#3b82f6",
+        "width": 1.5,
+        "shape": "hv"
+       }
+      },
+      {
+       "entity": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur",
+       "name": "Aussen HmIP",
+       "yaxis": "y2",
+       "line": {
+        "color": "#06b6d4",
+        "width": 1,
+        "dash": "dot"
+       }
+      }
+     ]
+    }
+   ]
   }
  ]
 }

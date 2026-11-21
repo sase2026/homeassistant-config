@@ -1,0 +1,40 @@
+push_beide_handys:
+  alias: Push an beide Handys
+  description: 'Schickt eine Push-Meldung mit Titel und Text an iPhone 12 und iPhone
+    17. Optional: Zusatzdaten (z. B. interruption-level, tag, url). Fällt ein Handy
+    aus, bekommt das andere die Meldung trotzdem.'
+  fields:
+    daten:
+      name: Zusatzdaten
+      required: false
+      selector:
+        object: {}
+    text:
+      name: Text
+      required: true
+      selector:
+        text:
+          multiline: true
+    titel:
+      name: Titel
+      required: true
+      selector:
+        text: {}
+  icon: mdi:cellphone-message
+  mode: parallel
+  sequence:
+  - variables:
+      zusatz: '{{ daten | default({}, true) }}'
+  - parallel:
+    - action: notify.mobile_app_iphone_12_sse
+      continue_on_error: true
+      data:
+        data: '{{ zusatz }}'
+        message: '{{ text }}'
+        title: '{{ titel }}'
+    - action: notify.mobile_app_iphone17_sse
+      continue_on_error: true
+      data:
+        data: '{{ zusatz }}'
+        message: '{{ text }}'
+        title: '{{ titel }}'
