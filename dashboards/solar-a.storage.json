@@ -951,701 +951,1001 @@
           "title": "WP",
           "path": "wp",
           "icon": "mdi:heat-pump",
-          "cards": [
+          "type": "sections",
+          "max_columns": 3,
+          "sections": [
             {
-              "type": "horizontal-stack",
+              "type": "grid",
+              "column_span": 3,
               "cards": [
                 {
-                  "type": "custom:mushroom-template-card",
-                  "primary": "WP aktuell",
-                  "secondary": "{{ states('sensor.energy_manager_wp_aktuell_w') | int }} W",
-                  "icon": "mdi:heat-pump",
-                  "icon_color": "cyan",
-                  "layout": "vertical",
-                  "card_mod": {
-                    "style": "ha-card { background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.3); border-radius: 16px; }\n"
-                  }
-                },
-                {
-                  "type": "custom:mushroom-template-card",
-                  "primary": "WP heute kWh",
-                  "secondary": "{{ states('sensor.energy_manager_wp_heute_kwh') | float(0) | round(1) }} kWh",
-                  "icon": "mdi:calendar-today",
-                  "icon_color": "cyan",
-                  "layout": "vertical"
-                },
-                {
-                  "type": "custom:mushroom-template-card",
-                  "primary": "WP Monat kWh",
-                  "secondary": "{{ states('sensor.energy_manager_wp_monat_kwh') | float(0) | round(1) }} kWh",
-                  "icon": "mdi:calendar-month",
-                  "icon_color": "cyan",
-                  "layout": "vertical"
-                },
-                {
-                  "type": "custom:mushroom-template-card",
-                  "primary": "WP Jahr kWh",
-                  "secondary": "{{ states('sensor.energy_manager_wp_jahr_kwh') | float(0) | round(1) }} kWh",
-                  "icon": "mdi:calendar",
-                  "icon_color": "cyan",
-                  "layout": "vertical"
-                }
-              ]
-            },
-            {
-              "type": "horizontal-stack",
-              "cards": [
-                {
-                  "type": "custom:mushroom-template-card",
-                  "primary": "Speicher WW °C",
-                  "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C",
-                  "icon": "mdi:water-thermometer",
-                  "icon_color": "red",
-                  "layout": "vertical"
-                },
-                {
-                  "type": "custom:mushroom-template-card",
-                  "primary": "Vorlauf HK-II °C",
-                  "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3') | float(0) | round(1) }} °C",
-                  "icon": "mdi:thermometer-chevron-up",
-                  "icon_color": "orange",
-                  "layout": "vertical"
-                },
-                {
-                  "type": "custom:mushroom-template-card",
-                  "primary": "Rücklauf HK-II °C",
-                  "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2') | float(0) | round(1) }} °C",
-                  "icon": "mdi:thermometer-chevron-down",
-                  "icon_color": "blue",
-                  "layout": "vertical"
-                }
-              ]
-            },
-            {
-              "type": "custom:plotly-graph",
-              "hours_to_show": 24,
-              "refresh_interval": 60,
-              "layout": {
-                "height": 360,
-                "margin": {
-                  "t": 75,
-                  "b": 70,
-                  "l": 50,
-                  "r": 50
-                },
-                "paper_bgcolor": "rgba(0,0,0,0)",
-                "plot_bgcolor": "rgba(0,0,0,0)",
-                "font": {
-                  "color": "#9e9e9e",
-                  "size": 11
-                },
-                "xaxis": {
-                  "showgrid": false,
-                  "color": "#9e9e9e",
-                  "tickformat": "%H:%M"
-                },
-                "yaxis": {
-                  "showgrid": true,
-                  "gridcolor": "#2a2a2a",
-                  "color": "#9e9e9e",
-                  "tickformat": "~s",
-                  "ticksuffix": "W"
-                },
-                "showlegend": true,
-                "legend": {
-                  "orientation": "h",
-                  "x": 0,
-                  "xanchor": "left",
-                  "y": -0.12,
-                  "yanchor": "top",
-                  "font": {
-                    "size": 10
-                  }
-                },
-                "annotations": [
-                  {
-                    "text": "Heizung Leistung (24 h)",
-                    "xref": "paper",
-                    "yref": "paper",
-                    "x": 0,
-                    "y": 1.13,
-                    "xanchor": "left",
-                    "yanchor": "bottom",
-                    "showarrow": false,
-                    "font": {
-                      "size": 20,
-                      "color": "#9e9e9e"
-                    }
-                  },
-                  {
-                    "text": "$fn ({hass}) => 'WP ' + Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0) + ' W'\n",
-                    "xref": "paper",
-                    "yref": "paper",
-                    "x": 0,
-                    "y": 1.04,
-                    "xanchor": "left",
-                    "yanchor": "bottom",
-                    "showarrow": false,
-                    "font": {
-                      "size": 14,
-                      "color": "#06b6d4"
-                    }
-                  }
-                ]
-              },
-              "entities": [
-                {
-                  "entity": "sensor.heizung_verbrauch_w",
-                  "name": "Gesamt",
-                  "yaxis": "y",
-                  "fill": "tozeroy",
-                  "fillcolor": "rgba(179,229,252,0.18)",
-                  "line": {
-                    "color": "rgba(179,229,252,0.9)",
-                    "width": 0.6
-                  }
-                },
-                {
-                  "entity": "sensor.heizung_phase_a_leistung",
-                  "name": "Phase A",
-                  "yaxis": "y",
-                  "line": {
-                    "color": "#0288d1",
-                    "width": 0.6
-                  }
-                },
-                {
-                  "entity": "sensor.heizung_phase_b_leistung",
-                  "name": "Phase B",
-                  "yaxis": "y",
-                  "line": {
-                    "color": "#4fc3f7",
-                    "width": 0.6
-                  }
-                },
-                {
-                  "entity": "sensor.heizung_phase_c_leistung",
-                  "name": "Phase C",
-                  "yaxis": "y",
-                  "line": {
-                    "color": "#81d4fa",
-                    "width": 0.6,
-                    "dash": "dot"
-                  }
-                }
-              ]
-            },
-            {
-              "type": "custom:plotly-graph",
-              "hours_to_show": 24,
-              "refresh_interval": 60,
-              "layout": {
-                "height": 360,
-                "margin": {
-                  "t": 75,
-                  "b": 60,
-                  "l": 50,
-                  "r": 50
-                },
-                "paper_bgcolor": "rgba(0,0,0,0)",
-                "plot_bgcolor": "rgba(0,0,0,0)",
-                "font": {
-                  "color": "#9e9e9e",
-                  "size": 11
-                },
-                "xaxis": {
-                  "showgrid": false,
-                  "color": "#9e9e9e",
-                  "tickformat": "%H:%M"
-                },
-                "yaxis": {
-                  "showgrid": true,
-                  "gridcolor": "#2a2a2a",
-                  "color": "#9e9e9e",
-                  "ticksuffix": "°",
-                  "range": [
-                    15,
-                    60
-                  ]
-                },
-                "showlegend": true,
-                "legend": {
-                  "orientation": "h",
-                  "x": 0,
-                  "xanchor": "left",
-                  "y": -0.12,
-                  "yanchor": "top",
-                  "font": {
-                    "size": 10
-                  }
-                },
-                "annotations": [
-                  {
-                    "text": "Temperaturen (24 h)",
-                    "xref": "paper",
-                    "yref": "paper",
-                    "x": 0,
-                    "y": 1.13,
-                    "xanchor": "left",
-                    "yanchor": "bottom",
-                    "showarrow": false,
-                    "font": {
-                      "size": 20,
-                      "color": "#9e9e9e"
-                    }
-                  },
-                  {
-                    "text": "$fn ({hass}) => 'Speicher WW ' + (parseFloat(hass.states['sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'].state)||0).toFixed(1) + ' °C'\n",
-                    "xref": "paper",
-                    "yref": "paper",
-                    "x": 0,
-                    "y": 1.04,
-                    "xanchor": "left",
-                    "yanchor": "bottom",
-                    "showarrow": false,
-                    "font": {
-                      "size": 14,
-                      "color": "#ef5350"
-                    }
-                  }
-                ]
-              },
-              "entities": [
-                {
-                  "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
-                  "name": "Speicher WW",
-                  "yaxis": "y",
-                  "line": {
-                    "color": "#ef5350",
-                    "width": 1.4
-                  }
-                },
-                {
-                  "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
-                  "name": "Vorlauf HK-II",
-                  "yaxis": "y",
-                  "line": {
-                    "color": "#ff9800",
-                    "width": 0.9
-                  }
-                },
-                {
-                  "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2",
-                  "name": "Rücklauf HK-II",
-                  "yaxis": "y",
-                  "line": {
-                    "color": "#42a5f5",
-                    "width": 0.9
-                  }
-                }
-              ]
-            },
-            {
-              "type": "custom:plotly-graph",
-              "hours_to_show": 1,
-              "refresh_interval": 600,
-              "layout": {
-                "height": 360,
-                "barmode": "stack",
-                "bargap": 0.25,
-                "margin": {
-                  "t": 75,
-                  "b": 60,
-                  "l": 55,
-                  "r": 10
-                },
-                "paper_bgcolor": "rgba(0,0,0,0)",
-                "plot_bgcolor": "rgba(0,0,0,0)",
-                "font": {
-                  "color": "#9e9e9e",
-                  "size": 11
-                },
-                "xaxis": {
-                  "type": "category",
-                  "range": "$ex [-0.5, JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').length - 0.5]",
-                  "color": "#9e9e9e",
-                  "showgrid": false
-                },
-                "yaxis": {
-                  "showgrid": true,
-                  "gridcolor": "#2a2a2a",
-                  "color": "#9e9e9e",
-                  "ticksuffix": " kWh",
-                  "zeroline": true,
-                  "zerolinecolor": "#666666"
-                },
-                "showlegend": true,
-                "legend": {
-                  "orientation": "h",
-                  "x": 0,
-                  "xanchor": "left",
-                  "y": -0.14,
-                  "yanchor": "top",
-                  "font": {
-                    "size": 10
-                  }
-                },
-                "annotations": [
-                  {
-                    "text": "WP-Verbrauch je Monat",
-                    "xref": "paper",
-                    "yref": "paper",
-                    "x": 0,
-                    "y": 1.13,
-                    "xanchor": "left",
-                    "yanchor": "bottom",
-                    "showarrow": false,
-                    "font": {
-                      "size": 20,
-                      "color": "#9e9e9e"
-                    }
-                  },
-                  {
-                    "text": "kWh aus Langzeitstatistik, letzte 13 Monate",
-                    "xref": "paper",
-                    "yref": "paper",
-                    "x": 0,
-                    "y": 1.04,
-                    "xanchor": "left",
-                    "yanchor": "bottom",
-                    "showarrow": false,
-                    "font": {
-                      "size": 11,
-                      "color": "#9e9e9e"
-                    }
-                  }
-                ]
-              },
-              "entities": [
-                {
-                  "entity": "",
-                  "name": "WP",
-                  "type": "bar",
-                  "yaxis": "y",
-                  "x": "$ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))\n",
-                  "y": "$ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.wp)\n",
-                  "marker": {
-                    "color": "#06b6d4"
-                  },
-                  "hovertemplate": "%{x}: %{y:.0f}<extra>WP</extra>"
-                },
-                {
-                  "entity": "",
-                  "name": "Haus (ohne WP)",
-                  "type": "bar",
-                  "yaxis": "y",
-                  "x": "$ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))\n",
-                  "y": "$ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.haus)\n",
-                  "marker": {
-                    "color": "#3b82f6"
-                  },
-                  "hovertemplate": "%{x}: %{y:.0f}<extra>Haus (ohne WP)</extra>"
-                }
-              ]
-            },
-            {
-              "content": "{% set zs = as_datetime('2026-11-18T18:50:00+01:00') %}{% set heute = today_at() %}{% set woche = today_at() - timedelta(days=now().weekday()) %}{% set monat = today_at().replace(day=1) %}{% set jahr = today_at().replace(month=1, day=1) %}{% macro f(v, d=1) %}{% if v is number %}{{ v | round(d) }}{% else %}–{% endif %}{% endmacro %}{% set ns = namespace(c=[]) %}{% for l, p, s, k, h, kwh in [('Heute', heute, 'sensor.wp_starts_heute', 'sensor.wp_kurztakte_heute', 'sensor.wp_laufzeit_heute', 'sensor.energy_manager_wp_heute_kwh'), ('Woche', woche, 'sensor.wp_starts_woche', 'sensor.wp_kurztakte_woche', 'sensor.wp_laufzeit_woche', 'sensor.wp_strom_woche'), ('Monat', monat, 'sensor.wp_starts_monat', 'sensor.wp_kurztakte_monat', 'sensor.wp_laufzeit_monat', 'sensor.energy_manager_wp_monat_kwh'), ('Jahr', jahr, 'sensor.wp_starts_jahr', 'sensor.wp_kurztakte_jahr', 'sensor.wp_laufzeit_jahr', 'sensor.energy_manager_wp_jahr_kwh')] %}{% set st = states(s) | float(0) %}{% set lz = states(h) | float(0) %}{% set e = states(kwh) | float(none) %}{% set voll = p >= zs %}{% set dauer_h = (now() - ([p, zs] | max)).total_seconds() / 3600 %}{% set ns.c = ns.c + [{'l': l, 'voll': voll, 'st': st, 'k': states(k) | float(0), 'lz': lz, 'avg': (lz * 60 / st if st > 0 else none), 'anteil': (lz / dauer_h * 100 if dauer_h > 0.1 else none), 'e': e, 'e_st': (e / st if voll and st > 0 and e is number else none), 'pm': (e / lz if voll and lz > 0.1 and e is number else none), 'sph': (st / dauer_h if dauer_h > 0.1 else none)}] %}{% endfor %}{% set c = ns.c %}{% set lauf = is_state('binary_sensor.wp_verdichter_lauft', 'on') %}{% set seit = ((now() - states.binary_sensor.wp_verdichter_lauft.last_changed).total_seconds() / 60) | round(0) | int if states.binary_sensor.wp_verdichter_lauft is not none else 0 %}\n**Verdichter jetzt:** {{ '🟢 läuft seit ' ~ seit ~ ' min' if lauf else '⚪ aus seit ' ~ seit ~ ' min' }}\n\n| Kennzahl | {% for x in c %}{{ x.l }}{{ '' if x.voll else '*' }} | {% endfor %}Richtwert |\n|:--|{% for x in c %}--:|{% endfor %}:--|\n| Verdichter-Starts | {% for x in c %}**{{ f(x.st, 0) }}** | {% endfor %} |\n| Starts pro Stunde | {% for x in c %}{{ f(x.sph, 2) }} | {% endfor %}max. 3/h |\n| Laufzeit h | {% for x in c %}{{ f(x.lz, 1) }} | {% endfor %} |\n| Ø Laufzeit pro Start min | {% for x in c %}**{{ f(x.avg, 0) }}** | {% endfor %}je länger, desto besser (≥ 30) |\n| Laufzeitanteil % | {% for x in c %}{{ f(x.anteil, 0) }} | {% endfor %} |\n| Kurztakte < {{ states('input_number.wp_kurztakt_grenze') | int(20) }} min | {% for x in c %}{{ f(x.k, 0) }} | {% endfor %}Ziel 0 |\n| WP-Strom kWh | {% for x in c %}{{ f(x.e, 1) }} | {% endfor %} |\n| kWh pro Start | {% for x in c %}{{ f(x.e_st, 2) }} | {% endfor %} |\n| Ø Leistung im Betrieb kW | {% for x in c %}{{ f(x.pm, 2) }} | {% endfor %}Verdichter ≈ 2.8–3.5 |\n| Abtauungen | – | – | – | – | Erkennung folgt (Muster bei Frost) |\n\n<sub>Verdichter läuft = WP-Leistung > 1000 W (Standby ≈ 8 W, Pumpe ≈ 48 W). Zählung Starts/Laufzeit ab 18.11.2026 18:50 – Spalten mit * sind noch unvollständig, Verhältniszahlen (kWh/Start, kW) erscheinen erst, wenn der Zeitraum ganz erfasst ist. WP-Strom aus Shelly 3EM (inkl. Pumpe und Steuerung).</sub>\n",
-              "title": "WP-Betrieb: Takte & Laufzeiten",
-              "type": "markdown"
-            },
-            {
-              "content": "{% set raw = state_attr('sensor.gebaude_tageswerte','tage') %}{% set t = raw | from_json if raw else [] %}{% set az = states('input_number.wp_arbeitszahl_annahme') | float(3) %}{% set tn = states('input_number.norm_aussentemperatur') | float(-8) %}{% set fl = states('input_number.beheizte_flache') | float(200) %}{% set mon = now().strftime('%Y-%m') %}{% set yr = now().strftime('%Y') %}{% macro f(v, d=1) %}{% if v is number %}{{ v | round(d) }}{% else %}–{% endif %}{% endmacro %}{% set ns = namespace(cols=[]) %}{% for label, rs in [('Gestern', t[-1:]), ('7 Tage', t[-7:]), ('Monat', t | selectattr('d', 'match', mon) | list), ('Jahr', t | selectattr('d', 'match', yr) | list)] %}{% set n = rs | length %}{% if n > 0 %}{% set h = namespace(s=0) %}{% for r in rs %}{% set h.s = h.s + ([20 - r.ta, 0] | max if r.ta < 12 else 0) %}{% endfor %}{% set wp = rs | sum(attribute='wp') %}{% set ta = (rs | sum(attribute='ta')) / n %}{% set ti = (rs | sum(attribute='ti')) / n %}{% set q = wp * az %}{% set H = (q * 1000 / (24 * n * (ti - ta))) if ti - ta > 1 else none %}{% set ns.cols = ns.cols + [{'l': label, 'n': n, 'ta': ta, 'ti': ti, 'wp': wp, 'q': q, 'hgt': h.s, 'kwh_hgt': (wp / h.s if h.s > 0 else none), 'H': H, 'P': (H * (ti - tn) / 1000 if H is not none else none), 'spez': (H * (ti - tn) / fl if H is not none else none)}] %}{% else %}{% set ns.cols = ns.cols + [{'l': label, 'n': 0}] %}{% endif %}{% endfor %}{% set c = ns.cols %}| Kennzahl | {% for x in c %}{{ x.l }} | {% endfor %}\n|:--|{% for x in c %}--:|{% endfor %}\n| Tage mit Daten | {% for x in c %}{{ x.n }} | {% endfor %}\n| Ø Aussen / Ø Innen °C | {% for x in c %}{{ f(x.ta) }} / {{ f(x.ti) }} | {% endfor %}\n| Heizgradtage HGT 20/12 | {% for x in c %}{{ f(x.hgt, 0) }} | {% endfor %}\n| WP-Strom kWh | {% for x in c %}{{ f(x.wp) }} | {% endfor %}\n| Wärme Hzg + WW kWh (AZ {{ az }}) | {% for x in c %}{{ f(x.q, 0) }} | {% endfor %}\n| **Strom pro Heizgradtag** kWh/HGT | {% for x in c %}**{{ f(x.kwh_hgt, 2) }}** | {% endfor %}\n| **Wärmeverlust H** W/K | {% for x in c %}**{{ f(x.H, 0) }}** | {% endfor %}\n| Heizlast bei {{ tn }} °C kW | {% for x in c %}{{ f(x.P, 1) }} | {% endfor %}\n| spez. Heizlast W/m² | {% for x in c %}{{ f(x.spez, 0) }} | {% endfor %}\n{% set g = namespace(n=0, sx=0, sy=0, sxx=0, sxy=0) %}{% for r in t %}{% set g.n = g.n + 1 %}{% set g.sx = g.sx + r.ta %}{% set g.sy = g.sy + r.wp %}{% set g.sxx = g.sxx + r.ta * r.ta %}{% set g.sxy = g.sxy + r.ta * r.wp %}{% endfor %}{% set den = g.n * g.sxx - g.sx * g.sx %}{% set b = (g.n * g.sxy - g.sx * g.sy) / den if den != 0 else 0 %}{% set a = (g.sy - b * g.sx) / g.n if g.n else 0 %}\n\n**Energiesignatur** ({{ g.n }} Tage{{ ', noch wenig aussagekräftig – ab ca. 14 Tagen mit verschiedenen Temperaturen' if g.n < 14 else '' }}): {% if g.n >= 3 and b < 0 %}WP-Strom ≈ {{ a | round(1) }} {{ b | round(2) }} × T<sub>aussen</sub> kWh/Tag · **Heizgrenze ≈ {{ (-a / b) | round(1) }} °C** · Bedarf bei {{ tn }} °C ≈ {{ (a + b * tn) | round(0) }} kWh Strom/Tag ≈ **{{ ((a + b * tn) * az / 24) | round(1) }} kW Heizlast**{% else %}noch zu wenig Daten{% endif %}\n\n<sub>Quelle: Langzeitstatistik (Tageswerte, dauerhaft), Aussen/Innen = Homematic ab 14.11.2026. H = Wärme / (24 h × (T<sub>innen</sub> − T<sub>aussen</sub>)); Wärme = WP-Strom (Shelly) × Arbeitszahl {{ az }} aus den Wärmezählern der Excel (Wärme Hzg + WW ÷ Shelly-Strom, Feb.–März und Okt.–Nov. 2026: 3.2 bzw. 3.5). Heizung und WW werden bewusst gemeinsam betrachtet, weil die FBH Speicherwärme aus der WW-Zone zieht – H und Heizlast gelten also inkl. WW-Grundbedarf. Sonnengewinne und Speicher-/Estrichpuffer verfälschen Einzeltage – Wochen- und Monatswerte sind verlässlicher. Richtwerte spez. Heizlast: Neubau 20–40, sanierter Altbau 40–70, unsaniert > 80 W/m².</sub>\n",
-              "title": "Gebäude: Heizlast & thermische Qualität",
-              "type": "markdown"
-            },
-            {
-              "entities": [
-                {
-                  "entity": "",
-                  "hovertemplate": "%{text}: %{x:.1f} °C → %{y:.1f} kWh<extra></extra>",
-                  "marker": {
-                    "color": "#06b6d4",
-                    "size": 8
-                  },
-                  "mode": "markers",
-                  "name": "Tage",
-                  "text": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').map(r => r.d.slice(8, 10) + '.' + r.d.slice(5, 7) + '.')",
-                  "type": "scatter",
-                  "x": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').map(r => r.ta)",
-                  "y": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').map(r => r.wp)"
-                },
-                {
-                  "entity": "",
-                  "hoverinfo": "skip",
-                  "line": {
-                    "color": "#f59e0b",
-                    "dash": "dash",
-                    "width": 1.5
-                  },
-                  "mode": "lines",
-                  "name": "Trend",
-                  "type": "scatter",
-                  "x": "$ex (() => { const t = JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]'); const n = t.length; if (n < 3) return []; let sx = 0, sy = 0, sxx = 0, sxy = 0; t.forEach(r => { sx += r.ta; sy += r.wp; sxx += r.ta * r.ta; sxy += r.ta * r.wp; }); const b = (n * sxy - sx * sy) / (n * sxx - sx * sx); const a = (sy - b * sx) / n; const tn = parseFloat(hass.states['input_number.norm_aussentemperatur'].state) || -8; const hg = b < 0 ? Math.min(-a / b, 25) : 20; return [tn, hg]; })()",
-                  "y": "$ex (() => { const t = JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]'); const n = t.length; if (n < 3) return []; let sx = 0, sy = 0, sxx = 0, sxy = 0; t.forEach(r => { sx += r.ta; sy += r.wp; sxx += r.ta * r.ta; sxy += r.ta * r.wp; }); const b = (n * sxy - sx * sy) / (n * sxx - sx * sx); const a = (sy - b * sx) / n; const tn = parseFloat(hass.states['input_number.norm_aussentemperatur'].state) || -8; const hg = b < 0 ? Math.min(-a / b, 25) : 20; return [a + b * tn, Math.max(0, a + b * hg)]; })()"
-                }
-              ],
-              "hours_to_show": 1,
-              "layout": {
-                "annotations": [
-                  {
-                    "font": {
-                      "color": "#9e9e9e",
-                      "size": 20
+                  "type": "horizontal-stack",
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "WP aktuell",
+                      "secondary": "{{ states('sensor.energy_manager_wp_aktuell_w') | int }} W",
+                      "icon": "mdi:heat-pump",
+                      "icon_color": "cyan",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.3); border-radius: 16px; }\n"
+                      }
                     },
-                    "showarrow": false,
-                    "text": "Energiesignatur",
-                    "x": 0,
-                    "xanchor": "left",
-                    "xref": "paper",
-                    "y": 1.13,
-                    "yanchor": "bottom",
-                    "yref": "paper"
-                  },
-                  {
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "WP heute kWh",
+                      "secondary": "{{ states('sensor.energy_manager_wp_heute_kwh') | float(0) | round(1) }} kWh",
+                      "icon": "mdi:calendar-today",
+                      "icon_color": "cyan",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "WP Monat kWh",
+                      "secondary": "{{ states('sensor.energy_manager_wp_monat_kwh') | float(0) | round(1) }} kWh",
+                      "icon": "mdi:calendar-month",
+                      "icon_color": "cyan",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "WP Jahr kWh",
+                      "secondary": "{{ states('sensor.energy_manager_wp_jahr_kwh') | float(0) | round(1) }} kWh",
+                      "icon": "mdi:calendar",
+                      "icon_color": "cyan",
+                      "layout": "vertical"
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                },
+                {
+                  "type": "horizontal-stack",
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Speicher WW °C",
+                      "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C",
+                      "icon": "mdi:water-thermometer",
+                      "icon_color": "red",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Vorlauf HK-II °C",
+                      "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3') | float(0) | round(1) }} °C",
+                      "icon": "mdi:thermometer-chevron-up",
+                      "icon_color": "orange",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Rücklauf HK-II °C",
+                      "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2') | float(0) | round(1) }} °C",
+                      "icon": "mdi:thermometer-chevron-down",
+                      "icon_color": "blue",
+                      "layout": "vertical"
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "column_span": 3,
+              "cards": [
+                {
+                  "type": "markdown",
+                  "content": "## 📊 Management Summary WP (aus Excel)\n### ⭐ Letztes vollständiges Jahr **2025**",
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                },
+                {
+                  "type": "horizontal-stack",
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Strom",
+                      "secondary": "5'530 kWh",
+                      "icon": "mdi:flash",
+                      "icon_color": "cyan",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(6,182,212,0.10); border: 1px solid rgba(6,182,212,0.45); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Wärme",
+                      "secondary": "18'860 kWh",
+                      "icon": "mdi:fire",
+                      "icon_color": "orange",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(6,182,212,0.10); border: 1px solid rgba(6,182,212,0.45); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "JAZ",
+                      "secondary": "3.41",
+                      "icon": "mdi:speedometer",
+                      "icon_color": "green",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(6,182,212,0.10); border: 1px solid rgba(6,182,212,0.45); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Strom ggü. 2024",
+                      "secondary": "+1.7 %",
+                      "icon": "mdi:swap-vertical",
+                      "icon_color": "grey",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(6,182,212,0.10); border: 1px solid rgba(6,182,212,0.45); border-radius: 16px; }\n"
+                      }
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                },
+                {
+                  "type": "horizontal-stack",
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Verdichter",
+                      "secondary": "1'613 h",
+                      "icon": "mdi:timer-outline",
+                      "icon_color": "cyan",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(6,182,212,0.10); border: 1px solid rgba(6,182,212,0.45); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Abtau-Starts",
+                      "secondary": "406",
+                      "icon": "mdi:snowflake-melt",
+                      "icon_color": "light-blue",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(6,182,212,0.10); border: 1px solid rgba(6,182,212,0.45); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Ø el. Leistung",
+                      "secondary": "3.43 kW",
+                      "icon": "mdi:lightning-bolt",
+                      "icon_color": "amber",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(6,182,212,0.10); border: 1px solid rgba(6,182,212,0.45); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Energiebedarf Geb.+WW",
+                      "secondary": "94.3 kWh/m²a",
+                      "icon": "mdi:home-thermometer",
+                      "icon_color": "deep-orange",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(6,182,212,0.10); border: 1px solid rgba(6,182,212,0.45); border-radius: 16px; }\n"
+                      }
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "content": "### ⭐ Laufendes Jahr **2026 bis KW 47** (Ablesung 22.11.) ggü. Vorjahresperiode",
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                },
+                {
+                  "type": "horizontal-stack",
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Strom bis KW 47",
+                      "secondary": "3'740 kWh",
+                      "icon": "mdi:flash",
+                      "icon_color": "cyan",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.5); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Strom ggü. 2025",
+                      "secondary": "−15.8 % (VJ 4'440)",
+                      "icon": "mdi:trending-down",
+                      "icon_color": "green",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.5); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Wärme bis KW 47",
+                      "secondary": "13'540 kWh (VJ 15'110)",
+                      "icon": "mdi:fire",
+                      "icon_color": "orange",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.5); border-radius: 16px; }\n"
+                      }
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                },
+                {
+                  "type": "horizontal-stack",
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "JAZ bis KW 47",
+                      "secondary": "3.62 (VJ 3.40)",
+                      "icon": "mdi:speedometer",
+                      "icon_color": "green",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.5); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Verdichter bis KW 47",
+                      "secondary": "1'009 h",
+                      "icon": "mdi:timer-outline",
+                      "icon_color": "cyan",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.5); border-radius: 16px; }\n"
+                      }
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Abtau-Starts bis KW 47",
+                      "secondary": "317",
+                      "icon": "mdi:snowflake-melt",
+                      "icon_color": "light-blue",
+                      "layout": "vertical",
+                      "card_mod": {
+                        "style": "ha-card { background: rgba(245,158,11,0.10); border: 1px solid rgba(245,158,11,0.5); border-radius: 16px; }\n"
+                      }
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "title": "Jahresübersicht 2019–2026",
+                  "content": "| Jahr | Strom Hzg | Strom WW | **Strom ges.** | Wärme Hzg | Wärme WW | **Wärme ges.** | JAZ Hzg | JAZ WW | **JAZ ges.** | Verdichter h | Abtau-Starts | WW-Anteil Strom | HGT | Geb.-heizlast | kWh/m²a Geb. | Geb.+WW-heizlast | kWh/m²a Geb.+WW | Strom ggü. VJ | Datenbasis |\n|:--|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|--:|:--|\n| 2019 | 1'762 | 3'121 | 4'883 | 7'108 | 11'350 | 18'458 | 4.03 | 3.64 | 3.78 | 1'513 | 217 | 64 % | 2'708 | 2.62 | 35.5 | 6.82 | 92.3 | – | inkl. interpoliert |\n| 2020 | 3'452 | 1'782 | 5'234 | 12'456 | 6'080 | 18'536 | 3.61 | 3.41 | 3.54 | 1'507 | 381 | 34 % | 2'508 | 4.97 | 62.3 | 7.39 | 92.7 | +7.2 % | inkl. interpoliert |\n| 2021 | 2'904 | 3'410 | 6'314 | 10'150 | 11'150 | 21'300 | 3.50 | 3.27 | 3.37 | 1'762 | 561 | 54 % | 3'058 | 3.32 | 50.8 | 6.97 | 106.5 | +20.6 % | gemessen |\n| 2022 | 2'009 | 2'980 | 4'989 | 7'400 | 9'890 | 17'290 | 3.68 | 3.32 | 3.47 | 1'399 | 391 | 60 % | 2'503 | 2.96 | 37.0 | 6.91 | 86.5 | −21.0 % | gemessen |\n| 2023 | 1'842 | 3'510 | 5'352 | 7'070 | 11'440 | 18'510 | 3.84 | 3.26 | 3.46 | 1'544 | 420 | 66 % | 2'457 | 2.88 | 35.4 | 7.53 | 92.5 | +7.3 % | inkl. interpoliert |\n| 2024 | 1'830 | 3'610 | 5'440 | 7'000 | 12'000 | 19'000 | 3.83 | 3.32 | 3.49 | 1'605 | 507 | 66 % | 2'512 | 2.79 | 35.0 | 7.56 | 95.0 | +1.6 % | inkl. interpoliert |\n| **2025** | 1'460 | 4'070 | **5'530** | 5'330 | 13'530 | **18'860** | 3.65 | 3.32 | **3.41** | 1'613 | 406 | 74 % | 2'712 | 1.97 | 26.6 | 6.95 | 94.3 | +1.7 % | inkl. interpoliert |\n| **2026** *(bis KW 47)* | 920 | 2'820 | **3'740** | 3'820 | 9'720 | **13'540** | 4.15 | 3.45 | **3.62** | 1'009 | 317 | 75 % | 1'678 | 1.60 | 19.1 | 6.86 | 67.7 | – | gemessen |\n\n<sub>Quelle: Excel «WP_Verbrauchsanalyse_2026», Blatt Management Summary (Zählerstände der WP, Rohdaten_WP), Stand **KW 47 / 22.11.2026** – wird bei jeder Excel-Nachführung aktualisiert. Energie in kWh. 2026 = Teiljahr, nicht direkt mit vollen Jahren vergleichbar (dafür der Vergleich oben); HGT November 2026 noch nicht erfasst → Gebäudekennwerte 2026 vorläufig. Heizlast-Kennwerte gemäss Excel-Definition (Wärme / HGT). JAZ = Wärme / Strom der WP-eigenen Zähler. WW-Wärme enthält bis Nov. 2026 Heizwärme (Schichtung, siehe WP_Benchmark).</sub>",
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "custom:plotly-graph",
+                  "hours_to_show": 24,
+                  "refresh_interval": 60,
+                  "layout": {
+                    "height": 360,
+                    "margin": {
+                      "t": 75,
+                      "b": 70,
+                      "l": 50,
+                      "r": 50
+                    },
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor": "rgba(0,0,0,0)",
                     "font": {
                       "color": "#9e9e9e",
                       "size": 11
                     },
-                    "showarrow": false,
-                    "text": "1 Punkt = 1 Tag · Linie = Trend bis Norm-Aussentemperatur",
-                    "x": 0,
-                    "xanchor": "left",
-                    "xref": "paper",
-                    "y": 1.04,
-                    "yanchor": "bottom",
-                    "yref": "paper"
-                  }
-                ],
-                "font": {
-                  "color": "#9e9e9e",
-                  "size": 11
-                },
-                "height": 380,
-                "legend": {
-                  "font": {
-                    "size": 10
+                    "xaxis": {
+                      "showgrid": false,
+                      "color": "#9e9e9e",
+                      "tickformat": "%H:%M"
+                    },
+                    "yaxis": {
+                      "showgrid": true,
+                      "gridcolor": "#2a2a2a",
+                      "color": "#9e9e9e",
+                      "tickformat": "~s",
+                      "ticksuffix": "W"
+                    },
+                    "showlegend": true,
+                    "legend": {
+                      "orientation": "h",
+                      "x": 0,
+                      "xanchor": "left",
+                      "y": -0.12,
+                      "yanchor": "top",
+                      "font": {
+                        "size": 10
+                      }
+                    },
+                    "annotations": [
+                      {
+                        "text": "Heizung Leistung (24 h)",
+                        "xref": "paper",
+                        "yref": "paper",
+                        "x": 0,
+                        "y": 1.13,
+                        "xanchor": "left",
+                        "yanchor": "bottom",
+                        "showarrow": false,
+                        "font": {
+                          "size": 20,
+                          "color": "#9e9e9e"
+                        }
+                      },
+                      {
+                        "text": "$fn ({hass}) => 'WP ' + Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0) + ' W'\n",
+                        "xref": "paper",
+                        "yref": "paper",
+                        "x": 0,
+                        "y": 1.04,
+                        "xanchor": "left",
+                        "yanchor": "bottom",
+                        "showarrow": false,
+                        "font": {
+                          "size": 14,
+                          "color": "#06b6d4"
+                        }
+                      }
+                    ]
                   },
-                  "orientation": "h",
-                  "x": 0,
-                  "y": -0.16
-                },
-                "margin": {
-                  "b": 60,
-                  "l": 55,
-                  "r": 15,
-                  "t": 75
-                },
-                "paper_bgcolor": "rgba(0,0,0,0)",
-                "plot_bgcolor": "rgba(0,0,0,0)",
-                "showlegend": true,
-                "xaxis": {
-                  "color": "#9e9e9e",
-                  "gridcolor": "#2a2a2a",
-                  "showgrid": true,
-                  "title": {
-                    "text": "Ø Aussentemperatur °C"
-                  },
-                  "type": "linear",
-                  "zeroline": false
-                },
-                "yaxis": {
-                  "color": "#9e9e9e",
-                  "gridcolor": "#2a2a2a",
-                  "rangemode": "tozero",
-                  "showgrid": true,
-                  "title": {
-                    "text": "WP-Strom kWh/Tag"
+                  "entities": [
+                    {
+                      "entity": "sensor.heizung_verbrauch_w",
+                      "name": "Gesamt",
+                      "yaxis": "y",
+                      "fill": "tozeroy",
+                      "fillcolor": "rgba(179,229,252,0.18)",
+                      "line": {
+                        "color": "rgba(179,229,252,0.9)",
+                        "width": 0.6
+                      }
+                    },
+                    {
+                      "entity": "sensor.heizung_phase_a_leistung",
+                      "name": "Phase A",
+                      "yaxis": "y",
+                      "line": {
+                        "color": "#0288d1",
+                        "width": 0.6
+                      }
+                    },
+                    {
+                      "entity": "sensor.heizung_phase_b_leistung",
+                      "name": "Phase B",
+                      "yaxis": "y",
+                      "line": {
+                        "color": "#4fc3f7",
+                        "width": 0.6
+                      }
+                    },
+                    {
+                      "entity": "sensor.heizung_phase_c_leistung",
+                      "name": "Phase C",
+                      "yaxis": "y",
+                      "line": {
+                        "color": "#81d4fa",
+                        "width": 0.6,
+                        "dash": "dot"
+                      }
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
                   }
                 }
-              },
-              "refresh_interval": 3600,
-              "type": "custom:plotly-graph"
+              ]
             },
             {
-              "entities": [
+              "type": "grid",
+              "cards": [
                 {
-                  "entity": "",
-                  "hovertemplate": "%{x}: %{y:.1f} kWh<extra>WP</extra>",
-                  "marker": {
-                    "color": "#06b6d4"
-                  },
-                  "name": "WP-Strom",
-                  "type": "bar",
-                  "x": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.d.slice(8, 10) + '.' + r.d.slice(5, 7) + '.')",
-                  "y": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.wp)"
-                },
-                {
-                  "entity": "",
-                  "hovertemplate": "%{x}: H ≈ %{y:.0f}0 W/K<extra></extra>",
-                  "marker": {
-                    "color": "#22c55e",
-                    "size": 7,
-                    "symbol": "diamond"
-                  },
-                  "mode": "markers",
-                  "name": "H ÷ 10",
-                  "type": "scatter",
-                  "x": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.d.slice(8, 10) + '.' + r.d.slice(5, 7) + '.')",
-                  "y": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => { const az = parseFloat(hass.states['input_number.wp_arbeitszahl_annahme'].state) || 3; const dt = r.ti - r.ta; return dt > 1 ? Math.round(r.wp * az * 1000 / (24 * dt)) / 10 : null; })"
-                },
-                {
-                  "entity": "",
-                  "hovertemplate": "%{x}: %{y:.1f} °C<extra>Aussen</extra>",
-                  "line": {
-                    "color": "#f97316",
-                    "width": 1.2
-                  },
-                  "marker": {
-                    "size": 4
-                  },
-                  "mode": "lines+markers",
-                  "name": "Ø Aussen",
-                  "type": "scatter",
-                  "x": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.d.slice(8, 10) + '.' + r.d.slice(5, 7) + '.')",
-                  "y": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.ta)",
-                  "yaxis": "y2"
-                }
-              ],
-              "hours_to_show": 1,
-              "layout": {
-                "annotations": [
-                  {
-                    "font": {
-                      "color": "#9e9e9e",
-                      "size": 20
+                  "type": "custom:plotly-graph",
+                  "hours_to_show": 24,
+                  "refresh_interval": 60,
+                  "layout": {
+                    "height": 360,
+                    "margin": {
+                      "t": 75,
+                      "b": 60,
+                      "l": 50,
+                      "r": 50
                     },
-                    "showarrow": false,
-                    "text": "WP-Strom je Tag vs. Aussentemperatur",
-                    "x": 0,
-                    "xanchor": "left",
-                    "xref": "paper",
-                    "y": 1.13,
-                    "yanchor": "bottom",
-                    "yref": "paper"
-                  },
-                  {
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor": "rgba(0,0,0,0)",
                     "font": {
                       "color": "#9e9e9e",
                       "size": 11
                     },
-                    "showarrow": false,
-                    "text": "letzte 60 Tage · Linie = Ø Aussen, Punkte = Wärmeverlust H (W/K ÷ 10)",
-                    "x": 0,
-                    "xanchor": "left",
-                    "xref": "paper",
-                    "y": 1.04,
-                    "yanchor": "bottom",
-                    "yref": "paper"
-                  }
-                ],
-                "font": {
-                  "color": "#9e9e9e",
-                  "size": 11
-                },
-                "height": 340,
-                "legend": {
-                  "font": {
-                    "size": 10
+                    "xaxis": {
+                      "showgrid": false,
+                      "color": "#9e9e9e",
+                      "tickformat": "%H:%M"
+                    },
+                    "yaxis": {
+                      "showgrid": true,
+                      "gridcolor": "#2a2a2a",
+                      "color": "#9e9e9e",
+                      "ticksuffix": "°",
+                      "range": [
+                        15,
+                        60
+                      ]
+                    },
+                    "showlegend": true,
+                    "legend": {
+                      "orientation": "h",
+                      "x": 0,
+                      "xanchor": "left",
+                      "y": -0.12,
+                      "yanchor": "top",
+                      "font": {
+                        "size": 10
+                      }
+                    },
+                    "annotations": [
+                      {
+                        "text": "Temperaturen (24 h)",
+                        "xref": "paper",
+                        "yref": "paper",
+                        "x": 0,
+                        "y": 1.13,
+                        "xanchor": "left",
+                        "yanchor": "bottom",
+                        "showarrow": false,
+                        "font": {
+                          "size": 20,
+                          "color": "#9e9e9e"
+                        }
+                      },
+                      {
+                        "text": "$fn ({hass}) => 'Speicher WW ' + (parseFloat(hass.states['sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'].state)||0).toFixed(1) + ' °C'\n",
+                        "xref": "paper",
+                        "yref": "paper",
+                        "x": 0,
+                        "y": 1.04,
+                        "xanchor": "left",
+                        "yanchor": "bottom",
+                        "showarrow": false,
+                        "font": {
+                          "size": 14,
+                          "color": "#ef5350"
+                        }
+                      }
+                    ]
                   },
-                  "orientation": "h",
-                  "x": 0,
-                  "y": -0.16
-                },
-                "margin": {
-                  "b": 60,
-                  "l": 55,
-                  "r": 50,
-                  "t": 75
-                },
-                "paper_bgcolor": "rgba(0,0,0,0)",
-                "plot_bgcolor": "rgba(0,0,0,0)",
-                "showlegend": true,
-                "xaxis": {
-                  "color": "#9e9e9e",
-                  "showgrid": false,
-                  "type": "category"
-                },
-                "yaxis": {
-                  "color": "#9e9e9e",
-                  "gridcolor": "#2a2a2a",
-                  "rangemode": "tozero",
-                  "showgrid": true,
-                  "ticksuffix": " kWh"
-                },
-                "yaxis2": {
-                  "color": "#9e9e9e",
-                  "overlaying": "y",
-                  "showgrid": false,
-                  "side": "right",
-                  "ticksuffix": "°"
+                  "entities": [
+                    {
+                      "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+                      "name": "Speicher WW",
+                      "yaxis": "y",
+                      "line": {
+                        "color": "#ef5350",
+                        "width": 1.4
+                      }
+                    },
+                    {
+                      "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
+                      "name": "Vorlauf HK-II",
+                      "yaxis": "y",
+                      "line": {
+                        "color": "#ff9800",
+                        "width": 0.9
+                      }
+                    },
+                    {
+                      "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2",
+                      "name": "Rücklauf HK-II",
+                      "yaxis": "y",
+                      "line": {
+                        "color": "#42a5f5",
+                        "width": 0.9
+                      }
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  }
                 }
-              },
-              "refresh_interval": 3600,
-              "type": "custom:plotly-graph"
+              ]
             },
             {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "custom:plotly-graph",
+                  "hours_to_show": 1,
+                  "refresh_interval": 600,
+                  "layout": {
+                    "height": 360,
+                    "barmode": "stack",
+                    "bargap": 0.25,
+                    "margin": {
+                      "t": 75,
+                      "b": 60,
+                      "l": 55,
+                      "r": 10
+                    },
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor": "rgba(0,0,0,0)",
+                    "font": {
+                      "color": "#9e9e9e",
+                      "size": 11
+                    },
+                    "xaxis": {
+                      "type": "category",
+                      "range": "$ex [-0.5, JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').length - 0.5]",
+                      "color": "#9e9e9e",
+                      "showgrid": false
+                    },
+                    "yaxis": {
+                      "showgrid": true,
+                      "gridcolor": "#2a2a2a",
+                      "color": "#9e9e9e",
+                      "ticksuffix": " kWh",
+                      "zeroline": true,
+                      "zerolinecolor": "#666666"
+                    },
+                    "showlegend": true,
+                    "legend": {
+                      "orientation": "h",
+                      "x": 0,
+                      "xanchor": "left",
+                      "y": -0.14,
+                      "yanchor": "top",
+                      "font": {
+                        "size": 10
+                      }
+                    },
+                    "annotations": [
+                      {
+                        "text": "WP-Verbrauch je Monat",
+                        "xref": "paper",
+                        "yref": "paper",
+                        "x": 0,
+                        "y": 1.13,
+                        "xanchor": "left",
+                        "yanchor": "bottom",
+                        "showarrow": false,
+                        "font": {
+                          "size": 20,
+                          "color": "#9e9e9e"
+                        }
+                      },
+                      {
+                        "text": "kWh aus Langzeitstatistik, letzte 13 Monate",
+                        "xref": "paper",
+                        "yref": "paper",
+                        "x": 0,
+                        "y": 1.04,
+                        "xanchor": "left",
+                        "yanchor": "bottom",
+                        "showarrow": false,
+                        "font": {
+                          "size": 11,
+                          "color": "#9e9e9e"
+                        }
+                      }
+                    ]
+                  },
+                  "entities": [
+                    {
+                      "entity": "",
+                      "name": "WP",
+                      "type": "bar",
+                      "yaxis": "y",
+                      "x": "$ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))\n",
+                      "y": "$ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.wp)\n",
+                      "marker": {
+                        "color": "#06b6d4"
+                      },
+                      "hovertemplate": "%{x}: %{y:.0f}<extra>WP</extra>"
+                    },
+                    {
+                      "entity": "",
+                      "name": "Haus (ohne WP)",
+                      "type": "bar",
+                      "yaxis": "y",
+                      "x": "$ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'][+r.p.slice(5) - 1] + ' ' + r.p.slice(2, 4))\n",
+                      "y": "$ex JSON.parse(((hass.states['sensor.energie_tageswerte'] || {}).attributes || {}).monate || '[]').map(r => r.haus)\n",
+                      "marker": {
+                        "color": "#3b82f6"
+                      },
+                      "hovertemplate": "%{x}: %{y:.0f}<extra>Haus (ohne WP)</extra>"
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "content": "{% set zs = as_datetime('2026-11-18T18:50:00+01:00') %}{% set heute = today_at() %}{% set woche = today_at() - timedelta(days=now().weekday()) %}{% set monat = today_at().replace(day=1) %}{% set jahr = today_at().replace(month=1, day=1) %}{% macro f(v, d=1) %}{% if v is number %}{{ v | round(d) }}{% else %}–{% endif %}{% endmacro %}{% set ns = namespace(c=[]) %}{% for l, p, s, k, h, kwh in [('Heute', heute, 'sensor.wp_starts_heute', 'sensor.wp_kurztakte_heute', 'sensor.wp_laufzeit_heute', 'sensor.energy_manager_wp_heute_kwh'), ('Woche', woche, 'sensor.wp_starts_woche', 'sensor.wp_kurztakte_woche', 'sensor.wp_laufzeit_woche', 'sensor.wp_strom_woche'), ('Monat', monat, 'sensor.wp_starts_monat', 'sensor.wp_kurztakte_monat', 'sensor.wp_laufzeit_monat', 'sensor.energy_manager_wp_monat_kwh'), ('Jahr', jahr, 'sensor.wp_starts_jahr', 'sensor.wp_kurztakte_jahr', 'sensor.wp_laufzeit_jahr', 'sensor.energy_manager_wp_jahr_kwh')] %}{% set st = states(s) | float(0) %}{% set lz = states(h) | float(0) %}{% set e = states(kwh) | float(none) %}{% set voll = p >= zs %}{% set dauer_h = (now() - ([p, zs] | max)).total_seconds() / 3600 %}{% set ns.c = ns.c + [{'l': l, 'voll': voll, 'st': st, 'k': states(k) | float(0), 'lz': lz, 'avg': (lz * 60 / st if st > 0 else none), 'anteil': (lz / dauer_h * 100 if dauer_h > 0.1 else none), 'e': e, 'e_st': (e / st if voll and st > 0 and e is number else none), 'pm': (e / lz if voll and lz > 0.1 and e is number else none), 'sph': (st / dauer_h if dauer_h > 0.1 else none)}] %}{% endfor %}{% set c = ns.c %}{% set lauf = is_state('binary_sensor.wp_verdichter_lauft', 'on') %}{% set seit = ((now() - states.binary_sensor.wp_verdichter_lauft.last_changed).total_seconds() / 60) | round(0) | int if states.binary_sensor.wp_verdichter_lauft is not none else 0 %}\n**Verdichter jetzt:** {{ '🟢 läuft seit ' ~ seit ~ ' min' if lauf else '⚪ aus seit ' ~ seit ~ ' min' }}\n\n| Kennzahl | {% for x in c %}{{ x.l }}{{ '' if x.voll else '*' }} | {% endfor %}Richtwert |\n|:--|{% for x in c %}--:|{% endfor %}:--|\n| Verdichter-Starts | {% for x in c %}**{{ f(x.st, 0) }}** | {% endfor %} |\n| Starts pro Stunde | {% for x in c %}{{ f(x.sph, 2) }} | {% endfor %}max. 3/h |\n| Laufzeit h | {% for x in c %}{{ f(x.lz, 1) }} | {% endfor %} |\n| Ø Laufzeit pro Start min | {% for x in c %}**{{ f(x.avg, 0) }}** | {% endfor %}je länger, desto besser (≥ 30) |\n| Laufzeitanteil % | {% for x in c %}{{ f(x.anteil, 0) }} | {% endfor %} |\n| Kurztakte < {{ states('input_number.wp_kurztakt_grenze') | int(20) }} min | {% for x in c %}{{ f(x.k, 0) }} | {% endfor %}Ziel 0 |\n| WP-Strom kWh | {% for x in c %}{{ f(x.e, 1) }} | {% endfor %} |\n| kWh pro Start | {% for x in c %}{{ f(x.e_st, 2) }} | {% endfor %} |\n| Ø Leistung im Betrieb kW | {% for x in c %}{{ f(x.pm, 2) }} | {% endfor %}Verdichter ≈ 2.8–3.5 |\n| Abtauungen | – | – | – | – | Erkennung folgt (Muster bei Frost) |\n\n<sub>Verdichter läuft = WP-Leistung > 1000 W (Standby ≈ 8 W, Pumpe ≈ 48 W). Zählung Starts/Laufzeit ab 18.11.2026 18:50 – Spalten mit * sind noch unvollständig, Verhältniszahlen (kWh/Start, kW) erscheinen erst, wenn der Zeitraum ganz erfasst ist. WP-Strom aus Shelly 3EM (inkl. Pumpe und Steuerung).</sub>\n",
+                  "title": "WP-Betrieb: Takte & Laufzeiten",
+                  "type": "markdown",
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "content": "{% set raw = state_attr('sensor.gebaude_tageswerte','tage') %}{% set t = raw | from_json if raw else [] %}{% set az = states('input_number.wp_arbeitszahl_annahme') | float(3) %}{% set tn = states('input_number.norm_aussentemperatur') | float(-8) %}{% set fl = states('input_number.beheizte_flache') | float(200) %}{% set mon = now().strftime('%Y-%m') %}{% set yr = now().strftime('%Y') %}{% macro f(v, d=1) %}{% if v is number %}{{ v | round(d) }}{% else %}–{% endif %}{% endmacro %}{% set ns = namespace(cols=[]) %}{% for label, rs in [('Gestern', t[-1:]), ('7 Tage', t[-7:]), ('Monat', t | selectattr('d', 'match', mon) | list), ('Jahr', t | selectattr('d', 'match', yr) | list)] %}{% set n = rs | length %}{% if n > 0 %}{% set h = namespace(s=0) %}{% for r in rs %}{% set h.s = h.s + ([20 - r.ta, 0] | max if r.ta < 12 else 0) %}{% endfor %}{% set wp = rs | sum(attribute='wp') %}{% set ta = (rs | sum(attribute='ta')) / n %}{% set ti = (rs | sum(attribute='ti')) / n %}{% set q = wp * az %}{% set H = (q * 1000 / (24 * n * (ti - ta))) if ti - ta > 1 else none %}{% set ns.cols = ns.cols + [{'l': label, 'n': n, 'ta': ta, 'ti': ti, 'wp': wp, 'q': q, 'hgt': h.s, 'kwh_hgt': (wp / h.s if h.s > 0 else none), 'H': H, 'P': (H * (ti - tn) / 1000 if H is not none else none), 'spez': (H * (ti - tn) / fl if H is not none else none)}] %}{% else %}{% set ns.cols = ns.cols + [{'l': label, 'n': 0}] %}{% endif %}{% endfor %}{% set c = ns.cols %}| Kennzahl | {% for x in c %}{{ x.l }} | {% endfor %}\n|:--|{% for x in c %}--:|{% endfor %}\n| Tage mit Daten | {% for x in c %}{{ x.n }} | {% endfor %}\n| Ø Aussen / Ø Innen °C | {% for x in c %}{{ f(x.ta) }} / {{ f(x.ti) }} | {% endfor %}\n| Heizgradtage HGT 20/12 | {% for x in c %}{{ f(x.hgt, 0) }} | {% endfor %}\n| WP-Strom kWh | {% for x in c %}{{ f(x.wp) }} | {% endfor %}\n| Wärme Hzg + WW kWh (AZ {{ az }}) | {% for x in c %}{{ f(x.q, 0) }} | {% endfor %}\n| **Strom pro Heizgradtag** kWh/HGT | {% for x in c %}**{{ f(x.kwh_hgt, 2) }}** | {% endfor %}\n| **Wärmeverlust H** W/K | {% for x in c %}**{{ f(x.H, 0) }}** | {% endfor %}\n| Heizlast bei {{ tn }} °C kW | {% for x in c %}{{ f(x.P, 1) }} | {% endfor %}\n| spez. Heizlast W/m² | {% for x in c %}{{ f(x.spez, 0) }} | {% endfor %}\n{% set g = namespace(n=0, sx=0, sy=0, sxx=0, sxy=0) %}{% for r in t %}{% set g.n = g.n + 1 %}{% set g.sx = g.sx + r.ta %}{% set g.sy = g.sy + r.wp %}{% set g.sxx = g.sxx + r.ta * r.ta %}{% set g.sxy = g.sxy + r.ta * r.wp %}{% endfor %}{% set den = g.n * g.sxx - g.sx * g.sx %}{% set b = (g.n * g.sxy - g.sx * g.sy) / den if den != 0 else 0 %}{% set a = (g.sy - b * g.sx) / g.n if g.n else 0 %}\n\n**Energiesignatur** ({{ g.n }} Tage{{ ', noch wenig aussagekräftig – ab ca. 14 Tagen mit verschiedenen Temperaturen' if g.n < 14 else '' }}): {% if g.n >= 3 and b < 0 %}WP-Strom ≈ {{ a | round(1) }} {{ b | round(2) }} × T<sub>aussen</sub> kWh/Tag · **Heizgrenze ≈ {{ (-a / b) | round(1) }} °C** · Bedarf bei {{ tn }} °C ≈ {{ (a + b * tn) | round(0) }} kWh Strom/Tag ≈ **{{ ((a + b * tn) * az / 24) | round(1) }} kW Heizlast**{% else %}noch zu wenig Daten{% endif %}\n\n<sub>Quelle: Langzeitstatistik (Tageswerte, dauerhaft), Aussen/Innen = Homematic ab 14.11.2026. H = Wärme / (24 h × (T<sub>innen</sub> − T<sub>aussen</sub>)); Wärme = WP-Strom (Shelly) × Arbeitszahl {{ az }} aus den Wärmezählern der Excel (Wärme Hzg + WW ÷ Shelly-Strom, Feb.–März und Okt.–Nov. 2026: 3.2 bzw. 3.5). Heizung und WW werden bewusst gemeinsam betrachtet, weil die FBH Speicherwärme aus der WW-Zone zieht – H und Heizlast gelten also inkl. WW-Grundbedarf. Sonnengewinne und Speicher-/Estrichpuffer verfälschen Einzeltage – Wochen- und Monatswerte sind verlässlicher. Richtwerte spez. Heizlast: Neubau 20–40, sanierter Altbau 40–70, unsaniert > 80 W/m².</sub>\n",
+                  "title": "Gebäude: Heizlast & thermische Qualität",
+                  "type": "markdown",
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "entities": [
+                    {
+                      "entity": "",
+                      "hovertemplate": "%{text}: %{x:.1f} °C → %{y:.1f} kWh<extra></extra>",
+                      "marker": {
+                        "color": "#06b6d4",
+                        "size": 8
+                      },
+                      "mode": "markers",
+                      "name": "Tage",
+                      "text": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').map(r => r.d.slice(8, 10) + '.' + r.d.slice(5, 7) + '.')",
+                      "type": "scatter",
+                      "x": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').map(r => r.ta)",
+                      "y": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').map(r => r.wp)"
+                    },
+                    {
+                      "entity": "",
+                      "hoverinfo": "skip",
+                      "line": {
+                        "color": "#f59e0b",
+                        "dash": "dash",
+                        "width": 1.5
+                      },
+                      "mode": "lines",
+                      "name": "Trend",
+                      "type": "scatter",
+                      "x": "$ex (() => { const t = JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]'); const n = t.length; if (n < 3) return []; let sx = 0, sy = 0, sxx = 0, sxy = 0; t.forEach(r => { sx += r.ta; sy += r.wp; sxx += r.ta * r.ta; sxy += r.ta * r.wp; }); const b = (n * sxy - sx * sy) / (n * sxx - sx * sx); const a = (sy - b * sx) / n; const tn = parseFloat(hass.states['input_number.norm_aussentemperatur'].state) || -8; const hg = b < 0 ? Math.min(-a / b, 25) : 20; return [tn, hg]; })()",
+                      "y": "$ex (() => { const t = JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]'); const n = t.length; if (n < 3) return []; let sx = 0, sy = 0, sxx = 0, sxy = 0; t.forEach(r => { sx += r.ta; sy += r.wp; sxx += r.ta * r.ta; sxy += r.ta * r.wp; }); const b = (n * sxy - sx * sy) / (n * sxx - sx * sx); const a = (sy - b * sx) / n; const tn = parseFloat(hass.states['input_number.norm_aussentemperatur'].state) || -8; const hg = b < 0 ? Math.min(-a / b, 25) : 20; return [a + b * tn, Math.max(0, a + b * hg)]; })()"
+                    }
+                  ],
+                  "hours_to_show": 1,
+                  "layout": {
+                    "annotations": [
+                      {
+                        "font": {
+                          "color": "#9e9e9e",
+                          "size": 20
+                        },
+                        "showarrow": false,
+                        "text": "Energiesignatur",
+                        "x": 0,
+                        "xanchor": "left",
+                        "xref": "paper",
+                        "y": 1.13,
+                        "yanchor": "bottom",
+                        "yref": "paper"
+                      },
+                      {
+                        "font": {
+                          "color": "#9e9e9e",
+                          "size": 11
+                        },
+                        "showarrow": false,
+                        "text": "1 Punkt = 1 Tag · Linie = Trend bis Norm-Aussentemperatur",
+                        "x": 0,
+                        "xanchor": "left",
+                        "xref": "paper",
+                        "y": 1.04,
+                        "yanchor": "bottom",
+                        "yref": "paper"
+                      }
+                    ],
+                    "font": {
+                      "color": "#9e9e9e",
+                      "size": 11
+                    },
+                    "height": 380,
+                    "legend": {
+                      "font": {
+                        "size": 10
+                      },
+                      "orientation": "h",
+                      "x": 0,
+                      "y": -0.16
+                    },
+                    "margin": {
+                      "b": 60,
+                      "l": 55,
+                      "r": 15,
+                      "t": 75
+                    },
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor": "rgba(0,0,0,0)",
+                    "showlegend": true,
+                    "xaxis": {
+                      "color": "#9e9e9e",
+                      "gridcolor": "#2a2a2a",
+                      "showgrid": true,
+                      "title": {
+                        "text": "Ø Aussentemperatur °C"
+                      },
+                      "type": "linear",
+                      "zeroline": false
+                    },
+                    "yaxis": {
+                      "color": "#9e9e9e",
+                      "gridcolor": "#2a2a2a",
+                      "rangemode": "tozero",
+                      "showgrid": true,
+                      "title": {
+                        "text": "WP-Strom kWh/Tag"
+                      }
+                    }
+                  },
+                  "refresh_interval": 3600,
+                  "type": "custom:plotly-graph",
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "entities": [
+                    {
+                      "entity": "",
+                      "hovertemplate": "%{x}: %{y:.1f} kWh<extra>WP</extra>",
+                      "marker": {
+                        "color": "#06b6d4"
+                      },
+                      "name": "WP-Strom",
+                      "type": "bar",
+                      "x": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.d.slice(8, 10) + '.' + r.d.slice(5, 7) + '.')",
+                      "y": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.wp)"
+                    },
+                    {
+                      "entity": "",
+                      "hovertemplate": "%{x}: H ≈ %{y:.0f}0 W/K<extra></extra>",
+                      "marker": {
+                        "color": "#22c55e",
+                        "size": 7,
+                        "symbol": "diamond"
+                      },
+                      "mode": "markers",
+                      "name": "H ÷ 10",
+                      "type": "scatter",
+                      "x": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.d.slice(8, 10) + '.' + r.d.slice(5, 7) + '.')",
+                      "y": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => { const az = parseFloat(hass.states['input_number.wp_arbeitszahl_annahme'].state) || 3; const dt = r.ti - r.ta; return dt > 1 ? Math.round(r.wp * az * 1000 / (24 * dt)) / 10 : null; })"
+                    },
+                    {
+                      "entity": "",
+                      "hovertemplate": "%{x}: %{y:.1f} °C<extra>Aussen</extra>",
+                      "line": {
+                        "color": "#f97316",
+                        "width": 1.2
+                      },
+                      "marker": {
+                        "size": 4
+                      },
+                      "mode": "lines+markers",
+                      "name": "Ø Aussen",
+                      "type": "scatter",
+                      "x": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.d.slice(8, 10) + '.' + r.d.slice(5, 7) + '.')",
+                      "y": "$ex JSON.parse(((hass.states['sensor.gebaude_tageswerte'] || {}).attributes || {}).tage || '[]').slice(-60).map(r => r.ta)",
+                      "yaxis": "y2"
+                    }
+                  ],
+                  "hours_to_show": 1,
+                  "layout": {
+                    "annotations": [
+                      {
+                        "font": {
+                          "color": "#9e9e9e",
+                          "size": 20
+                        },
+                        "showarrow": false,
+                        "text": "WP-Strom je Tag vs. Aussentemperatur",
+                        "x": 0,
+                        "xanchor": "left",
+                        "xref": "paper",
+                        "y": 1.13,
+                        "yanchor": "bottom",
+                        "yref": "paper"
+                      },
+                      {
+                        "font": {
+                          "color": "#9e9e9e",
+                          "size": 11
+                        },
+                        "showarrow": false,
+                        "text": "letzte 60 Tage · Linie = Ø Aussen, Punkte = Wärmeverlust H (W/K ÷ 10)",
+                        "x": 0,
+                        "xanchor": "left",
+                        "xref": "paper",
+                        "y": 1.04,
+                        "yanchor": "bottom",
+                        "yref": "paper"
+                      }
+                    ],
+                    "font": {
+                      "color": "#9e9e9e",
+                      "size": 11
+                    },
+                    "height": 340,
+                    "legend": {
+                      "font": {
+                        "size": 10
+                      },
+                      "orientation": "h",
+                      "x": 0,
+                      "y": -0.16
+                    },
+                    "margin": {
+                      "b": 60,
+                      "l": 55,
+                      "r": 50,
+                      "t": 75
+                    },
+                    "paper_bgcolor": "rgba(0,0,0,0)",
+                    "plot_bgcolor": "rgba(0,0,0,0)",
+                    "showlegend": true,
+                    "xaxis": {
+                      "color": "#9e9e9e",
+                      "showgrid": false,
+                      "type": "category"
+                    },
+                    "yaxis": {
+                      "color": "#9e9e9e",
+                      "gridcolor": "#2a2a2a",
+                      "rangemode": "tozero",
+                      "showgrid": true,
+                      "ticksuffix": " kWh"
+                    },
+                    "yaxis2": {
+                      "color": "#9e9e9e",
+                      "overlaying": "y",
+                      "showgrid": false,
+                      "side": "right",
+                      "ticksuffix": "°"
+                    }
+                  },
+                  "refresh_interval": 3600,
+                  "type": "custom:plotly-graph",
+                  "grid_options": {
+                    "columns": "full"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "grid",
               "cards": [
                 {
                   "cards": [
                     {
-                      "icon": "mdi:thermometer-minus",
-                      "icon_color": "blue",
-                      "layout": "vertical",
-                      "primary": "Auskühlrate",
-                      "secondary": "{% set v = states('input_number.gebaude_auskuhlrate_letzte') | float(0) %}{{ (v | round(2) ~ ' K/h') if v != 0 else 'noch keine Messung' }}",
-                      "type": "custom:mushroom-template-card"
-                    },
-                    {
-                      "icon": "mdi:timer-sand",
-                      "icon_color": "purple",
-                      "layout": "vertical",
-                      "primary": "Zeitkonstante τ",
-                      "secondary": "{% set v = states('input_number.gebaude_zeitkonstante_letzte') | float(0) %}{{ (v | round(0) | int ~ ' h') if v > 0 else '–' }}",
-                      "type": "custom:mushroom-template-card"
-                    },
-                    {
-                      "entity": "sensor.gebaude_auskuhlrate",
-                      "name": "Ø Monat",
-                      "period": {
-                        "calendar": {
-                          "period": "month"
+                      "cards": [
+                        {
+                          "icon": "mdi:thermometer-minus",
+                          "icon_color": "blue",
+                          "layout": "vertical",
+                          "primary": "Auskühlrate",
+                          "secondary": "{% set v = states('input_number.gebaude_auskuhlrate_letzte') | float(0) %}{{ (v | round(2) ~ ' K/h') if v != 0 else 'noch keine Messung' }}",
+                          "type": "custom:mushroom-template-card"
+                        },
+                        {
+                          "icon": "mdi:timer-sand",
+                          "icon_color": "purple",
+                          "layout": "vertical",
+                          "primary": "Zeitkonstante τ",
+                          "secondary": "{% set v = states('input_number.gebaude_zeitkonstante_letzte') | float(0) %}{{ (v | round(0) | int ~ ' h') if v > 0 else '–' }}",
+                          "type": "custom:mushroom-template-card"
+                        },
+                        {
+                          "entity": "sensor.gebaude_auskuhlrate",
+                          "name": "Ø Monat",
+                          "period": {
+                            "calendar": {
+                              "period": "month"
+                            }
+                          },
+                          "stat_type": "mean",
+                          "type": "statistic"
                         }
-                      },
-                      "stat_type": "mean",
-                      "type": "statistic"
+                      ],
+                      "type": "horizontal-stack"
+                    },
+                    {
+                      "content": "**Letzte Auskühl-Messung:** {{ states('input_text.auskuhlung_letzte_messung') if states('input_text.auskuhlung_letzte_messung') not in ['unknown', ''] else 'noch keine – startet bei der nächsten FBH-Pause ≥ 2 h ohne Sonne' }}\n\n<sub>Gemessen, während die FBH-Pumpe steht (Pause 2–24 h, PV < 0.3 kWh). Enthält die Nachwärme des Estrichs. τ = (T<sub>innen</sub> − T<sub>aussen</sub>) / Auskühlrate: in so vielen Stunden würde der Raum ohne Wärmezufuhr auf ≈ 37 % der Temperaturdifferenz abkühlen – je grösser, desto besser speichert/dämmt das Haus.</sub>",
+                      "type": "markdown"
                     }
                   ],
-                  "type": "horizontal-stack"
-                },
-                {
-                  "content": "**Letzte Auskühl-Messung:** {{ states('input_text.auskuhlung_letzte_messung') if states('input_text.auskuhlung_letzte_messung') not in ['unknown', ''] else 'noch keine – startet bei der nächsten FBH-Pause ≥ 2 h ohne Sonne' }}\n\n<sub>Gemessen, während die FBH-Pumpe steht (Pause 2–24 h, PV < 0.3 kWh). Enthält die Nachwärme des Estrichs. τ = (T<sub>innen</sub> − T<sub>aussen</sub>) / Auskühlrate: in so vielen Stunden würde der Raum ohne Wärmezufuhr auf ≈ 37 % der Temperaturdifferenz abkühlen – je grösser, desto besser speichert/dämmt das Haus.</sub>",
-                  "type": "markdown"
+                  "type": "vertical-stack",
+                  "grid_options": {
+                    "columns": "full"
+                  }
                 }
-              ],
-              "type": "vertical-stack"
+              ]
             },
             {
-              "entities": [
+              "type": "grid",
+              "cards": [
                 {
-                  "entity": "input_number.wp_arbeitszahl_annahme",
-                  "name": "Arbeitszahl WP (aus Excel-Wärmezählern, bezogen auf Shelly-Strom)"
-                },
-                {
-                  "entity": "input_number.norm_aussentemperatur",
-                  "name": "Norm-Aussentemperatur"
-                },
-                {
-                  "entity": "input_number.beheizte_flache",
-                  "name": "Beheizte Fläche"
-                },
-                {
-                  "entity": "input_number.wp_kurztakt_grenze",
-                  "name": "Kurztakt-Grenze"
+                  "entities": [
+                    {
+                      "entity": "input_number.wp_arbeitszahl_annahme",
+                      "name": "Arbeitszahl WP (aus Excel-Wärmezählern, bezogen auf Shelly-Strom)"
+                    },
+                    {
+                      "entity": "input_number.norm_aussentemperatur",
+                      "name": "Norm-Aussentemperatur"
+                    },
+                    {
+                      "entity": "input_number.beheizte_flache",
+                      "name": "Beheizte Fläche"
+                    },
+                    {
+                      "entity": "input_number.wp_kurztakt_grenze",
+                      "name": "Kurztakt-Grenze"
+                    }
+                  ],
+                  "show_header_toggle": false,
+                  "title": "Annahmen für die Kennzahlen",
+                  "type": "entities",
+                  "grid_options": {
+                    "columns": "full"
+                  }
                 }
-              ],
-              "show_header_toggle": false,
-              "title": "Annahmen für die Kennzahlen",
-              "type": "entities"
+              ]
             }
           ]
         },
@@ -3220,7 +3520,7 @@
             {
               "type": "markdown",
               "title": "Kennzahlen Nacht im Vergleich zur Vornacht",
-              "content": "{% set a = states.sensor.wp_nacht_kennzahlen.attributes if states.sensor.wp_nacht_kennzahlen is not none else {} %}\n{% set b = states.sensor.wp_vornacht_kennzahlen.attributes if states.sensor.wp_vornacht_kennzahlen is not none else {} %}\n{% macro f(v, d) %}{% if v is number %}{{ (v | round(d)) if d > 0 else (v | round(0) | int) }}{% else %}–{% endif %}{% endmacro %}\n{% macro row(l, k, u, d, n) -%}\n{%- set x = a.get(k) %}{% set y = b.get(k) -%}\n| {{ l }} | **{{ f(x, d) }}** {{ u }} | {{ f(y, d) }} {{ u }} | {% if x is number and y is number %}{{ '+' if x - y > 0 else '' }}{{ f(x - y, d) }}{% else %}–{% endif %} | {{ n }} |\n{%- endmacro %}\n| Kennzahl | Nacht {{ a.get('nacht', '–') }} | Vornacht {{ b.get('nacht', '–') }} | Δ | Bemerkung |\n|:--|--:|--:|--:|:--|\n{{ row('WP-Strom Nacht', 'strom_kwh', 'kWh', 1, '') }}\n{{ row('davon im WW-Modus', 'ww_kwh', 'kWh', 1, '') }}\n{{ row('Anteil WP-Strom im WW-Modus', 'ww_anteil_pct', '%', 0, 'Nov.-Schnitt vor Fühler-Umstecken ≈ 46 %') }}\n{{ row('WW-Ladungen', 'ww_ladungen', '', 0, 'Ziel nachts: 0') }}\n{{ row('Laufzeit WW-Modus', 'ww_h', 'h', 1, '') }}\n{{ row('Heiz-Takte', 'heiz_takte', '', 0, '') }}\n{{ row('Laufzeit Heizbetrieb', 'heiz_h', 'h', 1, '') }}\n{{ row('FBH aktiv (Spreizung > 2.5 K)', 'fbh_aktiv_h', 'h', 1, '') }}\n{{ row('FBH-Pumpe EIN (Leistung > 10 W)', 'pumpe_h', 'h', 1, '') }}\n{{ row('Speicher bei RL max. im Betrieb', 'rl_max_betrieb', '°C', 1, 'WW ab 38 °C') }}\n{{ row('Speicher bei VL min.', 'mitte_min', '°C', 1, 'Fühler 10 cm unter VL (ab 16.11.)') }}\n{{ row('Speicher WW min.', 'oben_min', '°C', 1, 'Zapfzone') }}\n{{ row('Ø Δ Mitte, WP aus + FBH läuft', 'dmitte_aus_fbh', 'K/h', 2, 'Wärmeentzug durch FBH') }}\n{{ row('Ø Δ Mitte, WP heizt + FBH läuft', 'dmitte_heiz_fbh', 'K/h', 2, '< 0 = Mitte kühlt trotz Heizbetrieb') }}\n{{ row('Ø Δ Mitte, FBH steht', 'dmitte_fbh_steht', 'K/h', 2, 'Verluste + Zapfung') }}\n{{ row('Ø Δ Speicher WW, ganze Nacht', 'doben', 'K/h', 2, '') }}\n{{ row('Aussen min.', 'aussen_min', '°C', 1, 'Homematic') }}\n{{ row('Aussen Ø', 'aussen_mittel', '°C', 1, '') }}\n| Speicher bei VL 18:00 → 08:00 | **{{ f(a.get('mitte_start'),1) }} → {{ f(a.get('mitte_ende'),1) }}** °C | {{ f(b.get('mitte_start'),1) }} → {{ f(b.get('mitte_ende'),1) }} °C | | |\n| Speicher WW 18:00 → 08:00 | **{{ f(a.get('oben_start'),1) }} → {{ f(a.get('oben_ende'),1) }}** °C | {{ f(b.get('oben_start'),1) }} → {{ f(b.get('oben_ende'),1) }} °C | | |\n| Innen 18:00 → 08:00 | **{{ f(a.get('innen_start'),1) }} → {{ f(a.get('innen_ende'),1) }}** °C | {{ f(b.get('innen_start'),1) }} → {{ f(b.get('innen_ende'),1) }} °C | | |\n| FBH-Pumpe erstmals EIN | **{{ a.get('pumpe_ein') or '–' }}** | {{ b.get('pumpe_ein') or '–' }} | | |\n\n<sub>Nacht = 18:00–08:00, 5-min-Mittel der HA-Kurzzeitstatistik (ca. 10 Tage). Zustand: Aus < 200 W · WW = WP läuft und RL Ist ≥ 38 °C · sonst Heizen. Gleiche Logik wie Excel-Blatt «Nacht_13_14», Abschnitt A. Homematic-Werte (Pumpe, Aussen, Innen) ab 13.11.2026 23:00.</sub>\n"
+              "content": "{% set a = states.sensor.wp_nacht_kennzahlen.attributes if states.sensor.wp_nacht_kennzahlen is not none else {} %}\n{% set b = states.sensor.wp_vornacht_kennzahlen.attributes if states.sensor.wp_vornacht_kennzahlen is not none else {} %}\n{% macro f(v, d) %}{% if v is number %}{{ (v | round(d)) if d > 0 else (v | round(0) | int) }}{% else %}–{% endif %}{% endmacro %}\n{% macro row(l, k, u, d, n) -%}\n{%- set x = a.get(k) %}{% set y = b.get(k) -%}\n| {{ l }} | **{{ f(x, d) }}** {{ u }} | {{ f(y, d) }} {{ u }} | {% if x is number and y is number %}{{ '+' if x - y > 0 else '' }}{{ f(x - y, d) }}{% else %}–{% endif %} | {{ n }} |\n{%- endmacro %}\n| Kennzahl | Nacht {{ a.get('nacht', '–') }} | Vornacht {{ b.get('nacht', '–') }} | Δ | Bemerkung |\n|:--|--:|--:|--:|:--|\n{{ row('WP-Strom Nacht', 'strom_kwh', 'kWh', 1, '') }}\n{{ row('davon im WW-Modus', 'ww_kwh', 'kWh', 1, '') }}\n{{ row('Anteil WP-Strom im WW-Modus', 'ww_anteil_pct', '%', 0, 'Nov.-Schnitt vor Fühler-Umstecken ≈ 46 %') }}\n{{ row('WW-Ladungen', 'ww_ladungen', '', 0, 'Ziel nachts: 0') }}\n{{ row('Laufzeit WW-Modus', 'ww_h', 'h', 1, '') }}\n{{ row('Heiz-Takte', 'heiz_takte', '', 0, '') }}\n{{ row('Laufzeit Heizbetrieb', 'heiz_h', 'h', 1, '') }}\n{{ row('FBH aktiv (Spreizung > 2.5 K)', 'fbh_aktiv_h', 'h', 1, '') }}\n{{ row('FBH-Pumpe EIN (Leistung > 10 W)', 'pumpe_h', 'h', 1, '') }}\n{{ row('Speicher bei RL max. im Betrieb', 'rl_max_betrieb', '°C', 1, 'Heizläufe erreichen 36–42 °C') }}\n{{ row('Speicher bei VL min.', 'mitte_min', '°C', 1, 'Fühler 10 cm unter VL (ab 16.11.)') }}\n{{ row('Speicher WW min.', 'oben_min', '°C', 1, 'Zapfzone') }}\n{{ row('Ø Δ Mitte, WP aus + FBH läuft', 'dmitte_aus_fbh', 'K/h', 2, 'Wärmeentzug durch FBH') }}\n{{ row('Ø Δ Mitte, WP heizt + FBH läuft', 'dmitte_heiz_fbh', 'K/h', 2, '< 0 = Mitte kühlt trotz Heizbetrieb') }}\n{{ row('Ø Δ Mitte, FBH steht', 'dmitte_fbh_steht', 'K/h', 2, 'Verluste + Zapfung') }}\n{{ row('Ø Δ Speicher WW, ganze Nacht', 'doben', 'K/h', 2, '') }}\n{{ row('Aussen min.', 'aussen_min', '°C', 1, 'Homematic') }}\n{{ row('Aussen Ø', 'aussen_mittel', '°C', 1, '') }}\n| Speicher bei VL 18:00 → 08:00 | **{{ f(a.get('mitte_start'),1) }} → {{ f(a.get('mitte_ende'),1) }}** °C | {{ f(b.get('mitte_start'),1) }} → {{ f(b.get('mitte_ende'),1) }} °C | | |\n| Speicher WW 18:00 → 08:00 | **{{ f(a.get('oben_start'),1) }} → {{ f(a.get('oben_ende'),1) }}** °C | {{ f(b.get('oben_start'),1) }} → {{ f(b.get('oben_ende'),1) }} °C | | |\n| Innen 18:00 → 08:00 | **{{ f(a.get('innen_start'),1) }} → {{ f(a.get('innen_ende'),1) }}** °C | {{ f(b.get('innen_start'),1) }} → {{ f(b.get('innen_ende'),1) }} °C | | |\n| FBH-Pumpe erstmals EIN | **{{ a.get('pumpe_ein') or '–' }}** | {{ b.get('pumpe_ein') or '–' }} | | |\n\n<sub>Nacht = 18:00–08:00, 5-min-Mittel der HA-Kurzzeitstatistik (ca. 10 Tage). Zustand: Aus < 200 W · WW = ganzer WP-Lauf, in dem «Speicher WW» ≥ 10 K/h steigt (seit 22.11.2026; vorher RL Ist ≥ 38 °C) · sonst Heizen. Gleiche Logik wie Excel-Blatt «Nacht_13_14», Abschnitt A. Homematic-Werte (Pumpe, Aussen, Innen) ab 13.11.2026 23:00.</sub>\n"
             }
           ]
         }

@@ -36,6 +36,16 @@
         },
         {
          "type": "template",
+         "icon": "mdi:thermometer",
+         "icon_color": "light-blue",
+         "content": "{{ states('sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) | round(1) }} °C aussen",
+         "tap_action": {
+          "action": "more-info",
+          "entity": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur"
+         }
+        },
+        {
+         "type": "template",
          "icon": "mdi:home-thermometer",
          "icon_color": "orange",
          "content": "{{ states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) | round(1) }} °C innen",
@@ -1312,6 +1322,156 @@
        },
        "color": "indigo",
        "features": []
+      },
+      {
+       "type": "heading",
+       "heading": "Stimmungslicht",
+       "icon": "mdi:lightbulb-on-outline",
+       "heading_style": "subtitle"
+      },
+      {
+       "type": "tile",
+       "entity": "light.kuche_color_bulb",
+       "name": "Color Bulb",
+       "features": [
+        {
+         "type": "light-brightness"
+        },
+        {
+         "type": "light-color-temp"
+        }
+       ],
+       "grid_options": {
+        "columns": 12
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "input_select.kuche_stimmungsfarbe",
+       "name": "Stimmungsfarbe",
+       "features": [
+        {
+         "type": "select-options"
+        }
+       ],
+       "grid_options": {
+        "columns": 12
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "input_number.kuche_stimmungslicht_tag",
+       "name": "Tag",
+       "features": [
+        {
+         "type": "numeric-input",
+         "style": "slider"
+        }
+       ],
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "input_number.kuche_stimmungslicht_abend",
+       "name": "Abend / Nacht",
+       "features": [
+        {
+         "type": "numeric-input",
+         "style": "slider"
+        }
+       ],
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "automation.kuche_stimmungslicht",
+       "name": "Stimmungslicht automatisch",
+       "features": [
+        {
+         "type": "toggle"
+        }
+       ],
+       "features_position": "inline",
+       "grid_options": {
+        "columns": 12
+       }
+      },
+      {
+       "type": "heading",
+       "heading": "Zeitplan",
+       "heading_style": "subtitle",
+       "icon": "mdi:calendar-clock"
+      },
+      {
+       "type": "tile",
+       "entity": "input_boolean.kuche_zeitplan_aktiv",
+       "name": "Zeitplan aktiv",
+       "features": [
+        {
+         "type": "toggle"
+        }
+       ],
+       "features_position": "inline",
+       "grid_options": {
+        "columns": 12
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "input_datetime.kuche_tag_ein",
+       "name": "Tag ein",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "input_datetime.kuche_tag_aus",
+       "name": "Tag aus",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "input_datetime.kuche_abend_ein",
+       "name": "Abend ein",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "input_datetime.kuche_abend_aus",
+       "name": "Abend aus",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "markdown",
+       "text_only": true,
+       "content": "<sub>**Farbe:** Warmweiss/Neutralweiss oder eine Farbe – Gelb ist für die Abfall-Erinnerung reserviert. **Helligkeit:** im Zeitfenster Tag der Regler «Tag», im Zeitfenster Abend der Regler «Abend»; von Hand eingeschaltet nach Sonnenstand. Antippen einer Zeit öffnet die Einstellung.</sub>"
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shellycolorbulb_e8db84d4fd38_leistung",
+       "name": "Leistung",
+       "grid_options": {
+        "columns": 6
+       }
+      },
+      {
+       "type": "tile",
+       "entity": "sensor.shellycolorbulb_e8db84d4fd38_energie",
+       "name": "Energie",
+       "grid_options": {
+        "columns": 6
+       }
       }
      ]
     },

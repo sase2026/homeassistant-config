@@ -253,27 +253,27 @@
    "raum": "Haus"
   },
   {
-   "name": "1-2-3 (Küche, Wohnen2, Wohnen3)",
+   "name": "FBH 1-3 (Küche, Wo2, Wo3)",
    "raum": "Heizung"
   },
   {
-   "name": "10-11-12 (Yanik, Bad, Mael)",
+   "name": "FBH 10-12 (Yanik, Bad, Mael)",
    "raum": "Heizung"
   },
   {
-   "name": "13-14-15 (Eltern, Dusche, Hobby)",
+   "name": "FBH 13-15 (Eltern,Du.,Hobby)",
    "raum": "Heizung"
   },
   {
-   "name": "16 (WaKü, RL HK-II, VL HK-II)",
+   "name": "FBH 16 WaKü / HK-II RL/VL",
    "raum": "Heizung"
   },
   {
-   "name": "4-5-6 (Essen, Spielen, WC)",
+   "name": "FBH 4-6 (Essen, Spielen, WC)",
    "raum": "Heizung"
   },
   {
-   "name": "7-8-9 (Entrée, Wohnen1, Galerie)",
+   "name": "FBH 7-9 (Entrée,Wo1,Galerie)",
    "raum": "Heizung"
   },
   {
@@ -313,12 +313,16 @@
    "raum": "Heizung"
   },
   {
-   "name": "WW-Mitte, RL-Ist, WW-Oben",
+   "name": "WW-Speicher (VL, RL, WW)",
    "raum": "Heizung"
   },
   {
    "name": "Homematic IP Fensterkontakt Kellertreppe",
    "raum": "Hobby"
+  },
+  {
+   "name": "Color Bulb",
+   "raum": "Küche"
   },
   {
    "name": "Homematic IP Fensterkontakt Küche",
@@ -411,8 +415,196 @@
  ],
  "entitaets_icons": [
   {
+   "entity_id": "binary_sensor.alarm_fuhler_ausgefallen",
+   "icon": "mdi:thermometer-off"
+  },
+  {
+   "entity_id": "binary_sensor.alarm_heizstab_ohne_pv",
+   "icon": "mdi:heating-coil"
+  },
+  {
+   "entity_id": "binary_sensor.alarm_warmwasser_zu_kalt",
+   "icon": "mdi:water-thermometer-outline"
+  },
+  {
+   "entity_id": "binary_sensor.alarm_wohnraum_zu_kalt",
+   "icon": "mdi:home-thermometer-outline"
+  },
+  {
+   "entity_id": "binary_sensor.alarm_wp_heizt_nicht",
+   "icon": "mdi:heat-pump-outline"
+  },
+  {
+   "entity_id": "binary_sensor.alarme_kritisch",
+   "icon": "mdi:alarm-light-outline"
+  },
+  {
+   "entity_id": "binary_sensor.fbh_lueften_aktiv",
+   "icon": "mdi:window-open-variant"
+  },
+  {
    "entity_id": "binary_sensor.shelly_flood_hzg_uberflutung",
    "icon": "mdi:water-alert"
+  },
+  {
+   "entity_id": "binary_sensor.warnung_hmip_batterie_schwach",
+   "icon": "mdi:battery-alert-variant-outline"
+  },
+  {
+   "entity_id": "binary_sensor.warnung_hmip_sabotage",
+   "icon": "mdi:shield-alert-outline"
+  },
+  {
+   "entity_id": "binary_sensor.warnung_sd_karte_voll",
+   "icon": "mdi:sd"
+  },
+  {
+   "entity_id": "binary_sensor.warnung_wp_taktet",
+   "icon": "mdi:sync-alert"
+  },
+  {
+   "entity_id": "binary_sensor.warnungen",
+   "icon": "mdi:alert-outline"
+  },
+  {
+   "entity_id": "binary_sensor.wp_verdichter_lauft",
+   "icon": "mdi:heat-pump"
+  },
+  {
+   "entity_id": "counter.batterie_sim_autarke_tage",
+   "icon": "mdi:home-battery"
+  },
+  {
+   "entity_id": "counter.wp_kurztakte",
+   "icon": "mdi:timer-alert-outline"
+  },
+  {
+   "entity_id": "counter.wp_verdichter_starts",
+   "icon": "mdi:counter"
+  },
+  {
+   "entity_id": "input_boolean.abfall_erinnerung_offen",
+   "icon": "mdi:trash-can-outline"
+  },
+  {
+   "entity_id": "input_boolean.alarm_tore_testmodus",
+   "icon": "mdi:test-tube"
+  },
+  {
+   "entity_id": "input_boolean.bad_led_offen_anzeige",
+   "icon": "mdi:door-open"
+  },
+  {
+   "entity_id": "input_boolean.bad_led_sabotage_anzeige",
+   "icon": "mdi:shield-alert"
+  },
+  {
+   "entity_id": "input_boolean.bad_led_ww_ampel",
+   "icon": "mdi:water-thermometer"
+  },
+  {
+   "entity_id": "input_boolean.fbh_smart_aktiv",
+   "icon": "mdi:home-thermometer"
+  },
+  {
+   "entity_id": "input_boolean.kuche_zeitplan_aktiv",
+   "icon": "mdi:calendar-clock"
+  },
+  {
+   "entity_id": "input_button.abfall_quittieren",
+   "icon": "mdi:check-circle-outline"
+  },
+  {
+   "entity_id": "input_button.alarm_tore_freigabe_geben",
+   "icon": "mdi:shield-key"
+  },
+  {
+   "entity_id": "input_datetime.auskuhlung_start",
+   "icon": "mdi:clock-start"
+  },
+  {
+   "entity_id": "input_datetime.fbh_lueften_zuletzt_geschlossen",
+   "icon": "mdi:window-closed-variant"
+  },
+  {
+   "entity_id": "input_datetime.kuche_abend_aus",
+   "icon": "mdi:lightbulb-off"
+  },
+  {
+   "entity_id": "input_datetime.kuche_abend_ein",
+   "icon": "mdi:weather-sunset-down"
+  },
+  {
+   "entity_id": "input_datetime.kuche_tag_aus",
+   "icon": "mdi:lightbulb-off-outline"
+  },
+  {
+   "entity_id": "input_datetime.kuche_tag_ein",
+   "icon": "mdi:weather-sunset-up"
+  },
+  {
+   "entity_id": "input_number.batterie_sim_einspeisung_zaehler",
+   "icon": "mdi:transmission-tower-export"
+  },
+  {
+   "entity_id": "input_number.batterie_sim_ladestand",
+   "icon": "mdi:battery-sync"
+  },
+  {
+   "entity_id": "input_number.batterie_sim_netzbezug_zaehler",
+   "icon": "mdi:transmission-tower-import"
+  },
+  {
+   "entity_id": "input_number.beheizte_flache",
+   "icon": "mdi:floor-plan"
+  },
+  {
+   "entity_id": "input_number.fbh_lueften_nachlauf",
+   "icon": "mdi:window-open-variant"
+  },
+  {
+   "entity_id": "input_number.gebaude_auskuhlrate_letzte",
+   "icon": "mdi:thermometer-minus"
+  },
+  {
+   "entity_id": "input_number.gebaude_zeitkonstante_letzte",
+   "icon": "mdi:timer-sand"
+  },
+  {
+   "entity_id": "input_number.kuche_stimmungslicht_abend",
+   "icon": "mdi:weather-night"
+  },
+  {
+   "entity_id": "input_number.kuche_stimmungslicht_tag",
+   "icon": "mdi:white-balance-sunny"
+  },
+  {
+   "entity_id": "input_number.norm_aussentemperatur",
+   "icon": "mdi:snowflake-thermometer"
+  },
+  {
+   "entity_id": "input_number.wp_arbeitszahl_annahme",
+   "icon": "mdi:division"
+  },
+  {
+   "entity_id": "input_number.wp_kurztakt_grenze",
+   "icon": "mdi:timer-cog-outline"
+  },
+  {
+   "entity_id": "input_select.kuche_stimmungsfarbe",
+   "icon": "mdi:palette"
+  },
+  {
+   "entity_id": "input_select.ww_ampel_stufe",
+   "icon": "mdi:traffic-light"
+  },
+  {
+   "entity_id": "input_text.abfall_morgen",
+   "icon": "mdi:recycle"
+  },
+  {
+   "entity_id": "input_text.auskuhlung_letzte_messung",
+   "icon": "mdi:text-box-outline"
   },
   {
    "entity_id": "light.homematic_ip_eingang_dimmaktor",
@@ -441,6 +633,10 @@
   {
    "entity_id": "person.rasppi5",
    "icon": "mdi:account-box-outline"
+  },
+  {
+   "entity_id": "schedule.niedertarif",
+   "icon": "mdi:cash-clock"
   },
   {
    "entity_id": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur",
@@ -553,6 +749,26 @@
   {
    "entity_id": "sensor.energy_production_tomorrow",
    "icon": "mdi:weather-partly-cloudy"
+  },
+  {
+   "entity_id": "sensor.fbh_pv_prognose_vorhalt",
+   "icon": "mdi:solar-power-variant"
+  },
+  {
+   "entity_id": "sensor.fbh_pv_rest_heute",
+   "icon": "mdi:solar-power"
+  },
+  {
+   "entity_id": "sensor.fbh_smart_entscheid",
+   "icon": "mdi:brain"
+  },
+  {
+   "entity_id": "sensor.gebaude_auskuhlrate",
+   "icon": "mdi:thermometer-minus"
+  },
+  {
+   "entity_id": "sensor.gebaude_zeitkonstante",
+   "icon": "mdi:timer-sand"
   },
   {
    "entity_id": "sensor.haus_verbauch_phase_a_leistung",
@@ -675,6 +891,10 @@
    "icon": "mdi:meter-electric"
   },
   {
+   "entity_id": "sensor.sd_karte_belegt",
+   "icon": "mdi:sd"
+  },
+  {
    "entity_id": "sensor.shelly1_8caab55d7177_temperatur",
    "icon": "mdi:bed-single"
   },
@@ -771,6 +991,30 @@
    "icon": "mdi:weather-sunset-down"
   },
   {
+   "entity_id": "sensor.speicher_energie_gesamt",
+   "icon": "mdi:storage-tank"
+  },
+  {
+   "entity_id": "sensor.speicher_energie_mitte",
+   "icon": "mdi:water-thermometer"
+  },
+  {
+   "entity_id": "sensor.speicher_energie_oben",
+   "icon": "mdi:water-boiler"
+  },
+  {
+   "entity_id": "sensor.speicher_energie_unten",
+   "icon": "mdi:thermometer-chevron-down"
+  },
+  {
+   "entity_id": "sensor.speicher_heizzone_mitteltemperatur",
+   "icon": "mdi:thermometer-lines"
+  },
+  {
+   "entity_id": "sensor.speicher_heizzone_spreizung",
+   "icon": "mdi:arrow-expand-vertical"
+  },
+  {
    "entity_id": "sensor.stp4_0_3av_40_930_grid_power",
    "icon": "mdi:current-ac"
   },
@@ -809,6 +1053,38 @@
   {
    "entity_id": "sensor.verbrauch_wp_heizung_kwh",
    "icon": "mdi:heat-pump-outline"
+  },
+  {
+   "entity_id": "sensor.wohnraum_prognose",
+   "icon": "mdi:home-thermometer-outline"
+  },
+  {
+   "entity_id": "sensor.wohnzimmer_homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_wohnraum_trend",
+   "icon": "mdi:thermometer-chevron-down"
+  },
+  {
+   "entity_id": "sensor.wp_kurztakte_gesamt",
+   "icon": "mdi:timer-alert-outline"
+  },
+  {
+   "entity_id": "sensor.wp_laufzeit_gesamt",
+   "icon": "mdi:timer-outline"
+  },
+  {
+   "entity_id": "sensor.wp_starts_gesamt",
+   "icon": "mdi:counter"
+  },
+  {
+   "entity_id": "sensor.wp_starts_letzte_stunde",
+   "icon": "mdi:counter"
+  },
+  {
+   "entity_id": "sensor.wp_strom_woche",
+   "icon": "mdi:calendar-week"
+  },
+  {
+   "entity_id": "sensor.wp_verdichter_betrieb",
+   "icon": "mdi:heat-pump"
   },
   {
    "entity_id": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
@@ -893,6 +1169,14 @@
   {
    "entity_id": "switch.shelly1pm_84cca8b15caf",
    "icon": "mdi:washing-machine"
+  },
+  {
+   "entity_id": "timer.alarm_tore_freigabe",
+   "icon": "mdi:lock-open-variant"
+  },
+  {
+   "entity_id": "timer.fbh_hand_pause",
+   "icon": "mdi:hand-back-right"
   }
  ],
  "entitaeten_mit_eigenem_raum": [

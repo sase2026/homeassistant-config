@@ -1,1648 +1,1655 @@
 {
- "title": "FBH Heizungsraum",
- "icon": "mdi:thermometer-lines",
- "views": [
-  {
-   "title": "FBH Übersicht",
-   "path": "fbh-uebersicht",
-   "icon": "mdi:thermometer-lines",
-   "cards": [
-    {
-     "type": "horizontal-stack",
-     "cards": [
-      {
-       "type": "custom:mushroom-template-card",
-       "primary": "Speicher WW",
-       "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C",
-       "icon": "mdi:water-thermometer",
-       "icon_color": "{% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %} {% if t >= 55 %}red{% elif t >= 45 %}orange{% else %}blue{% endif %}\n",
-       "layout": "vertical",
-       "card_mod": {
-        "style": "ha-card { border-left: 3px solid #ef4444; }"
-       }
-      },
-      {
-       "type": "custom:mushroom-template-card",
-       "primary": "Speicher bei VL",
-       "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur') | float(0) | round(1) }} °C",
-       "icon": "mdi:thermometer-water",
-       "icon_color": "{% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur') | float(0) %} {% if t >= 50 %}red{% elif t >= 40 %}orange{% else %}blue{% endif %}\n",
-       "layout": "vertical"
-      },
-      {
-       "type": "custom:mushroom-template-card",
-       "primary": "Speicher bei RL",
-       "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_2') | float(0) | round(1) }} °C",
-       "icon": "mdi:thermometer-chevron-down",
-       "icon_color": "blue",
-       "layout": "vertical"
-      },
-      {
-       "type": "custom:mushroom-template-card",
-       "primary": "VL HK-II",
-       "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3') | float(0) | round(1) }} °C",
-       "icon": "mdi:thermometer-chevron-up",
-       "icon_color": "orange",
-       "layout": "vertical"
-      },
-      {
-       "type": "custom:mushroom-template-card",
-       "primary": "RL HK-II",
-       "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2') | float(0) | round(1) }} °C",
-       "icon": "mdi:thermometer-chevron-down",
-       "icon_color": "cyan",
-       "layout": "vertical"
-      },
-      {
-       "type": "custom:mushroom-template-card",
-       "primary": "WaKü",
-       "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur') | float(0) | round(1) }} °C",
-       "icon": "mdi:water-pump",
-       "icon_color": "blue",
-       "layout": "vertical"
-      }
-     ]
-    },
-    {
-     "type": "custom:plotly-graph",
-     "hours_to_show": 24,
-     "refresh_interval": 60,
-     "layout": {
-      "height": 470,
-      "margin": {
-       "t": 95,
-       "b": 120,
-       "l": 45,
-       "r": 50
-      },
-      "paper_bgcolor": "rgba(0,0,0,0)",
-      "plot_bgcolor": "rgba(0,0,0,0)",
-      "font": {
-       "color": "#9e9e9e",
-       "size": 11
-      },
-      "xaxis": {
-       "showgrid": false,
-       "color": "#9e9e9e",
-       "tickformat": "%H:%M"
-      },
-      "yaxis": {
-       "showgrid": true,
-       "gridcolor": "#2a2a2a",
-       "color": "#9e9e9e",
-       "ticksuffix": "°",
-       "range": [
-        15,
-        60
-       ],
-       "fixedrange": true,
-       "dtick": 5
-      },
-      "yaxis2": {
-       "overlaying": "y",
-       "side": "right",
-       "visible": true,
-       "showgrid": false,
-       "color": "#06b6d4",
-       "tickformat": ".2s",
-       "ticksuffix": "W",
-       "range": [
-        0,
-        7000
-       ],
-       "fixedrange": true,
-       "hoverformat": ".1f",
-       "dtick": 1000
-      },
-      "showlegend": true,
-      "legend": {
-       "orientation": "h",
-       "x": 0,
-       "xanchor": "left",
-       "y": -0.09,
-       "yanchor": "top",
-       "font": {
-        "size": 10
-       }
-      },
-      "annotations": [
-       {
-        "text": "Speicher & Heizkreis",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.13,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 20,
-         "color": "#9e9e9e"
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.fbh_a",
+  "data": {
+    "config": {
+      "title": "FBH Heizungsraum",
+      "icon": "mdi:thermometer-lines",
+      "views": [
+        {
+          "title": "FBH Übersicht",
+          "path": "fbh-uebersicht",
+          "icon": "mdi:thermometer-lines",
+          "cards": [
+            {
+              "type": "horizontal-stack",
+              "cards": [
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "Speicher WW",
+                  "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) | round(1) }} °C",
+                  "icon": "mdi:water-thermometer",
+                  "icon_color": "{% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %} {% if t >= 55 %}red{% elif t >= 45 %}orange{% else %}blue{% endif %}\n",
+                  "layout": "vertical",
+                  "card_mod": {
+                    "style": "ha-card { border-left: 3px solid #ef4444; }"
+                  }
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "Speicher bei VL",
+                  "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur') | float(0) | round(1) }} °C",
+                  "icon": "mdi:thermometer-water",
+                  "icon_color": "{% set t = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur') | float(0) %} {% if t >= 50 %}red{% elif t >= 40 %}orange{% else %}blue{% endif %}\n",
+                  "layout": "vertical"
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "Speicher bei RL",
+                  "secondary": "{{ states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_2') | float(0) | round(1) }} °C",
+                  "icon": "mdi:thermometer-chevron-down",
+                  "icon_color": "blue",
+                  "layout": "vertical"
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "VL HK-II",
+                  "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3') | float(0) | round(1) }} °C",
+                  "icon": "mdi:thermometer-chevron-up",
+                  "icon_color": "orange",
+                  "layout": "vertical"
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "RL HK-II",
+                  "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2') | float(0) | round(1) }} °C",
+                  "icon": "mdi:thermometer-chevron-down",
+                  "icon_color": "cyan",
+                  "layout": "vertical"
+                },
+                {
+                  "type": "custom:mushroom-template-card",
+                  "primary": "WaKü",
+                  "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur') | float(0) | round(1) }} °C",
+                  "icon": "mdi:water-pump",
+                  "icon_color": "blue",
+                  "layout": "vertical"
+                }
+              ]
+            },
+            {
+              "type": "custom:plotly-graph",
+              "hours_to_show": 24,
+              "refresh_interval": 60,
+              "layout": {
+                "height": 470,
+                "margin": {
+                  "t": 95,
+                  "b": 120,
+                  "l": 45,
+                  "r": 50
+                },
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "font": {
+                  "color": "#9e9e9e",
+                  "size": 11
+                },
+                "xaxis": {
+                  "showgrid": false,
+                  "color": "#9e9e9e",
+                  "tickformat": "%H:%M"
+                },
+                "yaxis": {
+                  "showgrid": true,
+                  "gridcolor": "#2a2a2a",
+                  "color": "#9e9e9e",
+                  "ticksuffix": "°",
+                  "range": [
+                    15,
+                    60
+                  ],
+                  "fixedrange": true,
+                  "dtick": 5
+                },
+                "yaxis2": {
+                  "overlaying": "y",
+                  "side": "right",
+                  "visible": true,
+                  "showgrid": false,
+                  "color": "#06b6d4",
+                  "tickformat": ".2s",
+                  "ticksuffix": "W",
+                  "range": [
+                    0,
+                    7000
+                  ],
+                  "fixedrange": true,
+                  "hoverformat": ".1f",
+                  "dtick": 1000
+                },
+                "showlegend": true,
+                "legend": {
+                  "orientation": "h",
+                  "x": 0,
+                  "xanchor": "left",
+                  "y": -0.09,
+                  "yanchor": "top",
+                  "font": {
+                    "size": 10
+                  }
+                },
+                "annotations": [
+                  {
+                    "text": "Speicher & Heizkreis",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.13,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 20,
+                      "color": "#9e9e9e"
+                    }
+                  },
+                  {
+                    "text": "$fn ({hass}) => 'Speicher WW ' + (Math.round((parseFloat(hass.states['sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'].state)||0)*10)/10).toFixed(1) + ' °C'\n",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.05,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 14,
+                      "color": "#ef4444"
+                    }
+                  },
+                  {
+                    "text": "$fn ({hass}) => 'WP ' + Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0) + ' W'\n",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.0,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 11,
+                      "color": "#06b6d4"
+                    }
+                  }
+                ]
+              },
+              "entities": [
+                {
+                  "entity": "sensor.energy_manager_wp_aktuell_w",
+                  "name": "WP Leistung",
+                  "yaxis": "y2",
+                  "fill": "tozeroy",
+                  "fillcolor": "rgba(6,182,212,0.15)",
+                  "line": {
+                    "color": "rgba(6,182,212,0.5)",
+                    "width": 0.5,
+                    "shape": "hv"
+                  },
+                  "hovertemplate": "WP Leistung: %{y:.1f} W<extra></extra>"
+                },
+                {
+                  "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+                  "name": "Speicher WW",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ef4444",
+                    "width": 2
+                  }
+                },
+                {
+                  "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
+                  "name": "Speicher bei VL",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#f97316",
+                    "width": 2
+                  }
+                },
+                {
+                  "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
+                  "name": "Speicher bei RL",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#3b82f6",
+                    "width": 1.5
+                  }
+                },
+                {
+                  "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
+                  "name": "VL HK-II",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#f59e0b",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2",
+                  "name": "RL HK-II",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#06b6d4",
+                    "width": 1.2
+                  }
+                }
+              ]
+            },
+            {
+              "type": "vertical-stack",
+              "cards": [
+                {
+                  "type": "markdown",
+                  "content": "### Erdgeschoss"
+                },
+                {
+                  "type": "grid",
+                  "columns": 4,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Küche",
+                      "secondary": "{{ states('sensor.shelly1_8caab55d7ecf_temperatur') | float(0) | round(1) }} °C",
+                      "icon": "mdi:stove",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab55d7ecf_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Wohnen 1",
+                      "secondary": "{{ states('sensor.shelly1_8caab561c0b7_temperatur_2') | float(0) | round(1) }} °C",
+                      "icon": "mdi:sofa",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab561c0b7_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Wohnen 2",
+                      "secondary": "{{ states('sensor.shelly1_8caab55d7ecf_temperatur_2') | float(0) | round(1) }} °C",
+                      "icon": "mdi:sofa-outline",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab55d7ecf_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Wohnen 3",
+                      "secondary": "{{ states('sensor.shelly1_8caab55d7ecf_temperatur_3') | float(0) | round(1) }} °C",
+                      "icon": "mdi:sofa-single",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab55d7ecf_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Essen",
+                      "secondary": "{{ states('sensor.shelly1_8caab56147d3_temperatur') | float(0) | round(1) }} °C",
+                      "icon": "mdi:silverware-fork-knife",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab56147d3_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Spielen",
+                      "secondary": "{{ states('sensor.shelly1_8caab56147d3_temperatur_2') | float(0) | round(1) }} °C",
+                      "icon": "mdi:toy-brick",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab56147d3_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Gäste WC",
+                      "secondary": "{{ states('sensor.shelly1_8caab56147d3_temperatur_3') | float(0) | round(1) }} °C",
+                      "icon": "mdi:toilet",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab56147d3_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Entrée",
+                      "secondary": "{{ states('sensor.shelly1_8caab561c0b7_temperatur') | float(0) | round(1) }} °C",
+                      "icon": "mdi:door-open",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab561c0b7_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "vertical-stack",
+              "cards": [
+                {
+                  "type": "markdown",
+                  "content": "### Obergeschoss"
+                },
+                {
+                  "type": "grid",
+                  "columns": 3,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Galerie",
+                      "secondary": "{{ states('sensor.shelly1_8caab561c0b7_temperatur_3') | float(0) | round(1) }} °C",
+                      "icon": "mdi:stairs",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab561c0b7_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Eltern",
+                      "secondary": "{{ states('sensor.shelly1_c45bbe570c30_temperatur') | float(0) | round(1) }} °C",
+                      "icon": "mdi:bed-king",
+                      "icon_color": "{% set t = states('sensor.shelly1_c45bbe570c30_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Dusche",
+                      "secondary": "{{ states('sensor.shelly1_c45bbe570c30_temperatur_2') | float(0) | round(1) }} °C",
+                      "icon": "mdi:shower",
+                      "icon_color": "{% set t = states('sensor.shelly1_c45bbe570c30_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Yanik",
+                      "secondary": "{{ states('sensor.shelly1_8caab55d7177_temperatur') | float(0) | round(1) }} °C",
+                      "icon": "mdi:bed-single",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab55d7177_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Bad",
+                      "secondary": "{{ states('sensor.shelly1_8caab55d7177_temperatur_2') | float(0) | round(1) }} °C",
+                      "icon": "mdi:bathtub-outline",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab55d7177_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Mael",
+                      "secondary": "{{ states('sensor.shelly1_8caab55d7177_temperatur_3') | float(0) | round(1) }} °C",
+                      "icon": "mdi:bed-single-outline",
+                      "icon_color": "{% set t = states('sensor.shelly1_8caab55d7177_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "vertical-stack",
+              "cards": [
+                {
+                  "type": "markdown",
+                  "content": "### Untergeschoss"
+                },
+                {
+                  "type": "grid",
+                  "columns": 2,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "Hobby",
+                      "secondary": "{{ states('sensor.shelly1_c45bbe570c30_temperatur_3') | float(0) | round(1) }} °C",
+                      "icon": "mdi:radiator",
+                      "icon_color": "{% set t = states('sensor.shelly1_c45bbe570c30_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    },
+                    {
+                      "type": "custom:mushroom-template-card",
+                      "primary": "WaKü",
+                      "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur') | float(0) | round(1) }} °C",
+                      "icon": "mdi:washing-machine",
+                      "icon_color": "{% set t = states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
+                      "layout": "vertical"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "custom:plotly-graph",
+              "hours_to_show": 24,
+              "refresh_interval": 120,
+              "layout": {
+                "height": 560,
+                "margin": {
+                  "t": 80,
+                  "b": 175,
+                  "l": 45,
+                  "r": 10
+                },
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "font": {
+                  "color": "#9e9e9e",
+                  "size": 11
+                },
+                "xaxis": {
+                  "showgrid": false,
+                  "color": "#9e9e9e",
+                  "tickformat": "%H:%M"
+                },
+                "yaxis": {
+                  "showgrid": true,
+                  "gridcolor": "#2a2a2a",
+                  "color": "#9e9e9e",
+                  "ticksuffix": "°",
+                  "range": [
+                    19,
+                    37
+                  ]
+                },
+                "yaxis2": {
+                  "overlaying": "y",
+                  "visible": false,
+                  "range": [
+                    0,
+                    1
+                  ],
+                  "fixedrange": true
+                },
+                "showlegend": true,
+                "legend": {
+                  "orientation": "h",
+                  "x": 0,
+                  "xanchor": "left",
+                  "y": -0.07,
+                  "yanchor": "top",
+                  "font": {
+                    "size": 10
+                  }
+                },
+                "annotations": [
+                  {
+                    "text": "FBH-Stränge Rücklauf (24 h)",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.1,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 20,
+                      "color": "#9e9e9e"
+                    }
+                  },
+                  {
+                    "text": "$fn ({hass}) => 'RL HK-II ' + (Math.round((parseFloat(hass.states['sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2'].state)||0)*10)/10).toFixed(1) + '° · VL ' + (Math.round((parseFloat(hass.states['sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3'].state)||0)*10)/10).toFixed(1) + '°'\n",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.02,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 12,
+                      "color": "#06b6d4"
+                    }
+                  }
+                ]
+              },
+              "entities": [
+                {
+                  "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
+                  "name": "FBH-Pumpe EIN",
+                  "yaxis": "y2",
+                  "showlegend": false,
+                  "fill": "tozeroy",
+                  "fillcolor": "rgba(34,197,94,0.07)",
+                  "line": {
+                    "color": "rgba(34,197,94,0.25)",
+                    "width": 0.5,
+                    "shape": "hv"
+                  },
+                  "filters": [
+                    {
+                      "map_y": "y === \"on\" ? 1 : 0"
+                    }
+                  ]
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7ecf_temperatur",
+                  "name": "Küche",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ef4444",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab561c0b7_temperatur_2",
+                  "name": "Wohnen 1",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#f97316",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7ecf_temperatur_2",
+                  "name": "Wohnen 2",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#f59e0b",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7ecf_temperatur_3",
+                  "name": "Wohnen 3",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#eab308",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab56147d3_temperatur",
+                  "name": "Essen",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#22c55e",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab56147d3_temperatur_2",
+                  "name": "Spielen",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#06b6d4",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab56147d3_temperatur_3",
+                  "name": "Gäste WC",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#8b5cf6",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab561c0b7_temperatur",
+                  "name": "Entrée",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ec4899",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab561c0b7_temperatur_3",
+                  "name": "Galerie",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#64748b",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_c45bbe570c30_temperatur",
+                  "name": "Eltern",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#dc2626",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_c45bbe570c30_temperatur_2",
+                  "name": "Dusche",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#3b82f6",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_c45bbe570c30_temperatur_3",
+                  "name": "Hobby (Radiator)",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#16a34a",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7177_temperatur",
+                  "name": "Yanik",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#d97706",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7177_temperatur_2",
+                  "name": "Bad",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#a855f7",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7177_temperatur_3",
+                  "name": "Mael",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#db2777",
+                    "width": 1.2
+                  }
+                },
+                {
+                  "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2",
+                  "name": "RL HK-II gesamt",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ffffff",
+                    "width": 3
+                  }
+                },
+                {
+                  "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
+                  "name": "VL HK-II",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#f59e0b",
+                    "width": 1.5,
+                    "dash": "dash"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:plotly-graph",
+              "hours_to_show": 1,
+              "refresh_interval": 300,
+              "layout": {
+                "height": 680,
+                "margin": {
+                  "t": 80,
+                  "b": 70,
+                  "l": 115,
+                  "r": 20
+                },
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "font": {
+                  "color": "#9e9e9e",
+                  "size": 11
+                },
+                "xaxis": {
+                  "type": "linear",
+                  "range": [
+                    -1,
+                    1
+                  ],
+                  "ticksuffix": " K",
+                  "dtick": 0.2,
+                  "showgrid": true,
+                  "gridcolor": "#2a2a2a",
+                  "zeroline": true,
+                  "zerolinecolor": "#888888",
+                  "color": "#9e9e9e"
+                },
+                "yaxis": {
+                  "type": "category",
+                  "autorange": "reversed",
+                  "color": "#cccccc"
+                },
+                "showlegend": true,
+                "barmode": "group",
+                "bargap": 0.25,
+                "bargroupgap": 0.05,
+                "legend": {
+                  "orientation": "h",
+                  "x": 0,
+                  "y": -0.04,
+                  "yanchor": "top",
+                  "font": {
+                    "size": 11
+                  }
+                },
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "xref": "x",
+                    "yref": "paper",
+                    "x0": -0.4,
+                    "x1": 0.4,
+                    "y0": 0,
+                    "y1": 1,
+                    "fillcolor": "rgba(34,197,94,0.07)",
+                    "line": {
+                      "width": 0
+                    }
+                  }
+                ],
+                "annotations": [
+                  {
+                    "text": "Strang-Abgleich Ø Abw.",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.1,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 18,
+                      "color": "#9e9e9e"
+                    }
+                  },
+                  {
+                    "text": "$fn ({hass}) => { const s = hass.states['sensor.fbh_strang_abweichung']; const a = (s || {}).attributes || {}; const b = (hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}; return a.fenster ? ('Nacht ' + a.fenster + ' · ' + s.state + ' Werte' + (b.zeitraum ? ' · Vergleich Ø ' + b.zeitraum + ' (' + hass.states['sensor.fbh_strang_abweichung_7_naechte'].state + ' Nächte) · Klammer = Δ zum Ø' : '')) : 'keine Daten (FBH-Pumpe lief letzte Nacht nicht eingeschwungen)'; }\n",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.02,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 11,
+                      "color": "#22c55e"
+                    }
+                  }
+                ]
+              },
+              "entities": [
+                {
+                  "entity": "",
+                  "name": "Letzte Nacht",
+                  "type": "bar",
+                  "orientation": "h",
+                  "yaxis": "y",
+                  "y": [
+                    "Küche",
+                    "Wohnen 1",
+                    "Wohnen 2",
+                    "Wohnen 3",
+                    "Essen",
+                    "Spielen",
+                    "Gäste WC",
+                    "Entrée",
+                    "Galerie",
+                    "Eltern",
+                    "Dusche",
+                    "Hobby (Radiator)",
+                    "Yanik",
+                    "Bad",
+                    "Mael",
+                    "RL HK-II gesamt"
+                  ],
+                  "x": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : (typeof a[k] === 'number' ? a[k] : null); })\n",
+                  "text": "$ex (() => { const l = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : (typeof a[k] === 'number' ? a[k] : null); }), m = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b[k] === 'number' ? b[k] : null); }); return l.map((v, i) => v === null ? '–' : (v > 0 ? '+' : '') + v.toFixed(2) + ' K' + (m[i] === null ? '' : ' (' + (v - m[i] >= 0 ? '+' : '−') + Math.abs(v - m[i]).toFixed(2) + ')')); })()\n",
+                  "customdata": "$ex (() => { const m = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b[k] === 'number' ? b[k] : null); }), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map((k, i) => [m[i], typeof a['hub_' + k] === 'number' ? a['hub_' + k] : null]); })()\n",
+                  "textposition": "outside",
+                  "cliponaxis": false,
+                  "marker": {
+                    "color": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : (typeof a[k] === 'number' ? a[k] : null); }).map((v, i) => i === 15 ? '#ffffff' : v === null ? '#555555' : v >= 0.4 ? '#f97316' : v <= -0.4 ? '#3b82f6' : '#22c55e')\n"
+                  },
+                  "hovertemplate": "%{y}: %{x:+.2f} K · Ø 7 Nächte %{customdata[0]:+.2f} K · Hub je Takt %{customdata[1]:.1f} K<extra>Letzte Nacht</extra>"
+                },
+                {
+                  "entity": "",
+                  "name": "Ø 7 Nächte davor",
+                  "type": "bar",
+                  "orientation": "h",
+                  "yaxis": "y",
+                  "y": [
+                    "Küche",
+                    "Wohnen 1",
+                    "Wohnen 2",
+                    "Wohnen 3",
+                    "Essen",
+                    "Spielen",
+                    "Gäste WC",
+                    "Entrée",
+                    "Galerie",
+                    "Eltern",
+                    "Dusche",
+                    "Hobby (Radiator)",
+                    "Yanik",
+                    "Bad",
+                    "Mael",
+                    "RL HK-II gesamt"
+                  ],
+                  "x": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b[k] === 'number' ? b[k] : null); })\n",
+                  "marker": {
+                    "color": "rgba(158,158,158,0.45)"
+                  },
+                  "hovertemplate": "%{y}: %{x:+.2f} K<extra>Ø 7 Nächte davor</extra>"
+                },
+                {
+                  "entity": "",
+                  "name": "Vornacht",
+                  "type": "scatter",
+                  "mode": "markers",
+                  "yaxis": "y",
+                  "y": [
+                    "Küche",
+                    "Wohnen 1",
+                    "Wohnen 2",
+                    "Wohnen 3",
+                    "Essen",
+                    "Spielen",
+                    "Gäste WC",
+                    "Entrée",
+                    "Galerie",
+                    "Eltern",
+                    "Dusche",
+                    "Hobby (Radiator)",
+                    "Yanik",
+                    "Bad",
+                    "Mael",
+                    "RL HK-II gesamt"
+                  ],
+                  "x": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b['v_' + k] === 'number' ? b['v_' + k] : null); })\n",
+                  "marker": {
+                    "symbol": "diamond-open",
+                    "size": 9,
+                    "color": "#e5e7eb",
+                    "line": {
+                      "width": 1.5
+                    }
+                  },
+                  "hovertemplate": "%{y}: %{x:+.2f} K<extra>Vornacht</extra>"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Räume 24h",
+          "path": "fbh-raeume",
+          "icon": "mdi:chart-line",
+          "cards": [
+            {
+              "type": "custom:plotly-graph",
+              "hours_to_show": 24,
+              "refresh_interval": 300,
+              "layout": {
+                "height": 420,
+                "margin": {
+                  "t": 55,
+                  "b": 141,
+                  "l": 45,
+                  "r": 10
+                },
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "font": {
+                  "color": "#9e9e9e",
+                  "size": 11
+                },
+                "xaxis": {
+                  "showgrid": false,
+                  "color": "#9e9e9e",
+                  "tickformat": "%H:%M"
+                },
+                "yaxis": {
+                  "showgrid": true,
+                  "gridcolor": "#2a2a2a",
+                  "color": "#9e9e9e",
+                  "ticksuffix": "°"
+                },
+                "showlegend": true,
+                "legend": {
+                  "orientation": "h",
+                  "x": 0,
+                  "xanchor": "left",
+                  "y": -0.08,
+                  "yanchor": "top",
+                  "font": {
+                    "size": 10
+                  }
+                },
+                "annotations": [
+                  {
+                    "text": "Erdgeschoss – letzte 24 h",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.06,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 18,
+                      "color": "#9e9e9e"
+                    }
+                  }
+                ]
+              },
+              "entities": [
+                {
+                  "entity": "sensor.shelly1_8caab55d7ecf_temperatur",
+                  "name": "Küche",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ef4444",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab561c0b7_temperatur_2",
+                  "name": "Wohnen 1",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#f97316",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7ecf_temperatur_2",
+                  "name": "Wohnen 2",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#f59e0b",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7ecf_temperatur_3",
+                  "name": "Wohnen 3",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#eab308",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab56147d3_temperatur",
+                  "name": "Essen",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#22c55e",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab56147d3_temperatur_2",
+                  "name": "Spielen",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#06b6d4",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab56147d3_temperatur_3",
+                  "name": "Gäste WC",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#8b5cf6",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab561c0b7_temperatur",
+                  "name": "Entrée",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ec4899",
+                    "width": 1.4
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:plotly-graph",
+              "hours_to_show": 24,
+              "refresh_interval": 300,
+              "layout": {
+                "height": 400,
+                "margin": {
+                  "t": 55,
+                  "b": 119,
+                  "l": 45,
+                  "r": 10
+                },
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "font": {
+                  "color": "#9e9e9e",
+                  "size": 11
+                },
+                "xaxis": {
+                  "showgrid": false,
+                  "color": "#9e9e9e",
+                  "tickformat": "%H:%M"
+                },
+                "yaxis": {
+                  "showgrid": true,
+                  "gridcolor": "#2a2a2a",
+                  "color": "#9e9e9e",
+                  "ticksuffix": "°"
+                },
+                "showlegend": true,
+                "legend": {
+                  "orientation": "h",
+                  "x": 0,
+                  "xanchor": "left",
+                  "y": -0.08,
+                  "yanchor": "top",
+                  "font": {
+                    "size": 10
+                  }
+                },
+                "annotations": [
+                  {
+                    "text": "Obergeschoss – letzte 24 h",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.06,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 18,
+                      "color": "#9e9e9e"
+                    }
+                  }
+                ]
+              },
+              "entities": [
+                {
+                  "entity": "sensor.shelly1_8caab561c0b7_temperatur_3",
+                  "name": "Galerie",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#64748b",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_c45bbe570c30_temperatur",
+                  "name": "Eltern",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#dc2626",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_c45bbe570c30_temperatur_2",
+                  "name": "Dusche",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#3b82f6",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7177_temperatur",
+                  "name": "Yanik",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#d97706",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7177_temperatur_2",
+                  "name": "Bad",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#a855f7",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.shelly1_8caab55d7177_temperatur_3",
+                  "name": "Mael",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#db2777",
+                    "width": 1.4
+                  }
+                }
+              ]
+            },
+            {
+              "type": "custom:plotly-graph",
+              "hours_to_show": 24,
+              "refresh_interval": 300,
+              "layout": {
+                "height": 340,
+                "margin": {
+                  "t": 55,
+                  "b": 97,
+                  "l": 45,
+                  "r": 10
+                },
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "font": {
+                  "color": "#9e9e9e",
+                  "size": 11
+                },
+                "xaxis": {
+                  "showgrid": false,
+                  "color": "#9e9e9e",
+                  "tickformat": "%H:%M"
+                },
+                "yaxis": {
+                  "showgrid": true,
+                  "gridcolor": "#2a2a2a",
+                  "color": "#9e9e9e",
+                  "ticksuffix": "°"
+                },
+                "showlegend": true,
+                "legend": {
+                  "orientation": "h",
+                  "x": 0,
+                  "xanchor": "left",
+                  "y": -0.08,
+                  "yanchor": "top",
+                  "font": {
+                    "size": 10
+                  }
+                },
+                "annotations": [
+                  {
+                    "text": "Untergeschoss – letzte 24 h",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.06,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 18,
+                      "color": "#9e9e9e"
+                    }
+                  }
+                ]
+              },
+              "entities": [
+                {
+                  "entity": "sensor.shelly1_c45bbe570c30_temperatur_3",
+                  "name": "Hobby (Radiator)",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#16a34a",
+                    "width": 1.4
+                  }
+                },
+                {
+                  "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur",
+                  "name": "WaKü",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#8b5cf6",
+                    "width": 1.4
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Smarte FBH Temperatur Steuerung",
+          "path": "fbh-smart",
+          "icon": "mdi:home-thermometer-outline",
+          "cards": [
+            {
+              "type": "markdown",
+              "content": "{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set p = states('sensor.wohnraum_prognose') | float(0) -%}\n{%- set mn = states('input_number.fbh_raum_minimum') | float(22.3) -%}\n{%- set nt = is_state('schedule.niedertarif', 'on') -%}\n{%- if now().hour >= 12 -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_morgen') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_max_morgen') | float(99) -%}{%- else -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_heute') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}{%- endif -%}\n{%- set vorladen = nt and pvm < states('input_number.fbh_vorladen_pv_morgen_unter') | float(0) and tm < states('input_number.fbh_vorladen_tmax_morgen_unter') | float(-99) -%}\n{%- set ein = states('input_number.fbh_prognose_ein_unter') | float(22.4) + (0.2 if vorladen else 0) -%}\n{%- set aus = states('input_number.fbh_prognose_aus_ueber') | float(22.7) + (0.2 if vorladen else 0) -%}\n{%- set pumpe = states.switch.homematic_ip_fbh_pumpe_hk_ii -%}\n{%- set on = pumpe is not none and pumpe.state == 'on' -%}\n{%- set dur = ((now() - pumpe.last_changed).total_seconds() / 60) if pumpe is not none else 999 -%}\n{%- set mlz = states('input_number.fbh_mindestlaufzeit') | float(0) -%}\n{%- set mp = states('input_number.fbh_mindestpause') | float(0) -%}\n{%- set pvrest = states('sensor.fbh_pv_rest_heute') | float(0) -%}\n{%- set sschw = states('input_number.fbh_sonnensperre_ab_kwh') | float(99) -%}\n{%- set sonne = is_state('sun.sun', 'above_horizon') -%}\n{%- set sperre = sonne and now().hour < 13 and pvrest >= sschw -%}\n{%- set aktiv = is_state('input_boolean.fbh_smart_aktiv', 'on') -%}\n{%- set hand = not is_state('timer.fbh_hand_pause', 'idle') -%}\n{%- set lueften = is_state('binary_sensor.fbh_lueften_aktiv', 'on') -%}\n{%- set offen = ['binary_sensor.homematic_ip_turkontakt_hibiscus_tur','binary_sensor.homematic_ip_turkontakt_krauter_tur','binary_sensor.homematic_ip_fensterkontakt_kuche_tur'] | select('is_state','on') | list | count -%}\n{%- set nlm = states('input_number.fbh_lueften_nachlauf') | float(45) -%}\n{%- set lts = state_attr('input_datetime.fbh_lueften_zuletzt_geschlossen','timestamp') -%}\n{%- set m_lueft = 0 if not lueften else (nlm if offen > 0 else [nlm - (now().timestamp() - (lts or 0)) / 60, 0] | max) -%}\n{%- set ok = '✅' -%}{%- set no = '❌' -%}{%- set wait = '⏳' -%}\n{%- macro z(b) -%}{{ ok if b else no }}{%- endmacro -%}\n{%- macro hm(m) -%}{%- set m = [m, 0] | max | int -%}{{ '%d:%02d' | format(m // 60, m % 60) }} h{%- endmacro -%}\n## {{ '🟢 FBH-Pumpe läuft' if on else '⚪ FBH-Pumpe steht' }} seit {{ hm(dur) }}\n**Entscheid:** {{ states('sensor.fbh_smart_entscheid') }}  \n**Modus:** {{ '🟢 LIVE – Smart schaltet die Pumpe' if aktiv else '👁️ Beobachtung – HmIP R1–R8 schalten, Smart rechnet nur mit' }}{{ '  \\n⏸️ **Hand-Pause läuft** bis ' ~ (as_datetime(state_attr('timer.fbh_hand_pause','finishes_at')) | as_local).strftime('%H:%M') if hand and state_attr('timer.fbh_hand_pause','finishes_at') else '' }}\n\n{% if not on -%}\n### Einschalten – Voraussetzungen\n| | Bedingung | Ist | Soll |\n|:-:|---|---|---|\n| {{ z(aktiv) }} | Smart-Steuerung live | {{ 'EIN' if aktiv else 'Beobachtung' }} | EIN |\n| {{ z(not hand) }} | Keine Hand-Pause | {{ 'läuft' if hand else 'keine' }} | keine |\n| {{ z(not lueften) }} | Kein Lüften (Hibiscus, Kräuter, Küche + Nachlauf) | {{ ('offen' if offen > 0 else 'zu, Nachlauf noch ' ~ hm(m_lueft)) if lueften else 'zu' }} | zu + {{ nlm | int }} min |\n| {{ z(t < mn - 0.1) }} | **Weg A – Sicherheit:** Raum zu kalt | {{ t }} °C | < {{ (mn - 0.1) | round(1) }} °C |\n| {{ z(dur >= mp) if dur >= mp else wait }} | **Weg B – Prognose:** Mindestpause vorbei | {{ hm(dur) }} | ≥ {{ hm(mp) }} |\n| {{ z(not (sperre and t >= mn)) }} | Keine Sonnensperre | {{ 'Sperre aktiv (PV Rest ' ~ pvrest ~ ' kWh)' if sperre and t >= mn else ('PV Rest ' ~ pvrest ~ ' kWh' if sonne and now().hour < 13 else 'nicht relevant') }} | PV Rest < {{ sschw }} kWh oder ab 13:00 |\n| {{ z(p < ein) }} | Prognose in {{ states('input_number.fbh_vorhalt_stunden') | float(3) | round(1) }} h unter Prognose-EIN | {{ p }} °C | < {{ ein | round(2) }} °C{{ ' (Vorladen NT +0.2)' if vorladen else '' }} |\n{%- else -%}\n### Ausschalten – Voraussetzungen\n| | Bedingung | Ist | Soll |\n|:-:|---|---|---|\n| {{ z(aktiv) }} | Smart-Steuerung live | {{ 'EIN' if aktiv else 'Beobachtung' }} | EIN |\n| {{ z(not hand) }} | Keine Hand-Pause | {{ 'läuft' if hand else 'keine' }} | keine |\n| {{ z(not lueften) }} | Kein Lüften (Hibiscus, Kräuter, Küche + Nachlauf) | {{ ('offen' if offen > 0 else 'zu, Nachlauf noch ' ~ hm(m_lueft)) if lueften else 'zu' }} | zu + {{ nlm | int }} min |\n| {{ z(t >= mn - 0.1) }} | Raum nicht zu kalt (sonst Sicherheit EIN) | {{ t }} °C | ≥ {{ (mn - 0.1) | round(1) }} °C |\n| {{ ok if dur >= mlz else wait }} | Mindestlaufzeit vorbei | {{ hm(dur) }} | ≥ {{ hm(mlz) }} |\n| {{ z(sperre and t >= mn) }} | **Weg A – Sonnensperre** (vor 13:00, PV Rest) | {{ pvrest }} kWh | ≥ {{ sschw }} kWh |\n| {{ z(p > aus and t >= mn + 0.1) }} | **Weg B – Prognose** über Prognose-AUS und Raum ≥ {{ (mn + 0.1) | round(1) }} °C | {{ p }} °C / {{ t }} °C | > {{ aus | round(2) }} °C |\n{%- endif %}\n\n{#- Countdown -#}\n{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n{%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}\n{%- set nwf = states('input_number.fbh_nachwaerme_faktor') | float(0) -%}\n{%- set rate = k * (t - ta) + (nwf * fa if l6 > 0 else 0) -%}\n{%- set rate = [rate, 0.02] | max -%}\n{%- if not on %}\n\n### ⏱️ Countdown bis Einschalten\n{%- if t < mn - 0.1 %}\n**Jetzt** – Sicherheitsregel greift.\n{%- else -%}\n{%- set m_pause = [mp - dur, 0] | max -%}\n{%- set m_prog = ([p - ein, 0] | max) / rate * 60 if p >= ein else 0 -%}\n{%- if sperre and t >= mn -%}{%- set m_sperre = (today_at('13:00') - now()).total_seconds() / 60 -%}{%- else -%}{%- set m_sperre = 0 -%}{%- endif -%}\n{%- set m = [m_pause, m_prog, m_sperre, m_lueft] | max -%}\n{%- set grund = ('Lüften + Nachlauf' ~ (' (Fenster/Tür offen, frühestens)' if offen > 0 else '')) if m == m_lueft and m > 0 else 'Mindestpause' if m == m_pause and m > 0 else ('Sonnensperre bis 13:00' if m == m_sperre and m > 0 else 'Prognose sinkt unter ' ~ ein | round(2) ~ ' °C') -%}\n{%- if m <= 0 %}\n**Jetzt** – alle Bedingungen für EIN erfüllt{{ '' if aktiv else ' (im Beobachtungsmodus schaltet Smart nicht)' }}.\n{%- elif m > 720 %}\n**> 12 h** – Raum bleibt laut Prognose warm genug.\n{%- else %}\n## ≈ {{ hm(m) }} → ca. {{ (now() + timedelta(minutes=m)).strftime('%H:%M') }} Uhr\n<sub>Massgebend: {{ grund }} · geschätzt mit Abkühlung ≈ {{ rate | round(2) }} K/h (Aussen {{ ta | round(1) }} °C){{ ' · Niedertarif' if is_state('schedule.niedertarif','on') else '' }}</sub>\n{%- endif -%}\n{%- endif -%}\n{%- else %}\n\n### ⏱️ Restlaufzeit\n{%- set m_mlz = [mlz - dur, 0] | max %}\n{{ 'Mindestlaufzeit noch **' ~ hm(m_mlz) ~ '** (bis ca. ' ~ (now() + timedelta(minutes=m_mlz)).strftime('%H:%M') ~ ' Uhr), danach entscheidet die Prognose.' if m_mlz > 0 else 'Mindestlaufzeit erfüllt – AUS, sobald Prognose > ' ~ aus | round(2) ~ ' °C oder Sonnensperre greift.' }}\n{%- endif %}\n"
+            },
+            {
+              "type": "custom:plotly-graph",
+              "hours_to_show": 27,
+              "refresh_interval": 120,
+              "layout": {
+                "height": 420,
+                "margin": {
+                  "t": 70,
+                  "b": 90,
+                  "l": 45,
+                  "r": 10
+                },
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "font": {
+                  "color": "#9e9e9e",
+                  "size": 11
+                },
+                "xaxis": {
+                  "showgrid": false,
+                  "color": "#9e9e9e",
+                  "tickformat": "%H:%M"
+                },
+                "yaxis": {
+                  "showgrid": true,
+                  "gridcolor": "#2a2a2a",
+                  "color": "#9e9e9e",
+                  "ticksuffix": "°",
+                  "range": [
+                    21.4,
+                    23.6
+                  ],
+                  "dtick": 0.2
+                },
+                "yaxis2": {
+                  "overlaying": "y",
+                  "visible": false,
+                  "range": [
+                    0,
+                    1
+                  ],
+                  "fixedrange": true
+                },
+                "showlegend": true,
+                "legend": {
+                  "orientation": "h",
+                  "x": 0,
+                  "y": -0.1,
+                  "yanchor": "top",
+                  "font": {
+                    "size": 10
+                  }
+                },
+                "annotations": [
+                  {
+                    "text": "Raum Ist vs. Prognose mit Zielband – rechts von «jetzt» = Vorschau 3 h",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.08,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 18,
+                      "color": "#9e9e9e"
+                    }
+                  },
+                  {
+                    "text": "jetzt",
+                    "xref": "x",
+                    "yref": "paper",
+                    "x": "$ex new Date()",
+                    "y": 1.0,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 10,
+                      "color": "#9e9e9e"
+                    }
+                  }
+                ],
+                "shapes": [
+                  {
+                    "type": "line",
+                    "xref": "x",
+                    "yref": "paper",
+                    "x0": "$ex new Date()",
+                    "x1": "$ex new Date()",
+                    "y0": 0,
+                    "y1": 1,
+                    "line": {
+                      "color": "#9e9e9e",
+                      "width": 1,
+                      "dash": "dot"
+                    }
+                  }
+                ]
+              },
+              "entities": [
+                {
+                  "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
+                  "name": "FBH-Pumpe EIN",
+                  "yaxis": "y2",
+                  "fill": "tozeroy",
+                  "fillcolor": "rgba(34,197,94,0.10)",
+                  "line": {
+                    "color": "rgba(34,197,94,0.3)",
+                    "width": 0.5,
+                    "shape": "hv"
+                  },
+                  "filters": [
+                    {
+                      "map_y": "y === \"on\" ? 1 : 0"
+                    }
+                  ]
+                },
+                {
+                  "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur",
+                  "name": "Raum Ist",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ffffff",
+                    "width": 2.5,
+                    "shape": "hv"
+                  }
+                },
+                {
+                  "entity": "sensor.wohnraum_prognose",
+                  "name": "Prognose (3 h vorher berechnet)",
+                  "time_offset": "3h",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#f59e0b",
+                    "width": 1.5,
+                    "dash": "dot"
+                  }
+                },
+                {
+                  "entity": "input_number.fbh_raum_minimum",
+                  "name": "Raum Minimum",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ef4444",
+                    "width": 1,
+                    "dash": "dash",
+                    "shape": "hv"
+                  },
+                  "extend_to": "end"
+                },
+                {
+                  "entity": "input_number.fbh_prognose_ein_unter",
+                  "name": "Prognose-EIN",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#3b82f6",
+                    "width": 1,
+                    "dash": "dash",
+                    "shape": "hv"
+                  },
+                  "extend_to": "end",
+                  "time_offset": "3h"
+                },
+                {
+                  "entity": "input_number.fbh_prognose_aus_ueber",
+                  "name": "Prognose-AUS",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#22c55e",
+                    "width": 1,
+                    "dash": "dash",
+                    "shape": "hv"
+                  },
+                  "extend_to": "end",
+                  "time_offset": "3h",
+                  "fill": "tonexty",
+                  "fillcolor": "rgba(34,197,94,0.10)"
+                }
+              ],
+              "time_offset": "3h"
+            },
+            {
+              "type": "markdown",
+              "content": "{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set H = states('input_number.fbh_vorhalt_stunden') | float(3) -%}\n{%- set tr = [[states('sensor.wohnzimmer_homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_wohnraum_trend') | float(0), -0.5] | max, 0.5] | min -%}\n{%- set tr = [tr, 0] | max if is_state('binary_sensor.fbh_lueften_aktiv', 'on') else tr -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}\n{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}\n{%- set s = states('input_number.fbh_sonnenfaktor') | float(0) -%}\n{%- set pv = states('sensor.fbh_pv_prognose_vorhalt') | float(0) -%}\n{%- set ein = is_state('switch.homematic_ip_fbh_pumpe_hk_ii', 'on') -%}\n{%- set hb = states('input_number.fbh_heizbeitrag') | float(0) if ein else 0 -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n{%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}\n{%- set nw = 0 if ein else states('input_number.fbh_nachwaerme_faktor') | float(0) * ([l6, 6] | min) * fa -%}\n{%- macro v(x) -%}{{ ('+' if x >= 0 else '−') ~ '%.2f' | format(x | abs) }} K{%- endmacro -%}\n### 🧮 Prognose in {{ H | round(1) }} h – Bausteine\n| Baustein | Grundlage | Beitrag |\n|---|---|---|\n| Raum jetzt | HmIP Innen | **{{ t }} °C** |\n| Trend | {{ '%+.2f' | format(tr) }} K/h (60 min, max ±0.5{{ ', Lüften: nur ≥ 0' if is_state('binary_sensor.fbh_lueften_aktiv','on') else '' }}) × {{ H }} h × 0.5 | {{ v(tr * H * 0.5) }} |\n| Auskühlung | k {{ k }} × (Raum − Aussen {{ ta | round(1) }} °C) × {{ H }} h | {{ v(- k * (t - ta) * H) }} |\n| Sonne | {{ pv | round(2) }} kWh PV (nächste {{ H }} h) × {{ s }} | {{ v(s * pv) }} |\n| Heizbeitrag | {{ 'Pumpe EIN' if ein else 'Pumpe AUS → 0' }} | {{ v(hb) }} |\n| Nachwärme Estrich | {{ 'Pumpe EIN → 0' if ein else (l6 | round(1) ~ ' h Laufzeit (letzte 6 h) × ' ~ states('input_number.fbh_nachwaerme_faktor') ~ ' × Aussenfaktor ' ~ fa | round(2)) }} | {{ v(nw) }} |\n| **Prognose** | Summe | **{{ states('sensor.wohnraum_prognose') }} °C** |\n"
+            },
+            {
+              "type": "entities",
+              "title": "Steuerung & Parameter",
+              "show_header_toggle": false,
+              "entities": [
+                {
+                  "entity": "input_boolean.fbh_smart_aktiv",
+                  "name": "Smart LIVE (AUS = Beobachtung)"
+                },
+                {
+                  "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
+                  "name": "FBH-Pumpe (HK II)"
+                },
+                {
+                  "entity": "timer.fbh_hand_pause",
+                  "name": "Hand-Pause"
+                },
+                {
+                  "entity": "binary_sensor.fbh_lueften_aktiv",
+                  "name": "Lüften aktiv (inkl. Nachlauf)"
+                },
+                {
+                  "type": "section",
+                  "label": "Zielband & Schwellen"
+                },
+                {
+                  "entity": "input_number.fbh_raum_minimum",
+                  "name": "Raum-Minimum"
+                },
+                {
+                  "entity": "input_number.fbh_prognose_ein_unter",
+                  "name": "Prognose-EIN (Zielband unten)"
+                },
+                {
+                  "entity": "input_number.fbh_prognose_aus_ueber",
+                  "name": "Prognose-AUS (Zielband oben)"
+                },
+                {
+                  "entity": "input_number.fbh_mindestlaufzeit",
+                  "name": "Mindestlaufzeit"
+                },
+                {
+                  "entity": "input_number.fbh_mindestpause",
+                  "name": "Mindestpause"
+                },
+                {
+                  "entity": "input_number.fbh_sonnensperre_ab_kwh",
+                  "name": "Sonnensperre ab PV-Rest"
+                },
+                {
+                  "entity": "input_number.fbh_lueften_nachlauf",
+                  "name": "Lüften Nachlauf"
+                },
+                {
+                  "type": "section",
+                  "label": "Modell"
+                },
+                {
+                  "entity": "input_number.fbh_vorhalt_stunden",
+                  "name": "Vorhalt H"
+                },
+                {
+                  "entity": "input_number.fbh_auskuehlfaktor_k",
+                  "name": "Auskühlfaktor k"
+                },
+                {
+                  "entity": "input_number.fbh_sonnenfaktor",
+                  "name": "Sonnenfaktor s"
+                },
+                {
+                  "entity": "input_number.fbh_heizbeitrag",
+                  "name": "Heizbeitrag"
+                },
+                {
+                  "entity": "input_number.fbh_nachwaerme_faktor",
+                  "name": "Nachwärme-Faktor"
+                },
+                {
+                  "entity": "input_number.fbh_nachwaerme_referenz_aussen",
+                  "name": "Nachwärme Referenz aussen"
+                },
+                {
+                  "entity": "input_number.fbh_vorladen_pv_morgen_unter",
+                  "name": "Vorladen wenn PV morgen <"
+                },
+                {
+                  "entity": "input_number.fbh_vorladen_tmax_morgen_unter",
+                  "name": "Vorladen wenn Tmax morgen <"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "FBH Lernphase Prognose",
+          "path": "fbh-lernphase",
+          "icon": "mdi:table-clock",
+          "cards": [
+            {
+              "type": "markdown",
+              "content": "{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}\n{%- set th = states('sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0) -%}\n{%- set band = '> 10 °C' if ta > 10 else ('5–10 °C' if ta >= 5 else ('0–5 °C' if ta >= 0 else '< 0 °C')) -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n## 🌡️ Aktueller Aussenbereich: **{{ band }}**\nmet.no-Mittel 6 h **{{ ta }} °C** · HmIP Unterstand {{ th }} °C · Raum {{ t }} °C\n\n| Modell jetzt | Wert |\n|---|---|\n| Auskühlfaktor k | {{ k }} K/h/K |\n| Auskühlung ohne FBH (Modell) | {{ (k * (t - ta)) | round(2) }} K/h |\n| Nachwärme-Aussenfaktor fa | {{ fa | round(2) }} → {{ (states('input_number.fbh_nachwaerme_faktor') | float(0) * fa) | round(3) }} K je h Laufzeit |\n| Vorhalt H | {{ states('input_number.fbh_vorhalt_stunden') }} h |\n| Modus | {{ '🟢 LIVE' if is_state('input_boolean.fbh_smart_aktiv','on') else '👁️ Beobachtung (HmIP schaltet)' }} |\n"
+            },
+            {
+              "type": "markdown",
+              "content": "{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}\n{%- set akt = 0 if ta > 10 else (1 if ta >= 5 else (2 if ta >= 0 else 3)) -%}\n{%- set rows = [\n ['> 10 °C', '0.008 (vorläufig)', '~0.08–0.1 K/h', '2–3 h', '0.1 K', '3 h', '16./17., 17./18., 18./19.11.'],\n ['5–10 °C', '0.008', '~0.1–0.12 K/h', '~4 h', '~0.08 K', '3 h (Kandidat 5 h)', '20./21.11.'],\n ['0–5 °C', 'offen (0.008)', '14.11. abends ~0.2 K/h', 'offen (> 4 h?)', '0.1 × fa', 'offen', 'fehlt'],\n ['< 0 °C', 'offen', 'offen', 'offen', '0.03 K', 'offen', 'fehlt']\n] -%}\n### 📋 Prognosetabelle je Aussenbereich (Lernphase)\n<sub>Aussen = met.no-Mittel 6 h · Zielband fix (Minimum 22.3, EIN 22.4, AUS 22.5 °C) · ▶ = aktueller Bereich · nachgeführt nach jeder Nachtauswertung</sub>\n\n| | Aussen | k (K/h/K) | Auskühlung ohne FBH | Totzeit FBH | Nachwärme je h Laufzeit | Vorhalt EIN | Messnächte |\n|:-:|---|---|---|---|---|---|---|\n{% for r in rows -%}\n| {{ '▶' if loop.index0 == akt else '' }} | {{ '**' ~ r[0] ~ '**' if loop.index0 == akt else r[0] }} | {{ r[1] }} | {{ r[2] }} | {{ r[3] }} | {{ r[4] }} | {{ r[5] }} | {{ r[6] }} |\n{% endfor %}"
+            },
+            {
+              "type": "markdown",
+              "content": "### 🌙 Messprotokoll Nächte\n| Nacht | Aussen met.no / HmIP | Auskühlung ohne FBH | Nachwärme nach AUS | Totzeit | Prognosefehler 3 h | WP kWh (NT-Anteil) | Raum min. |\n|---|---|---|---|---|---|---|---|\n| 18./19.11. | – / 9.5–11.9 °C | – | +0.2 K nach 6.5 h Laufzeit | > 3 h | Smart zu tief (hätte ab 04:00 unnötig EIN) | 13.0 (91 %) | 22.1 °C |\n| 20./21.11. | 6.0 / 8.2 °C | 0.1–0.12 K/h | +0.1 K (Peak nach 1.7 h), netto +0.3 K nach 3.5 h | ~4 h | −0.15 … −0.25 K (k 0.01) | 18.7 (83 %) | 22.1 °C |\n\n<sub>Änderungen: 21.11. 18:31 k 0.01 → 0.008. Nächste Ausbauschritte nach der Lernphase: Parameter je Bereich automatisch, Weitblick 6 h für EIN, lernende Korrektur.</sub>"
+            },
+            {
+              "type": "custom:plotly-graph",
+              "hours_to_show": 18,
+              "refresh_interval": 300,
+              "layout": {
+                "height": 380,
+                "margin": {
+                  "t": 60,
+                  "b": 80,
+                  "l": 45,
+                  "r": 45
+                },
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "font": {
+                  "color": "#9e9e9e",
+                  "size": 11
+                },
+                "xaxis": {
+                  "showgrid": false,
+                  "color": "#9e9e9e",
+                  "tickformat": "%H:%M"
+                },
+                "yaxis": {
+                  "showgrid": true,
+                  "gridcolor": "#2a2a2a",
+                  "color": "#9e9e9e",
+                  "ticksuffix": "°",
+                  "title": {
+                    "text": "Raum"
+                  }
+                },
+                "yaxis2": {
+                  "overlaying": "y",
+                  "side": "right",
+                  "color": "#9e9e9e",
+                  "ticksuffix": "°",
+                  "showgrid": false,
+                  "title": {
+                    "text": "Aussen"
+                  }
+                },
+                "yaxis3": {
+                  "overlaying": "y",
+                  "visible": false,
+                  "range": [
+                    0,
+                    1
+                  ],
+                  "fixedrange": true
+                },
+                "showlegend": true,
+                "legend": {
+                  "orientation": "h",
+                  "x": 0,
+                  "y": -0.12,
+                  "yanchor": "top",
+                  "font": {
+                    "size": 10
+                  }
+                },
+                "annotations": [
+                  {
+                    "text": "Nacht: Raum, Aussen (met.no / HmIP) und FBH-Laufzeit",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.06,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 16,
+                      "color": "#9e9e9e"
+                    }
+                  }
+                ]
+              },
+              "entities": [
+                {
+                  "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
+                  "name": "FBH-Pumpe EIN",
+                  "yaxis": "y3",
+                  "fill": "tozeroy",
+                  "fillcolor": "rgba(34,197,94,0.10)",
+                  "line": {
+                    "color": "rgba(34,197,94,0.3)",
+                    "width": 0.5,
+                    "shape": "hv"
+                  },
+                  "filters": [
+                    {
+                      "map_y": "y === \"on\" ? 1 : 0"
+                    }
+                  ]
+                },
+                {
+                  "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur",
+                  "name": "Raum Ist",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ffffff",
+                    "width": 2.5,
+                    "shape": "hv"
+                  }
+                },
+                {
+                  "entity": "input_number.fbh_raum_minimum",
+                  "name": "Raum Minimum",
+                  "yaxis": "y",
+                  "line": {
+                    "color": "#ef4444",
+                    "width": 1,
+                    "dash": "dash",
+                    "shape": "hv"
+                  },
+                  "extend_to": "now"
+                },
+                {
+                  "entity": "input_number.aussen_prognose_mittel_6h",
+                  "name": "Aussen met.no 6 h",
+                  "yaxis": "y2",
+                  "line": {
+                    "color": "#3b82f6",
+                    "width": 1.5,
+                    "shape": "hv"
+                  }
+                },
+                {
+                  "entity": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur",
+                  "name": "Aussen HmIP",
+                  "yaxis": "y2",
+                  "line": {
+                    "color": "#06b6d4",
+                    "width": 1,
+                    "dash": "dot"
+                  }
+                }
+              ]
+            }
+          ]
         }
-       },
-       {
-        "text": "$fn ({hass}) => 'Speicher WW ' + (Math.round((parseFloat(hass.states['sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'].state)||0)*10)/10).toFixed(1) + ' °C'\n",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.05,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 14,
-         "color": "#ef4444"
-        }
-       },
-       {
-        "text": "$fn ({hass}) => 'WP ' + Math.round(parseFloat(hass.states['sensor.energy_manager_wp_aktuell_w'].state)||0) + ' W'\n",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.0,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 11,
-         "color": "#06b6d4"
-        }
-       }
       ]
-     },
-     "entities": [
-      {
-       "entity": "sensor.energy_manager_wp_aktuell_w",
-       "name": "WP Leistung",
-       "yaxis": "y2",
-       "fill": "tozeroy",
-       "fillcolor": "rgba(6,182,212,0.15)",
-       "line": {
-        "color": "rgba(6,182,212,0.5)",
-        "width": 0.5,
-        "shape": "hv"
-       },
-       "hovertemplate": "WP Leistung: %{y:.1f} W<extra></extra>"
-      },
-      {
-       "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
-       "name": "Speicher WW",
-       "yaxis": "y",
-       "line": {
-        "color": "#ef4444",
-        "width": 2
-       }
-      },
-      {
-       "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
-       "name": "Speicher bei VL",
-       "yaxis": "y",
-       "line": {
-        "color": "#f97316",
-        "width": 2
-       }
-      },
-      {
-       "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
-       "name": "Speicher bei RL",
-       "yaxis": "y",
-       "line": {
-        "color": "#3b82f6",
-        "width": 1.5
-       }
-      },
-      {
-       "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
-       "name": "VL HK-II",
-       "yaxis": "y",
-       "line": {
-        "color": "#f59e0b",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2",
-       "name": "RL HK-II",
-       "yaxis": "y",
-       "line": {
-        "color": "#06b6d4",
-        "width": 1.2
-       }
-      }
-     ]
-    },
-    {
-     "type": "vertical-stack",
-     "cards": [
-      {
-       "type": "markdown",
-       "content": "### Erdgeschoss"
-      },
-      {
-       "type": "grid",
-       "columns": 4,
-       "square": false,
-       "cards": [
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Küche",
-         "secondary": "{{ states('sensor.shelly1_8caab55d7ecf_temperatur') | float(0) | round(1) }} °C",
-         "icon": "mdi:stove",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab55d7ecf_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Wohnen 1",
-         "secondary": "{{ states('sensor.shelly1_8caab561c0b7_temperatur_2') | float(0) | round(1) }} °C",
-         "icon": "mdi:sofa",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab561c0b7_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Wohnen 2",
-         "secondary": "{{ states('sensor.shelly1_8caab55d7ecf_temperatur_2') | float(0) | round(1) }} °C",
-         "icon": "mdi:sofa-outline",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab55d7ecf_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Wohnen 3",
-         "secondary": "{{ states('sensor.shelly1_8caab55d7ecf_temperatur_3') | float(0) | round(1) }} °C",
-         "icon": "mdi:sofa-single",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab55d7ecf_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Essen",
-         "secondary": "{{ states('sensor.shelly1_8caab56147d3_temperatur') | float(0) | round(1) }} °C",
-         "icon": "mdi:silverware-fork-knife",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab56147d3_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Spielen",
-         "secondary": "{{ states('sensor.shelly1_8caab56147d3_temperatur_2') | float(0) | round(1) }} °C",
-         "icon": "mdi:toy-brick",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab56147d3_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Gäste WC",
-         "secondary": "{{ states('sensor.shelly1_8caab56147d3_temperatur_3') | float(0) | round(1) }} °C",
-         "icon": "mdi:toilet",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab56147d3_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Entrée",
-         "secondary": "{{ states('sensor.shelly1_8caab561c0b7_temperatur') | float(0) | round(1) }} °C",
-         "icon": "mdi:door-open",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab561c0b7_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "type": "vertical-stack",
-     "cards": [
-      {
-       "type": "markdown",
-       "content": "### Obergeschoss"
-      },
-      {
-       "type": "grid",
-       "columns": 3,
-       "square": false,
-       "cards": [
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Galerie",
-         "secondary": "{{ states('sensor.shelly1_8caab561c0b7_temperatur_3') | float(0) | round(1) }} °C",
-         "icon": "mdi:stairs",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab561c0b7_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Eltern",
-         "secondary": "{{ states('sensor.shelly1_c45bbe570c30_temperatur') | float(0) | round(1) }} °C",
-         "icon": "mdi:bed-king",
-         "icon_color": "{% set t = states('sensor.shelly1_c45bbe570c30_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Dusche",
-         "secondary": "{{ states('sensor.shelly1_c45bbe570c30_temperatur_2') | float(0) | round(1) }} °C",
-         "icon": "mdi:shower",
-         "icon_color": "{% set t = states('sensor.shelly1_c45bbe570c30_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Yanik",
-         "secondary": "{{ states('sensor.shelly1_8caab55d7177_temperatur') | float(0) | round(1) }} °C",
-         "icon": "mdi:bed-single",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab55d7177_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Bad",
-         "secondary": "{{ states('sensor.shelly1_8caab55d7177_temperatur_2') | float(0) | round(1) }} °C",
-         "icon": "mdi:bathtub-outline",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab55d7177_temperatur_2') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Mael",
-         "secondary": "{{ states('sensor.shelly1_8caab55d7177_temperatur_3') | float(0) | round(1) }} °C",
-         "icon": "mdi:bed-single-outline",
-         "icon_color": "{% set t = states('sensor.shelly1_8caab55d7177_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "type": "vertical-stack",
-     "cards": [
-      {
-       "type": "markdown",
-       "content": "### Untergeschoss"
-      },
-      {
-       "type": "grid",
-       "columns": 2,
-       "square": false,
-       "cards": [
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "Hobby",
-         "secondary": "{{ states('sensor.shelly1_c45bbe570c30_temperatur_3') | float(0) | round(1) }} °C",
-         "icon": "mdi:radiator",
-         "icon_color": "{% set t = states('sensor.shelly1_c45bbe570c30_temperatur_3') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        },
-        {
-         "type": "custom:mushroom-template-card",
-         "primary": "WaKü",
-         "secondary": "{{ states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur') | float(0) | round(1) }} °C",
-         "icon": "mdi:washing-machine",
-         "icon_color": "{% set t = states('sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur') | float(0) %} {% if t >= 24 %}red{% elif t >= 21 %}green{% else %}blue{% endif %}\n",
-         "layout": "vertical"
-        }
-       ]
-      }
-     ]
-    },
-    {
-     "type": "custom:plotly-graph",
-     "hours_to_show": 24,
-     "refresh_interval": 120,
-     "layout": {
-      "height": 560,
-      "margin": {
-       "t": 80,
-       "b": 175,
-       "l": 45,
-       "r": 10
-      },
-      "paper_bgcolor": "rgba(0,0,0,0)",
-      "plot_bgcolor": "rgba(0,0,0,0)",
-      "font": {
-       "color": "#9e9e9e",
-       "size": 11
-      },
-      "xaxis": {
-       "showgrid": false,
-       "color": "#9e9e9e",
-       "tickformat": "%H:%M"
-      },
-      "yaxis": {
-       "showgrid": true,
-       "gridcolor": "#2a2a2a",
-       "color": "#9e9e9e",
-       "ticksuffix": "°",
-       "range": [
-        19,
-        37
-       ]
-      },
-      "yaxis2": {
-       "overlaying": "y",
-       "visible": false,
-       "range": [
-        0,
-        1
-       ],
-       "fixedrange": true
-      },
-      "showlegend": true,
-      "legend": {
-       "orientation": "h",
-       "x": 0,
-       "xanchor": "left",
-       "y": -0.07,
-       "yanchor": "top",
-       "font": {
-        "size": 10
-       }
-      },
-      "annotations": [
-       {
-        "text": "FBH-Stränge Rücklauf (24 h)",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.1,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 20,
-         "color": "#9e9e9e"
-        }
-       },
-       {
-        "text": "$fn ({hass}) => 'RL HK-II ' + (Math.round((parseFloat(hass.states['sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2'].state)||0)*10)/10).toFixed(1) + '° · VL ' + (Math.round((parseFloat(hass.states['sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3'].state)||0)*10)/10).toFixed(1) + '°'\n",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.02,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 12,
-         "color": "#06b6d4"
-        }
-       }
-      ]
-     },
-     "entities": [
-      {
-       "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
-       "name": "FBH-Pumpe EIN",
-       "yaxis": "y2",
-       "showlegend": false,
-       "fill": "tozeroy",
-       "fillcolor": "rgba(34,197,94,0.07)",
-       "line": {
-        "color": "rgba(34,197,94,0.25)",
-        "width": 0.5,
-        "shape": "hv"
-       },
-       "filters": [
-        {
-         "map_y": "y === \"on\" ? 1 : 0"
-        }
-       ]
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7ecf_temperatur",
-       "name": "Küche",
-       "yaxis": "y",
-       "line": {
-        "color": "#ef4444",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab561c0b7_temperatur_2",
-       "name": "Wohnen 1",
-       "yaxis": "y",
-       "line": {
-        "color": "#f97316",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7ecf_temperatur_2",
-       "name": "Wohnen 2",
-       "yaxis": "y",
-       "line": {
-        "color": "#f59e0b",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7ecf_temperatur_3",
-       "name": "Wohnen 3",
-       "yaxis": "y",
-       "line": {
-        "color": "#eab308",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab56147d3_temperatur",
-       "name": "Essen",
-       "yaxis": "y",
-       "line": {
-        "color": "#22c55e",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab56147d3_temperatur_2",
-       "name": "Spielen",
-       "yaxis": "y",
-       "line": {
-        "color": "#06b6d4",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab56147d3_temperatur_3",
-       "name": "Gäste WC",
-       "yaxis": "y",
-       "line": {
-        "color": "#8b5cf6",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab561c0b7_temperatur",
-       "name": "Entrée",
-       "yaxis": "y",
-       "line": {
-        "color": "#ec4899",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab561c0b7_temperatur_3",
-       "name": "Galerie",
-       "yaxis": "y",
-       "line": {
-        "color": "#64748b",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_c45bbe570c30_temperatur",
-       "name": "Eltern",
-       "yaxis": "y",
-       "line": {
-        "color": "#dc2626",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_c45bbe570c30_temperatur_2",
-       "name": "Dusche",
-       "yaxis": "y",
-       "line": {
-        "color": "#3b82f6",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_c45bbe570c30_temperatur_3",
-       "name": "Hobby (Radiator)",
-       "yaxis": "y",
-       "line": {
-        "color": "#16a34a",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7177_temperatur",
-       "name": "Yanik",
-       "yaxis": "y",
-       "line": {
-        "color": "#d97706",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7177_temperatur_2",
-       "name": "Bad",
-       "yaxis": "y",
-       "line": {
-        "color": "#a855f7",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7177_temperatur_3",
-       "name": "Mael",
-       "yaxis": "y",
-       "line": {
-        "color": "#db2777",
-        "width": 1.2
-       }
-      },
-      {
-       "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2",
-       "name": "RL HK-II gesamt",
-       "yaxis": "y",
-       "line": {
-        "color": "#ffffff",
-        "width": 3
-       }
-      },
-      {
-       "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3",
-       "name": "VL HK-II",
-       "yaxis": "y",
-       "line": {
-        "color": "#f59e0b",
-        "width": 1.5,
-        "dash": "dash"
-       }
-      }
-     ]
-    },
-    {
-     "type": "custom:plotly-graph",
-     "hours_to_show": 1,
-     "refresh_interval": 300,
-     "layout": {
-      "height": 680,
-      "margin": {
-       "t": 80,
-       "b": 70,
-       "l": 115,
-       "r": 20
-      },
-      "paper_bgcolor": "rgba(0,0,0,0)",
-      "plot_bgcolor": "rgba(0,0,0,0)",
-      "font": {
-       "color": "#9e9e9e",
-       "size": 11
-      },
-      "xaxis": {
-       "type": "linear",
-       "range": [
-        -1,
-        1
-       ],
-       "ticksuffix": " K",
-       "dtick": 0.2,
-       "showgrid": true,
-       "gridcolor": "#2a2a2a",
-       "zeroline": true,
-       "zerolinecolor": "#888888",
-       "color": "#9e9e9e"
-      },
-      "yaxis": {
-       "type": "category",
-       "autorange": "reversed",
-       "color": "#cccccc"
-      },
-      "showlegend": true,
-      "barmode": "group",
-      "bargap": 0.25,
-      "bargroupgap": 0.05,
-      "legend": {
-       "orientation": "h",
-       "x": 0,
-       "y": -0.04,
-       "yanchor": "top",
-       "font": {
-        "size": 11
-       }
-      },
-      "shapes": [
-       {
-        "type": "rect",
-        "xref": "x",
-        "yref": "paper",
-        "x0": -0.4,
-        "x1": 0.4,
-        "y0": 0,
-        "y1": 1,
-        "fillcolor": "rgba(34,197,94,0.07)",
-        "line": {
-         "width": 0
-        }
-       }
-      ],
-      "annotations": [
-       {
-        "text": "Strang-Abgleich Ø Abw.",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.1,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 18,
-         "color": "#9e9e9e"
-        }
-       },
-       {
-        "text": "$fn ({hass}) => { const s = hass.states['sensor.fbh_strang_abweichung']; const a = (s || {}).attributes || {}; const b = (hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}; return a.fenster ? ('Nacht ' + a.fenster + ' · ' + s.state + ' Werte' + (b.zeitraum ? ' · Vergleich Ø ' + b.zeitraum + ' (' + hass.states['sensor.fbh_strang_abweichung_7_naechte'].state + ' Nächte) · Klammer = Δ zum Ø' : '')) : 'keine Daten (FBH-Pumpe lief letzte Nacht nicht eingeschwungen)'; }\n",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.02,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 11,
-         "color": "#22c55e"
-        }
-       }
-      ]
-     },
-     "entities": [
-      {
-       "entity": "",
-       "name": "Letzte Nacht",
-       "type": "bar",
-       "orientation": "h",
-       "yaxis": "y",
-       "y": [
-        "Küche",
-        "Wohnen 1",
-        "Wohnen 2",
-        "Wohnen 3",
-        "Essen",
-        "Spielen",
-        "Gäste WC",
-        "Entrée",
-        "Galerie",
-        "Eltern",
-        "Dusche",
-        "Hobby (Radiator)",
-        "Yanik",
-        "Bad",
-        "Mael",
-        "RL HK-II gesamt"
-       ],
-       "x": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : (typeof a[k] === 'number' ? a[k] : null); })\n",
-       "text": "$ex (() => { const l = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : (typeof a[k] === 'number' ? a[k] : null); }), m = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b[k] === 'number' ? b[k] : null); }); return l.map((v, i) => v === null ? '–' : (v > 0 ? '+' : '') + v.toFixed(2) + ' K' + (m[i] === null ? '' : ' (' + (v - m[i] >= 0 ? '+' : '−') + Math.abs(v - m[i]).toFixed(2) + ')')); })()\n",
-       "customdata": "$ex (() => { const m = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b[k] === 'number' ? b[k] : null); }), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map((k, i) => [m[i], typeof a['hub_' + k] === 'number' ? a['hub_' + k] : null]); })()\n",
-       "textposition": "outside",
-       "cliponaxis": false,
-       "marker": {
-        "color": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}), a = ((hass.states['sensor.fbh_strang_abweichung'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : (typeof a[k] === 'number' ? a[k] : null); }).map((v, i) => i === 15 ? '#ffffff' : v === null ? '#555555' : v >= 0.4 ? '#f97316' : v <= -0.4 ? '#3b82f6' : '#22c55e')\n"
-       },
-       "hovertemplate": "%{y}: %{x:+.2f} K · Ø 7 Nächte %{customdata[0]:+.2f} K · Hub je Takt %{customdata[1]:.1f} K<extra>Letzte Nacht</extra>"
-      },
-      {
-       "entity": "",
-       "name": "Ø 7 Nächte davor",
-       "type": "bar",
-       "orientation": "h",
-       "yaxis": "y",
-       "y": [
-        "Küche",
-        "Wohnen 1",
-        "Wohnen 2",
-        "Wohnen 3",
-        "Essen",
-        "Spielen",
-        "Gäste WC",
-        "Entrée",
-        "Galerie",
-        "Eltern",
-        "Dusche",
-        "Hobby (Radiator)",
-        "Yanik",
-        "Bad",
-        "Mael",
-        "RL HK-II gesamt"
-       ],
-       "x": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b[k] === 'number' ? b[k] : null); })\n",
-       "marker": {
-        "color": "rgba(158,158,158,0.45)"
-       },
-       "hovertemplate": "%{y}: %{x:+.2f} K<extra>Ø 7 Nächte davor</extra>"
-      },
-      {
-       "entity": "",
-       "name": "Vornacht",
-       "type": "scatter",
-       "mode": "markers",
-       "yaxis": "y",
-       "y": [
-        "Küche",
-        "Wohnen 1",
-        "Wohnen 2",
-        "Wohnen 3",
-        "Essen",
-        "Spielen",
-        "Gäste WC",
-        "Entrée",
-        "Galerie",
-        "Eltern",
-        "Dusche",
-        "Hobby (Radiator)",
-        "Yanik",
-        "Bad",
-        "Mael",
-        "RL HK-II gesamt"
-       ],
-       "x": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_7_naechte'] || {}).attributes || {}); return (typeof b['v_' + k] === 'number' ? b['v_' + k] : null); })\n",
-       "marker": {
-        "symbol": "diamond-open",
-        "size": 9,
-        "color": "#e5e7eb",
-        "line": {
-         "width": 1.5
-        }
-       },
-       "hovertemplate": "%{y}: %{x:+.2f} K<extra>Vornacht</extra>"
-      }
-     ]
     }
-   ]
-  },
-  {
-   "title": "Räume 24h",
-   "path": "fbh-raeume",
-   "icon": "mdi:chart-line",
-   "cards": [
-    {
-     "type": "custom:plotly-graph",
-     "hours_to_show": 24,
-     "refresh_interval": 300,
-     "layout": {
-      "height": 420,
-      "margin": {
-       "t": 55,
-       "b": 141,
-       "l": 45,
-       "r": 10
-      },
-      "paper_bgcolor": "rgba(0,0,0,0)",
-      "plot_bgcolor": "rgba(0,0,0,0)",
-      "font": {
-       "color": "#9e9e9e",
-       "size": 11
-      },
-      "xaxis": {
-       "showgrid": false,
-       "color": "#9e9e9e",
-       "tickformat": "%H:%M"
-      },
-      "yaxis": {
-       "showgrid": true,
-       "gridcolor": "#2a2a2a",
-       "color": "#9e9e9e",
-       "ticksuffix": "°"
-      },
-      "showlegend": true,
-      "legend": {
-       "orientation": "h",
-       "x": 0,
-       "xanchor": "left",
-       "y": -0.08,
-       "yanchor": "top",
-       "font": {
-        "size": 10
-       }
-      },
-      "annotations": [
-       {
-        "text": "Erdgeschoss – letzte 24 h",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.06,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 18,
-         "color": "#9e9e9e"
-        }
-       }
-      ]
-     },
-     "entities": [
-      {
-       "entity": "sensor.shelly1_8caab55d7ecf_temperatur",
-       "name": "Küche",
-       "yaxis": "y",
-       "line": {
-        "color": "#ef4444",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab561c0b7_temperatur_2",
-       "name": "Wohnen 1",
-       "yaxis": "y",
-       "line": {
-        "color": "#f97316",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7ecf_temperatur_2",
-       "name": "Wohnen 2",
-       "yaxis": "y",
-       "line": {
-        "color": "#f59e0b",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7ecf_temperatur_3",
-       "name": "Wohnen 3",
-       "yaxis": "y",
-       "line": {
-        "color": "#eab308",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab56147d3_temperatur",
-       "name": "Essen",
-       "yaxis": "y",
-       "line": {
-        "color": "#22c55e",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab56147d3_temperatur_2",
-       "name": "Spielen",
-       "yaxis": "y",
-       "line": {
-        "color": "#06b6d4",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab56147d3_temperatur_3",
-       "name": "Gäste WC",
-       "yaxis": "y",
-       "line": {
-        "color": "#8b5cf6",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab561c0b7_temperatur",
-       "name": "Entrée",
-       "yaxis": "y",
-       "line": {
-        "color": "#ec4899",
-        "width": 1.4
-       }
-      }
-     ]
-    },
-    {
-     "type": "custom:plotly-graph",
-     "hours_to_show": 24,
-     "refresh_interval": 300,
-     "layout": {
-      "height": 400,
-      "margin": {
-       "t": 55,
-       "b": 119,
-       "l": 45,
-       "r": 10
-      },
-      "paper_bgcolor": "rgba(0,0,0,0)",
-      "plot_bgcolor": "rgba(0,0,0,0)",
-      "font": {
-       "color": "#9e9e9e",
-       "size": 11
-      },
-      "xaxis": {
-       "showgrid": false,
-       "color": "#9e9e9e",
-       "tickformat": "%H:%M"
-      },
-      "yaxis": {
-       "showgrid": true,
-       "gridcolor": "#2a2a2a",
-       "color": "#9e9e9e",
-       "ticksuffix": "°"
-      },
-      "showlegend": true,
-      "legend": {
-       "orientation": "h",
-       "x": 0,
-       "xanchor": "left",
-       "y": -0.08,
-       "yanchor": "top",
-       "font": {
-        "size": 10
-       }
-      },
-      "annotations": [
-       {
-        "text": "Obergeschoss – letzte 24 h",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.06,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 18,
-         "color": "#9e9e9e"
-        }
-       }
-      ]
-     },
-     "entities": [
-      {
-       "entity": "sensor.shelly1_8caab561c0b7_temperatur_3",
-       "name": "Galerie",
-       "yaxis": "y",
-       "line": {
-        "color": "#64748b",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_c45bbe570c30_temperatur",
-       "name": "Eltern",
-       "yaxis": "y",
-       "line": {
-        "color": "#dc2626",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_c45bbe570c30_temperatur_2",
-       "name": "Dusche",
-       "yaxis": "y",
-       "line": {
-        "color": "#3b82f6",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7177_temperatur",
-       "name": "Yanik",
-       "yaxis": "y",
-       "line": {
-        "color": "#d97706",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7177_temperatur_2",
-       "name": "Bad",
-       "yaxis": "y",
-       "line": {
-        "color": "#a855f7",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.shelly1_8caab55d7177_temperatur_3",
-       "name": "Mael",
-       "yaxis": "y",
-       "line": {
-        "color": "#db2777",
-        "width": 1.4
-       }
-      }
-     ]
-    },
-    {
-     "type": "custom:plotly-graph",
-     "hours_to_show": 24,
-     "refresh_interval": 300,
-     "layout": {
-      "height": 340,
-      "margin": {
-       "t": 55,
-       "b": 97,
-       "l": 45,
-       "r": 10
-      },
-      "paper_bgcolor": "rgba(0,0,0,0)",
-      "plot_bgcolor": "rgba(0,0,0,0)",
-      "font": {
-       "color": "#9e9e9e",
-       "size": 11
-      },
-      "xaxis": {
-       "showgrid": false,
-       "color": "#9e9e9e",
-       "tickformat": "%H:%M"
-      },
-      "yaxis": {
-       "showgrid": true,
-       "gridcolor": "#2a2a2a",
-       "color": "#9e9e9e",
-       "ticksuffix": "°"
-      },
-      "showlegend": true,
-      "legend": {
-       "orientation": "h",
-       "x": 0,
-       "xanchor": "left",
-       "y": -0.08,
-       "yanchor": "top",
-       "font": {
-        "size": 10
-       }
-      },
-      "annotations": [
-       {
-        "text": "Untergeschoss – letzte 24 h",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.06,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 18,
-         "color": "#9e9e9e"
-        }
-       }
-      ]
-     },
-     "entities": [
-      {
-       "entity": "sensor.shelly1_c45bbe570c30_temperatur_3",
-       "name": "Hobby (Radiator)",
-       "yaxis": "y",
-       "line": {
-        "color": "#16a34a",
-        "width": 1.4
-       }
-      },
-      {
-       "entity": "sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur",
-       "name": "WaKü",
-       "yaxis": "y",
-       "line": {
-        "color": "#8b5cf6",
-        "width": 1.4
-       }
-      }
-     ]
-    }
-   ]
-  },
-  {
-   "title": "Smarte FBH Temperatur Steuerung",
-   "path": "fbh-smart",
-   "icon": "mdi:home-thermometer-outline",
-   "cards": [
-    {
-     "type": "markdown",
-     "content": "{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set p = states('sensor.wohnraum_prognose') | float(0) -%}\n{%- set mn = states('input_number.fbh_raum_minimum') | float(22.3) -%}\n{%- set nt = is_state('schedule.niedertarif', 'on') -%}\n{%- if now().hour >= 12 -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_morgen') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_max_morgen') | float(99) -%}{%- else -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_heute') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}{%- endif -%}\n{%- set vorladen = nt and pvm < states('input_number.fbh_vorladen_pv_morgen_unter') | float(0) and tm < states('input_number.fbh_vorladen_tmax_morgen_unter') | float(-99) -%}\n{%- set ein = states('input_number.fbh_prognose_ein_unter') | float(22.4) + (0.2 if vorladen else 0) -%}\n{%- set aus = states('input_number.fbh_prognose_aus_ueber') | float(22.7) + (0.2 if vorladen else 0) -%}\n{%- set pumpe = states.switch.homematic_ip_fbh_pumpe_hk_ii -%}\n{%- set on = pumpe is not none and pumpe.state == 'on' -%}\n{%- set dur = ((now() - pumpe.last_changed).total_seconds() / 60) if pumpe is not none else 999 -%}\n{%- set mlz = states('input_number.fbh_mindestlaufzeit') | float(0) -%}\n{%- set mp = states('input_number.fbh_mindestpause') | float(0) -%}\n{%- set pvrest = states('sensor.fbh_pv_rest_heute') | float(0) -%}\n{%- set sschw = states('input_number.fbh_sonnensperre_ab_kwh') | float(99) -%}\n{%- set sonne = is_state('sun.sun', 'above_horizon') -%}\n{%- set sperre = sonne and now().hour < 13 and pvrest >= sschw -%}\n{%- set aktiv = is_state('input_boolean.fbh_smart_aktiv', 'on') -%}\n{%- set hand = not is_state('timer.fbh_hand_pause', 'idle') -%}\n{%- set lueften = is_state('binary_sensor.fbh_lueften_aktiv', 'on') -%}\n{%- set offen = ['binary_sensor.homematic_ip_turkontakt_hibiscus_tur','binary_sensor.homematic_ip_turkontakt_krauter_tur','binary_sensor.homematic_ip_fensterkontakt_kuche_tur'] | select('is_state','on') | list | count -%}\n{%- set nlm = states('input_number.fbh_lueften_nachlauf') | float(45) -%}\n{%- set lts = state_attr('input_datetime.fbh_lueften_zuletzt_geschlossen','timestamp') -%}\n{%- set m_lueft = 0 if not lueften else (nlm if offen > 0 else [nlm - (now().timestamp() - (lts or 0)) / 60, 0] | max) -%}\n{%- set ok = '✅' -%}{%- set no = '❌' -%}{%- set wait = '⏳' -%}\n{%- macro z(b) -%}{{ ok if b else no }}{%- endmacro -%}\n{%- macro hm(m) -%}{%- set m = [m, 0] | max | int -%}{{ '%d:%02d' | format(m // 60, m % 60) }} h{%- endmacro -%}\n## {{ '🟢 FBH-Pumpe läuft' if on else '⚪ FBH-Pumpe steht' }} seit {{ hm(dur) }}\n**Entscheid:** {{ states('sensor.fbh_smart_entscheid') }}  \n**Modus:** {{ '🟢 LIVE – Smart schaltet die Pumpe' if aktiv else '👁️ Beobachtung – HmIP R1–R8 schalten, Smart rechnet nur mit' }}{{ '  \\n⏸️ **Hand-Pause läuft** bis ' ~ (as_datetime(state_attr('timer.fbh_hand_pause','finishes_at')) | as_local).strftime('%H:%M') if hand and state_attr('timer.fbh_hand_pause','finishes_at') else '' }}\n\n{% if not on -%}\n### Einschalten – Voraussetzungen\n| | Bedingung | Ist | Soll |\n|:-:|---|---|---|\n| {{ z(aktiv) }} | Smart-Steuerung live | {{ 'EIN' if aktiv else 'Beobachtung' }} | EIN |\n| {{ z(not hand) }} | Keine Hand-Pause | {{ 'läuft' if hand else 'keine' }} | keine |\n| {{ z(not lueften) }} | Kein Lüften (Hibiscus, Kräuter, Küche + Nachlauf) | {{ ('offen' if offen > 0 else 'zu, Nachlauf noch ' ~ hm(m_lueft)) if lueften else 'zu' }} | zu + {{ nlm | int }} min |\n| {{ z(t < mn - 0.1) }} | **Weg A – Sicherheit:** Raum zu kalt | {{ t }} °C | < {{ (mn - 0.1) | round(1) }} °C |\n| {{ z(dur >= mp) if dur >= mp else wait }} | **Weg B – Prognose:** Mindestpause vorbei | {{ hm(dur) }} | ≥ {{ hm(mp) }} |\n| {{ z(not (sperre and t >= mn)) }} | Keine Sonnensperre | {{ 'Sperre aktiv (PV Rest ' ~ pvrest ~ ' kWh)' if sperre and t >= mn else ('PV Rest ' ~ pvrest ~ ' kWh' if sonne and now().hour < 13 else 'nicht relevant') }} | PV Rest < {{ sschw }} kWh oder ab 13:00 |\n| {{ z(p < ein) }} | Prognose in {{ states('input_number.fbh_vorhalt_stunden') | float(3) | round(1) }} h unter Prognose-EIN | {{ p }} °C | < {{ ein | round(2) }} °C{{ ' (Vorladen NT +0.2)' if vorladen else '' }} |\n{%- else -%}\n### Ausschalten – Voraussetzungen\n| | Bedingung | Ist | Soll |\n|:-:|---|---|---|\n| {{ z(aktiv) }} | Smart-Steuerung live | {{ 'EIN' if aktiv else 'Beobachtung' }} | EIN |\n| {{ z(not hand) }} | Keine Hand-Pause | {{ 'läuft' if hand else 'keine' }} | keine |\n| {{ z(not lueften) }} | Kein Lüften (Hibiscus, Kräuter, Küche + Nachlauf) | {{ ('offen' if offen > 0 else 'zu, Nachlauf noch ' ~ hm(m_lueft)) if lueften else 'zu' }} | zu + {{ nlm | int }} min |\n| {{ z(t >= mn - 0.1) }} | Raum nicht zu kalt (sonst Sicherheit EIN) | {{ t }} °C | ≥ {{ (mn - 0.1) | round(1) }} °C |\n| {{ ok if dur >= mlz else wait }} | Mindestlaufzeit vorbei | {{ hm(dur) }} | ≥ {{ hm(mlz) }} |\n| {{ z(sperre and t >= mn) }} | **Weg A – Sonnensperre** (vor 13:00, PV Rest) | {{ pvrest }} kWh | ≥ {{ sschw }} kWh |\n| {{ z(p > aus and t >= mn + 0.1) }} | **Weg B – Prognose** über Prognose-AUS und Raum ≥ {{ (mn + 0.1) | round(1) }} °C | {{ p }} °C / {{ t }} °C | > {{ aus | round(2) }} °C |\n{%- endif %}\n\n{#- Countdown -#}\n{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n{%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}\n{%- set nwf = states('input_number.fbh_nachwaerme_faktor') | float(0) -%}\n{%- set rate = k * (t - ta) + (nwf * fa if l6 > 0 else 0) -%}\n{%- set rate = [rate, 0.02] | max -%}\n{%- if not on %}\n\n### ⏱️ Countdown bis Einschalten\n{%- if t < mn - 0.1 %}\n**Jetzt** – Sicherheitsregel greift.\n{%- else -%}\n{%- set m_pause = [mp - dur, 0] | max -%}\n{%- set m_prog = ([p - ein, 0] | max) / rate * 60 if p >= ein else 0 -%}\n{%- if sperre and t >= mn -%}{%- set m_sperre = (today_at('13:00') - now()).total_seconds() / 60 -%}{%- else -%}{%- set m_sperre = 0 -%}{%- endif -%}\n{%- set m = [m_pause, m_prog, m_sperre, m_lueft] | max -%}\n{%- set grund = ('Lüften + Nachlauf' ~ (' (Fenster/Tür offen, frühestens)' if offen > 0 else '')) if m == m_lueft and m > 0 else 'Mindestpause' if m == m_pause and m > 0 else ('Sonnensperre bis 13:00' if m == m_sperre and m > 0 else 'Prognose sinkt unter ' ~ ein | round(2) ~ ' °C') -%}\n{%- if m <= 0 %}\n**Jetzt** – alle Bedingungen für EIN erfüllt{{ '' if aktiv else ' (im Beobachtungsmodus schaltet Smart nicht)' }}.\n{%- elif m > 720 %}\n**> 12 h** – Raum bleibt laut Prognose warm genug.\n{%- else %}\n## ≈ {{ hm(m) }} → ca. {{ (now() + timedelta(minutes=m)).strftime('%H:%M') }} Uhr\n<sub>Massgebend: {{ grund }} · geschätzt mit Abkühlung ≈ {{ rate | round(2) }} K/h (Aussen {{ ta | round(1) }} °C){{ ' · Niedertarif' if is_state('schedule.niedertarif','on') else '' }}</sub>\n{%- endif -%}\n{%- endif -%}\n{%- else %}\n\n### ⏱️ Restlaufzeit\n{%- set m_mlz = [mlz - dur, 0] | max %}\n{{ 'Mindestlaufzeit noch **' ~ hm(m_mlz) ~ '** (bis ca. ' ~ (now() + timedelta(minutes=m_mlz)).strftime('%H:%M') ~ ' Uhr), danach entscheidet die Prognose.' if m_mlz > 0 else 'Mindestlaufzeit erfüllt – AUS, sobald Prognose > ' ~ aus | round(2) ~ ' °C oder Sonnensperre greift.' }}\n{%- endif %}\n"
-    },
-    {
-     "type": "custom:plotly-graph",
-     "hours_to_show": 27,
-     "refresh_interval": 120,
-     "layout": {
-      "height": 420,
-      "margin": {
-       "t": 70,
-       "b": 90,
-       "l": 45,
-       "r": 10
-      },
-      "paper_bgcolor": "rgba(0,0,0,0)",
-      "plot_bgcolor": "rgba(0,0,0,0)",
-      "font": {
-       "color": "#9e9e9e",
-       "size": 11
-      },
-      "xaxis": {
-       "showgrid": false,
-       "color": "#9e9e9e",
-       "tickformat": "%H:%M"
-      },
-      "yaxis": {
-       "showgrid": true,
-       "gridcolor": "#2a2a2a",
-       "color": "#9e9e9e",
-       "ticksuffix": "°",
-       "range": [
-        21.4,
-        23.6
-       ],
-       "dtick": 0.2
-      },
-      "yaxis2": {
-       "overlaying": "y",
-       "visible": false,
-       "range": [
-        0,
-        1
-       ],
-       "fixedrange": true
-      },
-      "showlegend": true,
-      "legend": {
-       "orientation": "h",
-       "x": 0,
-       "y": -0.1,
-       "yanchor": "top",
-       "font": {
-        "size": 10
-       }
-      },
-      "annotations": [
-       {
-        "text": "Raum Ist vs. Prognose mit Zielband – rechts von «jetzt» = Vorschau 3 h",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.08,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 18,
-         "color": "#9e9e9e"
-        }
-       },
-       {
-        "text": "jetzt",
-        "xref": "x",
-        "yref": "paper",
-        "x": "$ex new Date()",
-        "y": 1.0,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 10,
-         "color": "#9e9e9e"
-        }
-       }
-      ],
-      "shapes": [
-       {
-        "type": "line",
-        "xref": "x",
-        "yref": "paper",
-        "x0": "$ex new Date()",
-        "x1": "$ex new Date()",
-        "y0": 0,
-        "y1": 1,
-        "line": {
-         "color": "#9e9e9e",
-         "width": 1,
-         "dash": "dot"
-        }
-       }
-      ]
-     },
-     "entities": [
-      {
-       "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
-       "name": "FBH-Pumpe EIN",
-       "yaxis": "y2",
-       "fill": "tozeroy",
-       "fillcolor": "rgba(34,197,94,0.10)",
-       "line": {
-        "color": "rgba(34,197,94,0.3)",
-        "width": 0.5,
-        "shape": "hv"
-       },
-       "filters": [
-        {
-         "map_y": "y === \"on\" ? 1 : 0"
-        }
-       ]
-      },
-      {
-       "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur",
-       "name": "Raum Ist",
-       "yaxis": "y",
-       "line": {
-        "color": "#ffffff",
-        "width": 2.5,
-        "shape": "hv"
-       }
-      },
-      {
-       "entity": "sensor.wohnraum_prognose",
-       "name": "Prognose (3 h vorher berechnet)",
-       "time_offset": "3h",
-       "yaxis": "y",
-       "line": {
-        "color": "#f59e0b",
-        "width": 1.5,
-        "dash": "dot"
-       }
-      },
-      {
-       "entity": "input_number.fbh_raum_minimum",
-       "name": "Raum Minimum",
-       "yaxis": "y",
-       "line": {
-        "color": "#ef4444",
-        "width": 1,
-        "dash": "dash",
-        "shape": "hv"
-       },
-       "extend_to": "end"
-      },
-      {
-       "entity": "input_number.fbh_prognose_ein_unter",
-       "name": "Prognose-EIN",
-       "yaxis": "y",
-       "line": {
-        "color": "#3b82f6",
-        "width": 1,
-        "dash": "dash",
-        "shape": "hv"
-       },
-       "extend_to": "end",
-       "time_offset": "3h"
-      },
-      {
-       "entity": "input_number.fbh_prognose_aus_ueber",
-       "name": "Prognose-AUS",
-       "yaxis": "y",
-       "line": {
-        "color": "#22c55e",
-        "width": 1,
-        "dash": "dash",
-        "shape": "hv"
-       },
-       "extend_to": "end",
-       "time_offset": "3h",
-       "fill": "tonexty",
-       "fillcolor": "rgba(34,197,94,0.10)"
-      }
-     ],
-     "time_offset": "3h"
-    },
-    {
-     "type": "markdown",
-     "content": "{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set H = states('input_number.fbh_vorhalt_stunden') | float(3) -%}\n{%- set tr = [[states('sensor.wohnzimmer_homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_wohnraum_trend') | float(0), -0.5] | max, 0.5] | min -%}\n{%- set tr = [tr, 0] | max if is_state('binary_sensor.fbh_lueften_aktiv', 'on') else tr -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}\n{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}\n{%- set s = states('input_number.fbh_sonnenfaktor') | float(0) -%}\n{%- set pv = states('sensor.fbh_pv_prognose_vorhalt') | float(0) -%}\n{%- set ein = is_state('switch.homematic_ip_fbh_pumpe_hk_ii', 'on') -%}\n{%- set hb = states('input_number.fbh_heizbeitrag') | float(0) if ein else 0 -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n{%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}\n{%- set nw = 0 if ein else states('input_number.fbh_nachwaerme_faktor') | float(0) * ([l6, 6] | min) * fa -%}\n{%- macro v(x) -%}{{ ('+' if x >= 0 else '−') ~ '%.2f' | format(x | abs) }} K{%- endmacro -%}\n### 🧮 Prognose in {{ H | round(1) }} h – Bausteine\n| Baustein | Grundlage | Beitrag |\n|---|---|---|\n| Raum jetzt | HmIP Innen | **{{ t }} °C** |\n| Trend | {{ '%+.2f' | format(tr) }} K/h (60 min, max ±0.5{{ ', Lüften: nur ≥ 0' if is_state('binary_sensor.fbh_lueften_aktiv','on') else '' }}) × {{ H }} h × 0.5 | {{ v(tr * H * 0.5) }} |\n| Auskühlung | k {{ k }} × (Raum − Aussen {{ ta | round(1) }} °C) × {{ H }} h | {{ v(- k * (t - ta) * H) }} |\n| Sonne | {{ pv | round(2) }} kWh PV (nächste {{ H }} h) × {{ s }} | {{ v(s * pv) }} |\n| Heizbeitrag | {{ 'Pumpe EIN' if ein else 'Pumpe AUS → 0' }} | {{ v(hb) }} |\n| Nachwärme Estrich | {{ 'Pumpe EIN → 0' if ein else (l6 | round(1) ~ ' h Laufzeit (letzte 6 h) × ' ~ states('input_number.fbh_nachwaerme_faktor') ~ ' × Aussenfaktor ' ~ fa | round(2)) }} | {{ v(nw) }} |\n| **Prognose** | Summe | **{{ states('sensor.wohnraum_prognose') }} °C** |\n"
-    },
-    {
-     "type": "entities",
-     "title": "Steuerung & Parameter",
-     "show_header_toggle": false,
-     "entities": [
-      {
-       "entity": "input_boolean.fbh_smart_aktiv",
-       "name": "Smart LIVE (AUS = Beobachtung)"
-      },
-      {
-       "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
-       "name": "FBH-Pumpe (HK II)"
-      },
-      {
-       "entity": "timer.fbh_hand_pause",
-       "name": "Hand-Pause"
-      },
-      {
-       "entity": "binary_sensor.fbh_lueften_aktiv",
-       "name": "Lüften aktiv (inkl. Nachlauf)"
-      },
-      {
-       "type": "section",
-       "label": "Zielband & Schwellen"
-      },
-      {
-       "entity": "input_number.fbh_raum_minimum",
-       "name": "Raum-Minimum"
-      },
-      {
-       "entity": "input_number.fbh_prognose_ein_unter",
-       "name": "Prognose-EIN (Zielband unten)"
-      },
-      {
-       "entity": "input_number.fbh_prognose_aus_ueber",
-       "name": "Prognose-AUS (Zielband oben)"
-      },
-      {
-       "entity": "input_number.fbh_mindestlaufzeit",
-       "name": "Mindestlaufzeit"
-      },
-      {
-       "entity": "input_number.fbh_mindestpause",
-       "name": "Mindestpause"
-      },
-      {
-       "entity": "input_number.fbh_sonnensperre_ab_kwh",
-       "name": "Sonnensperre ab PV-Rest"
-      },
-      {
-       "entity": "input_number.fbh_lueften_nachlauf",
-       "name": "Lüften Nachlauf"
-      },
-      {
-       "type": "section",
-       "label": "Modell"
-      },
-      {
-       "entity": "input_number.fbh_vorhalt_stunden",
-       "name": "Vorhalt H"
-      },
-      {
-       "entity": "input_number.fbh_auskuehlfaktor_k",
-       "name": "Auskühlfaktor k"
-      },
-      {
-       "entity": "input_number.fbh_sonnenfaktor",
-       "name": "Sonnenfaktor s"
-      },
-      {
-       "entity": "input_number.fbh_heizbeitrag",
-       "name": "Heizbeitrag"
-      },
-      {
-       "entity": "input_number.fbh_nachwaerme_faktor",
-       "name": "Nachwärme-Faktor"
-      },
-      {
-       "entity": "input_number.fbh_nachwaerme_referenz_aussen",
-       "name": "Nachwärme Referenz aussen"
-      },
-      {
-       "entity": "input_number.fbh_vorladen_pv_morgen_unter",
-       "name": "Vorladen wenn PV morgen <"
-      },
-      {
-       "entity": "input_number.fbh_vorladen_tmax_morgen_unter",
-       "name": "Vorladen wenn Tmax morgen <"
-      }
-     ]
-    }
-   ]
-  },
-  {
-   "title": "FBH Lernphase Prognose",
-   "path": "fbh-lernphase",
-   "icon": "mdi:table-clock",
-   "cards": [
-    {
-     "type": "markdown",
-     "content": "{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}\n{%- set th = states('sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0) -%}\n{%- set band = '> 10 °C' if ta > 10 else ('5–10 °C' if ta >= 5 else ('0–5 °C' if ta >= 0 else '< 0 °C')) -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n## 🌡️ Aktueller Aussenbereich: **{{ band }}**\nmet.no-Mittel 6 h **{{ ta }} °C** · HmIP Unterstand {{ th }} °C · Raum {{ t }} °C\n\n| Modell jetzt | Wert |\n|---|---|\n| Auskühlfaktor k | {{ k }} K/h/K |\n| Auskühlung ohne FBH (Modell) | {{ (k * (t - ta)) | round(2) }} K/h |\n| Nachwärme-Aussenfaktor fa | {{ fa | round(2) }} → {{ (states('input_number.fbh_nachwaerme_faktor') | float(0) * fa) | round(3) }} K je h Laufzeit |\n| Vorhalt H | {{ states('input_number.fbh_vorhalt_stunden') }} h |\n| Modus | {{ '🟢 LIVE' if is_state('input_boolean.fbh_smart_aktiv','on') else '👁️ Beobachtung (HmIP schaltet)' }} |\n"
-    },
-    {
-     "type": "markdown",
-     "content": "{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}\n{%- set akt = 0 if ta > 10 else (1 if ta >= 5 else (2 if ta >= 0 else 3)) -%}\n{%- set rows = [\n ['> 10 °C', '0.008 (vorläufig)', '~0.08–0.1 K/h', '2–3 h', '0.1 K', '3 h', '16./17., 17./18., 18./19.11.'],\n ['5–10 °C', '0.008', '~0.1–0.12 K/h', '~4 h', '~0.08 K', '3 h (Kandidat 5 h)', '20./21.11.'],\n ['0–5 °C', 'offen (0.008)', '14.11. abends ~0.2 K/h', 'offen (> 4 h?)', '0.1 × fa', 'offen', 'fehlt'],\n ['< 0 °C', 'offen', 'offen', 'offen', '0.03 K', 'offen', 'fehlt']\n] -%}\n### 📋 Prognosetabelle je Aussenbereich (Lernphase)\n<sub>Aussen = met.no-Mittel 6 h · Zielband fix (Minimum 22.3, EIN 22.4, AUS 22.5 °C) · ▶ = aktueller Bereich · nachgeführt nach jeder Nachtauswertung</sub>\n\n| | Aussen | k (K/h/K) | Auskühlung ohne FBH | Totzeit FBH | Nachwärme je h Laufzeit | Vorhalt EIN | Messnächte |\n|:-:|---|---|---|---|---|---|---|\n{% for r in rows -%}\n| {{ '▶' if loop.index0 == akt else '' }} | {{ '**' ~ r[0] ~ '**' if loop.index0 == akt else r[0] }} | {{ r[1] }} | {{ r[2] }} | {{ r[3] }} | {{ r[4] }} | {{ r[5] }} | {{ r[6] }} |\n{% endfor %}"
-    },
-    {
-     "type": "markdown",
-     "content": "### 🌙 Messprotokoll Nächte\n| Nacht | Aussen met.no / HmIP | Auskühlung ohne FBH | Nachwärme nach AUS | Totzeit | Prognosefehler 3 h | WP kWh (NT-Anteil) | Raum min. |\n|---|---|---|---|---|---|---|---|\n| 18./19.11. | – / 9.5–11.9 °C | – | +0.2 K nach 6.5 h Laufzeit | > 3 h | Smart zu tief (hätte ab 04:00 unnötig EIN) | 13.0 (91 %) | 22.1 °C |\n| 20./21.11. | 6.0 / 8.2 °C | 0.1–0.12 K/h | +0.1 K (Peak nach 1.7 h), netto +0.3 K nach 3.5 h | ~4 h | −0.15 … −0.25 K (k 0.01) | 18.7 (83 %) | 22.1 °C |\n\n<sub>Änderungen: 21.11. 18:31 k 0.01 → 0.008. Nächste Ausbauschritte nach der Lernphase: Parameter je Bereich automatisch, Weitblick 6 h für EIN, lernende Korrektur.</sub>"
-    },
-    {
-     "type": "custom:plotly-graph",
-     "hours_to_show": 18,
-     "refresh_interval": 300,
-     "layout": {
-      "height": 380,
-      "margin": {
-       "t": 60,
-       "b": 80,
-       "l": 45,
-       "r": 45
-      },
-      "paper_bgcolor": "rgba(0,0,0,0)",
-      "plot_bgcolor": "rgba(0,0,0,0)",
-      "font": {
-       "color": "#9e9e9e",
-       "size": 11
-      },
-      "xaxis": {
-       "showgrid": false,
-       "color": "#9e9e9e",
-       "tickformat": "%H:%M"
-      },
-      "yaxis": {
-       "showgrid": true,
-       "gridcolor": "#2a2a2a",
-       "color": "#9e9e9e",
-       "ticksuffix": "°",
-       "title": {
-        "text": "Raum"
-       }
-      },
-      "yaxis2": {
-       "overlaying": "y",
-       "side": "right",
-       "color": "#9e9e9e",
-       "ticksuffix": "°",
-       "showgrid": false,
-       "title": {
-        "text": "Aussen"
-       }
-      },
-      "yaxis3": {
-       "overlaying": "y",
-       "visible": false,
-       "range": [
-        0,
-        1
-       ],
-       "fixedrange": true
-      },
-      "showlegend": true,
-      "legend": {
-       "orientation": "h",
-       "x": 0,
-       "y": -0.12,
-       "yanchor": "top",
-       "font": {
-        "size": 10
-       }
-      },
-      "annotations": [
-       {
-        "text": "Nacht: Raum, Aussen (met.no / HmIP) und FBH-Laufzeit",
-        "xref": "paper",
-        "yref": "paper",
-        "x": 0,
-        "y": 1.06,
-        "xanchor": "left",
-        "yanchor": "bottom",
-        "showarrow": false,
-        "font": {
-         "size": 16,
-         "color": "#9e9e9e"
-        }
-       }
-      ]
-     },
-     "entities": [
-      {
-       "entity": "switch.homematic_ip_fbh_pumpe_hk_ii",
-       "name": "FBH-Pumpe EIN",
-       "yaxis": "y3",
-       "fill": "tozeroy",
-       "fillcolor": "rgba(34,197,94,0.10)",
-       "line": {
-        "color": "rgba(34,197,94,0.3)",
-        "width": 0.5,
-        "shape": "hv"
-       },
-       "filters": [
-        {
-         "map_y": "y === \"on\" ? 1 : 0"
-        }
-       ]
-      },
-      {
-       "entity": "sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur",
-       "name": "Raum Ist",
-       "yaxis": "y",
-       "line": {
-        "color": "#ffffff",
-        "width": 2.5,
-        "shape": "hv"
-       }
-      },
-      {
-       "entity": "input_number.fbh_raum_minimum",
-       "name": "Raum Minimum",
-       "yaxis": "y",
-       "line": {
-        "color": "#ef4444",
-        "width": 1,
-        "dash": "dash",
-        "shape": "hv"
-       },
-       "extend_to": "now"
-      },
-      {
-       "entity": "input_number.aussen_prognose_mittel_6h",
-       "name": "Aussen met.no 6 h",
-       "yaxis": "y2",
-       "line": {
-        "color": "#3b82f6",
-        "width": 1.5,
-        "shape": "hv"
-       }
-      },
-      {
-       "entity": "sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur",
-       "name": "Aussen HmIP",
-       "yaxis": "y2",
-       "line": {
-        "color": "#06b6d4",
-        "width": 1,
-        "dash": "dot"
-       }
-      }
-     ]
-    }
-   ]
   }
- ]
 }

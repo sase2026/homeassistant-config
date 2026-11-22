@@ -1575,7 +1575,7 @@
   description: 'Steuert die beiden LEDs am HmIP-BSL «WW Boiler Schalter». Sabotage
     (wenn Schalter EIN): beide LEDs rot 100 % blinkend. Sonst obere LED = WW-Ampel
     (Rot ab 48, Gelb 45–47, Violett darunter), untere LED = blau, solange ein Fenster,
-    eine Türe oder ein Garagentor offen ist. Beide 06–22 Uhr 20 %, nachts 5 %.'
+    eine Türe oder ein Garagentor offen ist. Beide 06–22 Uhr 10 %, nachts 5 %.'
   triggers:
   - entity_id:
     - input_select.ww_ampel_stufe
@@ -1629,7 +1629,7 @@
           hs_color:
           - 240
           - 100
-          brightness_pct: '{{ 5 if now().hour >= 22 or now().hour < 6 else 20 }}'
+          brightness_pct: '{{ 5 if now().hour >= 22 or now().hour < 6 else 10 }}'
           effect: 'ON'
       else:
       - action: light.turn_off
@@ -1646,10 +1646,231 @@
       then:
       - action: light.turn_on
         data:
-          brightness_pct: '{{ 5 if now().hour >= 22 or now().hour < 6 else 20 }}'
+          brightness_pct: '{{ 5 if now().hour >= 22 or now().hour < 6 else 10 }}'
           effect: 'ON'
           hs_color: '{{ {''Rot'': [0, 100], ''Gelb'': [60, 100], ''Violett'': [300,
             100]}[states(''input_select.ww_ampel_stufe'')] | default([300, 100]) }}'
         target:
           entity_id: light.homematic_ip_ww_boiler_schalter_top
+  mode: restart
+- id: '1795347293500'
+  alias: Abfall – Vorabend-Erinnerung
+  description: 'Liest um 16:00 den Kalender «Abfall Lupsingen» für morgen. Gibt es
+    eine Abfuhr (Hauskehricht, Karton/Altpapier, Grünabfall): Erinnerung offen, Küchenlampe
+    (Color Bulb) gelb 60 %; ihr vorheriger Zustand wird gemerkt und beim Ende wiederhergestellt,
+    um 18:00 Push an beide Handys mit Knopf «Erledigt». Ende um 22:00 oder beim Quittieren
+    (Knopf im Dashboard Alarme oder in der Push-Meldung).'
+  triggers:
+  - at: '16:00:00'
+    id: start
+    trigger: time
+  - at: '18:00:00'
+    id: push
+    trigger: time
+  - at: '22:00:00'
+    id: ende
+    trigger: time
+  - entity_id: input_button.abfall_quittieren
+    id: quitt
+    trigger: state
+  - event_data:
+      action: ABFALL_QUITT
+    event_type: mobile_app_notification_action
+    id: quitt
+    trigger: event
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: start
+      sequence:
+      - action: calendar.get_events
+        data:
+          end_date_time: '{{ (today_at() + timedelta(days=2)).isoformat() }}'
+          start_date_time: '{{ (today_at() + timedelta(days=1)).isoformat() }}'
+        response_variable: termine
+        target:
+          entity_id: calendar.abfall_lupsingen
+      - variables:
+          arten: '{{ termine[''calendar.abfall_lupsingen''].events | map(attribute=''summary'')
+            | unique | join('', '') }}'
+      - if:
+        - condition: template
+          value_template: '{{ arten | length > 0 }}'
+        then:
+        - action: input_text.set_value
+          data:
+            value: '{{ arten }}'
+          target:
+            entity_id: input_text.abfall_morgen
+        - action: input_boolean.turn_on
+          target:
+            entity_id: input_boolean.abfall_erinnerung_offen
+        - action: scene.create
+          data:
+            scene_id: abfall_kuche_vorher
+            snapshot_entities:
+            - light.kuche_color_bulb
+        - action: light.turn_on
+          target:
+            entity_id: light.kuche_color_bulb
+          data:
+            rgb_color:
+            - 255
+            - 190
+            - 0
+            brightness_pct: 60
+    - conditions:
+      - condition: trigger
+        id: push
+      - condition: state
+        entity_id: input_boolean.abfall_erinnerung_offen
+        state: 'on'
+      sequence:
+      - action: script.push_beide_handys
+        data:
+          daten:
+            actions:
+            - action: ABFALL_QUITT
+              title: Erledigt
+            tag: abfall
+          text: 'Morgen: {{ states(''input_text.abfall_morgen'') }}. Bitte heute Abend
+            bereitstellen.'
+          titel: "\U0001F5D1️ Morgen Abfuhr"
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: trigger
+          id: ende
+        - condition: trigger
+          id: quitt
+      - condition: state
+        entity_id: input_boolean.abfall_erinnerung_offen
+        state: 'on'
+      sequence:
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.abfall_erinnerung_offen
+      - action: scene.turn_on
+        target:
+          entity_id: scene.abfall_kuche_vorher
+        continue_on_error: true
+  mode: queued
+- id: '1795348967529'
+  alias: Küche – Stimmungslicht
+  description: 'Color Bulb Küche als Stimmungslicht. Farbe aus «Küche Stimmungsfarbe»
+    (Warmweiss/Neutralweiss als Weisston, sonst Farbe; Gelb bleibt der Abfall-Erinnerung
+    vorbehalten). Helligkeit: Zeitfenster Tag → Regler Tag, Zeitfenster Abend → Regler
+    Abend; beim Einschalten von Hand nach Sonne (über Horizont = Tag). Zeitplan (wenn
+    «Küche Zeitplan aktiv»): Tag ein/aus und Abend ein/aus. Greift nicht ein, solange
+    die Abfall-Erinnerung aktiv ist.'
+  triggers:
+  - entity_id: light.kuche_color_bulb
+    id: ein
+    to: 'on'
+    trigger: state
+  - event: sunset
+    id: sonne
+    trigger: sun
+  - event: sunrise
+    id: sonne
+    trigger: sun
+  - entity_id:
+    - input_number.kuche_stimmungslicht_tag
+    - input_number.kuche_stimmungslicht_abend
+    - input_select.kuche_stimmungsfarbe
+    id: regler
+    trigger: state
+  - at: input_datetime.kuche_tag_ein
+    id: tag_ein
+    trigger: time
+  - at: input_datetime.kuche_abend_ein
+    id: abend_ein
+    trigger: time
+  - at: input_datetime.kuche_tag_aus
+    id: aus
+    trigger: time
+  - at: input_datetime.kuche_abend_aus
+    id: aus
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.abfall_erinnerung_offen
+    state: 'off'
+  actions:
+  - if:
+    - condition: trigger
+      id: aus
+    then:
+    - if:
+      - condition: state
+        entity_id: input_boolean.kuche_zeitplan_aktiv
+        state: 'on'
+      then:
+      - action: light.turn_off
+        data:
+          transition: 5
+        target:
+          entity_id: light.kuche_color_bulb
+    - stop: Zeitplan aus
+  - if:
+    - condition: or
+      conditions:
+      - condition: and
+        conditions:
+        - condition: trigger
+          id:
+          - tag_ein
+          - abend_ein
+        - condition: state
+          entity_id: input_boolean.kuche_zeitplan_aktiv
+          state: 'off'
+      - condition: and
+        conditions:
+        - condition: not
+          conditions:
+          - condition: trigger
+            id:
+            - tag_ein
+            - abend_ein
+        - condition: state
+          entity_id: light.kuche_color_bulb
+          state: 'off'
+    then:
+    - stop: nichts zu tun
+  - variables:
+      farbe: '{{ states(''input_select.kuche_stimmungsfarbe'') }}'
+      hell: '{% set t = states(''input_number.kuche_stimmungslicht_tag'') | int(80)
+        %}{% set a = states(''input_number.kuche_stimmungslicht_abend'') | int(40)
+        %}{% if trigger.id == ''tag_ein'' %}{{ t }}{% elif trigger.id == ''abend_ein''
+        %}{{ a }}{% elif is_state(''sun.sun'', ''above_horizon'') %}{{ t }}{% else
+        %}{{ a }}{% endif %}'
+      kelvin: '{{ 4000 if farbe == ''Neutralweiss'' else 3000 }}'
+      rgb: '{{ {''Orange'': [255, 110, 0], ''Rot'': [255, 0, 0], ''Pink'': [255, 40,
+        140], ''Violett'': [140, 0, 255], ''Blau'': [0, 70, 255], ''Türkis'': [0,
+        200, 190], ''Grün'': [0, 255, 60]}.get(farbe, [255, 110, 0]) }}'
+      uebergang: '{{ 60 if trigger.id == ''sonne'' else 1 }}'
+  - else:
+    - action: light.turn_on
+      data:
+        brightness_pct: '{{ hell }}'
+        rgb_color: '{{ rgb }}'
+        transition: '{{ uebergang }}'
+      target:
+        entity_id: light.kuche_color_bulb
+    if:
+    - condition: state
+      entity_id: input_select.kuche_stimmungsfarbe
+      state:
+      - Warmweiss
+      - Neutralweiss
+    then:
+    - action: light.turn_on
+      data:
+        brightness_pct: '{{ hell }}'
+        color_temp_kelvin: '{{ kelvin }}'
+        transition: '{{ uebergang }}'
+      target:
+        entity_id: light.kuche_color_bulb
   mode: restart

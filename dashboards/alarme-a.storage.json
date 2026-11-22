@@ -331,7 +331,78 @@
                 {
                   "type": "markdown",
                   "text_only": true,
-                  "content": "<sub>**Obere LED (WW):** 🔴 ab 48 °C heiss, auch Baden · 🟡 45–47 °C gut · 🟣 41–44 °C reicht zum Duschen. Abwärts wechselt die Farbe erst 0.5 °C unter der Grenze (kein Flackern). **Untere LED:** 🔵 solange ein Fenster, eine Türe oder ein Garagentor offen ist (10 HmIP-Kontakte). Beide 06–22 Uhr 20 %, nachts 5 %. **Sabotage** an einem HmIP-Kontakt hat Vorrang: beide LEDs rot blinkend, bis HmIP die Sabotage zurücksetzt.</sub>"
+                  "content": "<sub>**Obere LED (WW):** 🔴 ab 48 °C heiss, auch Baden · 🟡 45–47 °C gut · 🟣 41–44 °C reicht zum Duschen. Abwärts wechselt die Farbe erst 0.5 °C unter der Grenze (kein Flackern). **Untere LED:** 🔵 solange ein Fenster, eine Türe oder ein Garagentor offen ist (10 HmIP-Kontakte). Beide 06–22 Uhr 10 %, nachts 5 %. **Sabotage** an einem HmIP-Kontakt hat Vorrang: beide LEDs rot blinkend, bis HmIP die Sabotage zurücksetzt.</sub>"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Abfall – Vorabend",
+                  "icon": "mdi:trash-can-outline"
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_button.abfall_quittieren",
+                  "name": "Abfall bereitgestellt – quittieren",
+                  "icon": "mdi:check-circle-outline",
+                  "color": "yellow",
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "input_button.press",
+                    "target": {
+                      "entity_id": "input_button.abfall_quittieren"
+                    }
+                  },
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_boolean.abfall_erinnerung_offen",
+                  "name": "Erinnerung offen",
+                  "color": "yellow",
+                  "grid_options": {
+                    "columns": 6
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "input_text.abfall_morgen",
+                  "name": "Morgen",
+                  "grid_options": {
+                    "columns": 6
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "calendar.abfall_lupsingen",
+                  "name": "Kalender Abfall Lupsingen",
+                  "grid_options": {
+                    "columns": 6
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "automation.abfall_vorabend_erinnerung",
+                  "name": "Erinnerung aktiv",
+                  "features": [
+                    {
+                      "type": "toggle"
+                    }
+                  ],
+                  "features_position": "inline",
+                  "grid_options": {
+                    "columns": 6
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>**Ablauf:** Um 16:00 prüft HA den Kalender für morgen (Hauskehricht, Karton/Altpapier, Grünabfall). Gibt es eine Abfuhr, leuchtet die Küchenlampe gelb und um 18:00 kommt eine Push-Meldung an beide Handys. Ende um 22:00 oder sobald quittiert ist – hier mit dem Knopf oder in der Push-Meldung mit «Erledigt».</sub>"
                 }
               ]
             },

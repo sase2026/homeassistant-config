@@ -1,561 +1,568 @@
 {
- "title": "Boiler PV-Überschuss laden",
- "views": [
-  {
-   "icon": "mdi:water-boiler-auto",
-   "badges": [],
-   "path": "boiler-pv",
-   "type": "masonry",
-   "title": "Boiler PV-Überschuss laden",
-   "cards": [
-    {
-     "content": "## Übersicht",
-     "type": "markdown"
-    },
-    {
-     "title": "Sicherheitsuebersicht",
-     "type": "markdown",
-     "content": "{% set netz_w = states('sensor.energy_manager_netz_aktuell_w') | float(0) %} {% set pv_ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %} {% set ein_grenze = (states('input_number.boiler_leistung') | float(2300) + states('input_number.boiler_reserveleistung') | float(70)) %} {% set temp = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %} {% set restart = states('input_number.boiler_wiedereinschalttemperatur') | float(60) %} {% set max_temp = states('input_number.boiler_maximaltemperatur') | float(63) %} {% set grid_schutz = states('input_number.boiler_max_netzbezug') | float(200) %} {% set start_ok = is_state('input_boolean.boiler_pv_automatik','on') and is_state('switch.haus_verbauch','off') and pv_ueberschuss >= ein_grenze and temp < restart %}\n{% if is_state('switch.haus_verbauch','on') %} ## 🟢 Boilerladung aktiv {% elif start_ok %} ## 🟠 Einschaltverzögerung aktiv {% else %} ## 🔴 Boilerladung aus {% endif %}\n**Automatik:** {{ 'aktiv' if is_state('input_boolean.boiler_pv_automatik','on') else 'aus' }} **Relais:** {{ 'ein' if is_state('switch.haus_verbauch','on') else 'aus' }} **PV Überschuss:** {{ pv_ueberschuss | round(0) }} W (Einschaltgrenze: {{ ein_grenze | round(0) }} W) **PV Start ok:** {{ 'ja ✅' if pv_ueberschuss >= ein_grenze else 'nein ❌' }} **Temp Start ok:** {{ 'ja ✅' if temp < restart else 'nein ❌' }} **Max Temp ok:** {{ 'ja ✅' if temp < max_temp else 'nein ❌' }} **Netzbezug aktuell:** {{ netz_w | round(0) }} W (Schutz ab {{ grid_schutz | round(0) }} W Bezug)\n"
-    },
-    {
-     "title": "Status",
-     "type": "markdown",
-     "content": "{% set pv_ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %} {% set leistung = states('input_number.boiler_leistung') | float(2300) %} {% set reserve = states('input_number.boiler_reserveleistung') | float(70) %} {% set ein_grenze = leistung + reserve %} {% set temp = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %} {% set max_temp = states('input_number.boiler_maximaltemperatur') | float(63) %}\n{% if is_state('switch.haus_verbauch', 'on') %} **Boiler laedt gerade.** Eingeschaltet seit {{ relative_time(states.switch.haus_verbauch.last_changed) }}. Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min. {% else %} **Boiler ist aus.** Letzter Wechsel vor {{ relative_time(states.switch.haus_verbauch.last_changed) }}. Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min. {% endif %}\nSpeicher WW: **{{ temp | round(1) }} °C** von **{{ max_temp | round(1) }} °C** PV Überschuss aktuell: **{{ pv_ueberschuss | round(0) }} W** Einschaltgrenze: **{{ ein_grenze | round(0) }} W** Heute: **{{ states('input_number.boiler_kapazitaet_heute') | float(0) | round(2) }} kWh** Monat: **{{ states('input_number.boiler_kapazitaet_monat') | float(0) | round(2) }} kWh** Total: **{{ states('input_number.boiler_ladezeit_total') | float(0) | round(2) }} h**, **{{ states('input_number.boiler_kapazitaet_total') | float(0) | round(2) }} kWh**\n"
-    },
-    {
-     "hours_to_show": 48,
-     "title": "Tagesverlauf 48 Stunden",
-     "refresh_interval": 60,
-     "entities": [
-      "switch.haus_verbauch",
-      "sensor.energy_manager_pv_ueberschuss_aktuell_w",
-      "sensor.energy_manager_netz_aktuell_w",
-      "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
-      "input_number.boiler_ladezeit_heute",
-      "input_number.boiler_kapazitaet_heute"
-     ],
-     "type": "history-graph"
-    },
-    {
-     "title": "PV Prognose",
-     "type": "entities",
-     "show_header_toggle": false,
-     "entities": [
-      {
-       "name": "Prognose heute",
-       "entity": "sensor.energy_production_today"
-      },
-      {
-       "name": "Rest heute",
-       "entity": "sensor.energy_production_today_remaining"
-      },
-      {
-       "name": "Prognose morgen",
-       "entity": "sensor.energy_production_tomorrow"
-      },
-      {
-       "name": "Aktuelle Stunde",
-       "entity": "sensor.energy_current_hour"
-      },
-      {
-       "name": "Naechste Stunde",
-       "entity": "sensor.energy_next_hour"
-      },
-      {
-       "name": "Prognose Leistung jetzt",
-       "entity": "sensor.power_production_now"
-      },
-      {
-       "name": "Peak heute",
-       "entity": "sensor.power_highest_peak_time_today"
-      },
-      {
-       "name": "Peak morgen",
-       "entity": "sensor.power_highest_peak_time_tomorrow"
-      }
-     ]
-    },
-    {
-     "content": "## Steuerung",
-     "type": "markdown"
-    },
-    {
-     "name": "Speicher WW",
-     "needle": true,
-     "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
-     "min": 20,
-     "type": "gauge",
-     "max": 75,
-     "severity": {
-      "green": 20,
-      "yellow": 48,
-      "red": 62
-     }
-    },
-    {
-     "name": "PV Überschuss aktuell W",
-     "needle": true,
-     "entity": "sensor.energy_manager_pv_ueberschuss_aktuell_w",
-     "min": 0,
-     "type": "gauge",
-     "max": 5000,
-     "severity": {
-      "green": 2500,
-      "yellow": 1000,
-      "red": 0
-     }
-    },
-    {
-     "title": "Boiler PV Steuerung",
-     "type": "entities",
-     "show_header_toggle": false,
-     "entities": [
-      {
-       "name": "Automatik aktiv",
-       "entity": "input_boolean.boiler_pv_automatik"
-      },
-      {
-       "secondary_info": "last-changed",
-       "name": "Boiler Relais",
-       "entity": "switch.haus_verbauch"
-      },
-      {
-       "name": "Speicher WW",
-       "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3"
-      },
-      {
-       "name": "Max. Warmwassertemperatur",
-       "entity": "input_number.boiler_maximaltemperatur"
-      },
-      {
-       "name": "Wiedereinschalttemperatur",
-       "entity": "input_number.boiler_wiedereinschalttemperatur"
-      },
-      {
-       "name": "Max. Netzbezug Schutz",
-       "entity": "input_number.boiler_max_netzbezug"
-      },
-      {
-       "name": "Boilerleistung",
-       "entity": "input_number.boiler_leistung"
-      },
-      {
-       "name": "Reserveleistung",
-       "entity": "input_number.boiler_reserveleistung"
-      },
-      {
-       "name": "Mindestlaufzeit",
-       "entity": "input_number.boiler_mindestlaufzeit"
-      },
-      {
-       "name": "Statistik ab",
-       "entity": "input_datetime.boiler_statistik_start"
-      }
-     ]
-    },
-    {
-     "content": "## Statistik",
-     "type": "markdown"
-    },
-    {
-     "title": "Boiler Statistik",
-     "type": "entities",
-     "show_header_toggle": false,
-     "entities": [
-      {
-       "name": "Ladezeit heute",
-       "entity": "input_number.boiler_ladezeit_heute"
-      },
-      {
-       "name": "Kapazitaet heute",
-       "entity": "input_number.boiler_kapazitaet_heute"
-      },
-      {
-       "name": "Ladezeit Monat",
-       "entity": "input_number.boiler_ladezeit_monat"
-      },
-      {
-       "name": "Kapazitaet Monat",
-       "entity": "input_number.boiler_kapazitaet_monat"
-      },
-      {
-       "name": "Ladestunden Total",
-       "entity": "input_number.boiler_ladezeit_total"
-      },
-      {
-       "name": "Kapazitaet Total",
-       "entity": "input_number.boiler_kapazitaet_total"
-      },
-      {
-       "name": "Durchschnitt Ladezeit pro Tag",
-       "entity": "input_number.boiler_durchschnitt_ladezeit_pro_tag"
-      },
-      {
-       "name": "Durchschnitt Kapazitaet pro Tag",
-       "entity": "input_number.boiler_durchschnitt_kapazitaet_pro_tag"
-      }
-     ]
-    },
-    {
-     "hours_to_show": 720,
-     "title": "Historie Tageswerte 30 Tage",
-     "refresh_interval": 300,
-     "entities": [
-      "input_number.boiler_ladezeit_heute",
-      "input_number.boiler_kapazitaet_heute",
-      "input_number.boiler_ladezeit_monat",
-      "input_number.boiler_kapazitaet_monat"
-     ],
-     "type": "history-graph"
-    },
-    {
-     "hours_to_show": 720,
-     "title": "Total und Durchschnitt 30 Tage",
-     "refresh_interval": 300,
-     "entities": [
-      "input_number.boiler_ladezeit_total",
-      "input_number.boiler_kapazitaet_total",
-      "input_number.boiler_durchschnitt_ladezeit_pro_tag",
-      "input_number.boiler_durchschnitt_kapazitaet_pro_tag"
-     ],
-     "type": "history-graph"
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.boiler_a",
+  "data": {
+    "config": {
+      "title": "Boiler PV-Überschuss laden",
+      "views": [
+        {
+          "icon": "mdi:water-boiler-auto",
+          "badges": [],
+          "path": "boiler-pv",
+          "type": "masonry",
+          "title": "Boiler PV-Überschuss laden",
+          "cards": [
+            {
+              "content": "## Übersicht",
+              "type": "markdown"
+            },
+            {
+              "title": "Sicherheitsuebersicht",
+              "type": "markdown",
+              "content": "{% set netz_w = states('sensor.energy_manager_netz_aktuell_w') | float(0) %} {% set pv_ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %} {% set ein_grenze = (states('input_number.boiler_leistung') | float(2300) + states('input_number.boiler_reserveleistung') | float(70)) %} {% set temp = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %} {% set restart = states('input_number.boiler_wiedereinschalttemperatur') | float(60) %} {% set max_temp = states('input_number.boiler_maximaltemperatur') | float(63) %} {% set grid_schutz = states('input_number.boiler_max_netzbezug') | float(200) %} {% set start_ok = is_state('input_boolean.boiler_pv_automatik','on') and is_state('switch.haus_verbauch','off') and pv_ueberschuss >= ein_grenze and temp < restart %}\n{% if is_state('switch.haus_verbauch','on') %} ## 🟢 Boilerladung aktiv {% elif start_ok %} ## 🟠 Einschaltverzögerung aktiv {% else %} ## 🔴 Boilerladung aus {% endif %}\n**Automatik:** {{ 'aktiv' if is_state('input_boolean.boiler_pv_automatik','on') else 'aus' }} **Relais:** {{ 'ein' if is_state('switch.haus_verbauch','on') else 'aus' }} **PV Überschuss:** {{ pv_ueberschuss | round(0) }} W (Einschaltgrenze: {{ ein_grenze | round(0) }} W) **PV Start ok:** {{ 'ja ✅' if pv_ueberschuss >= ein_grenze else 'nein ❌' }} **Temp Start ok:** {{ 'ja ✅' if temp < restart else 'nein ❌' }} **Max Temp ok:** {{ 'ja ✅' if temp < max_temp else 'nein ❌' }} **Netzbezug aktuell:** {{ netz_w | round(0) }} W (Schutz ab {{ grid_schutz | round(0) }} W Bezug)\n"
+            },
+            {
+              "title": "Status",
+              "type": "markdown",
+              "content": "{% set pv_ueberschuss = states('sensor.energy_manager_pv_ueberschuss_aktuell_w') | float(0) %} {% set leistung = states('input_number.boiler_leistung') | float(2300) %} {% set reserve = states('input_number.boiler_reserveleistung') | float(70) %} {% set ein_grenze = leistung + reserve %} {% set temp = states('sensor.ww_mitte_rl_ist_ww_oben_temperatur_3') | float(0) %} {% set max_temp = states('input_number.boiler_maximaltemperatur') | float(63) %}\n{% if is_state('switch.haus_verbauch', 'on') %} **Boiler laedt gerade.** Eingeschaltet seit {{ relative_time(states.switch.haus_verbauch.last_changed) }}. Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min. {% else %} **Boiler ist aus.** Letzter Wechsel vor {{ relative_time(states.switch.haus_verbauch.last_changed) }}. Ladezeit heute: {{ states('input_number.boiler_ladezeit_heute') | int(0) }} min. {% endif %}\nSpeicher WW: **{{ temp | round(1) }} °C** von **{{ max_temp | round(1) }} °C** PV Überschuss aktuell: **{{ pv_ueberschuss | round(0) }} W** Einschaltgrenze: **{{ ein_grenze | round(0) }} W** Heute: **{{ states('input_number.boiler_kapazitaet_heute') | float(0) | round(2) }} kWh** Monat: **{{ states('input_number.boiler_kapazitaet_monat') | float(0) | round(2) }} kWh** Total: **{{ states('input_number.boiler_ladezeit_total') | float(0) | round(2) }} h**, **{{ states('input_number.boiler_kapazitaet_total') | float(0) | round(2) }} kWh**\n"
+            },
+            {
+              "hours_to_show": 48,
+              "title": "Tagesverlauf 48 Stunden",
+              "refresh_interval": 60,
+              "entities": [
+                "switch.haus_verbauch",
+                "sensor.energy_manager_pv_ueberschuss_aktuell_w",
+                "sensor.energy_manager_netz_aktuell_w",
+                "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+                "input_number.boiler_ladezeit_heute",
+                "input_number.boiler_kapazitaet_heute"
+              ],
+              "type": "history-graph"
+            },
+            {
+              "title": "PV Prognose",
+              "type": "entities",
+              "show_header_toggle": false,
+              "entities": [
+                {
+                  "name": "Prognose heute",
+                  "entity": "sensor.energy_production_today"
+                },
+                {
+                  "name": "Rest heute",
+                  "entity": "sensor.energy_production_today_remaining"
+                },
+                {
+                  "name": "Prognose morgen",
+                  "entity": "sensor.energy_production_tomorrow"
+                },
+                {
+                  "name": "Aktuelle Stunde",
+                  "entity": "sensor.energy_current_hour"
+                },
+                {
+                  "name": "Naechste Stunde",
+                  "entity": "sensor.energy_next_hour"
+                },
+                {
+                  "name": "Prognose Leistung jetzt",
+                  "entity": "sensor.power_production_now"
+                },
+                {
+                  "name": "Peak heute",
+                  "entity": "sensor.power_highest_peak_time_today"
+                },
+                {
+                  "name": "Peak morgen",
+                  "entity": "sensor.power_highest_peak_time_tomorrow"
+                }
+              ]
+            },
+            {
+              "content": "## Steuerung",
+              "type": "markdown"
+            },
+            {
+              "name": "Speicher WW",
+              "needle": true,
+              "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+              "min": 20,
+              "type": "gauge",
+              "max": 75,
+              "severity": {
+                "green": 20,
+                "yellow": 48,
+                "red": 62
+              }
+            },
+            {
+              "name": "PV Überschuss aktuell W",
+              "needle": true,
+              "entity": "sensor.energy_manager_pv_ueberschuss_aktuell_w",
+              "min": 0,
+              "type": "gauge",
+              "max": 5000,
+              "severity": {
+                "green": 2500,
+                "yellow": 1000,
+                "red": 0
+              }
+            },
+            {
+              "title": "Boiler PV Steuerung",
+              "type": "entities",
+              "show_header_toggle": false,
+              "entities": [
+                {
+                  "name": "Automatik aktiv",
+                  "entity": "input_boolean.boiler_pv_automatik"
+                },
+                {
+                  "secondary_info": "last-changed",
+                  "name": "Boiler Relais",
+                  "entity": "switch.haus_verbauch"
+                },
+                {
+                  "name": "Speicher WW",
+                  "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3"
+                },
+                {
+                  "name": "Max. Warmwassertemperatur",
+                  "entity": "input_number.boiler_maximaltemperatur"
+                },
+                {
+                  "name": "Wiedereinschalttemperatur",
+                  "entity": "input_number.boiler_wiedereinschalttemperatur"
+                },
+                {
+                  "name": "Max. Netzbezug Schutz",
+                  "entity": "input_number.boiler_max_netzbezug"
+                },
+                {
+                  "name": "Boilerleistung",
+                  "entity": "input_number.boiler_leistung"
+                },
+                {
+                  "name": "Reserveleistung",
+                  "entity": "input_number.boiler_reserveleistung"
+                },
+                {
+                  "name": "Mindestlaufzeit",
+                  "entity": "input_number.boiler_mindestlaufzeit"
+                },
+                {
+                  "name": "Statistik ab",
+                  "entity": "input_datetime.boiler_statistik_start"
+                }
+              ]
+            },
+            {
+              "content": "## Statistik",
+              "type": "markdown"
+            },
+            {
+              "title": "Boiler Statistik",
+              "type": "entities",
+              "show_header_toggle": false,
+              "entities": [
+                {
+                  "name": "Ladezeit heute",
+                  "entity": "input_number.boiler_ladezeit_heute"
+                },
+                {
+                  "name": "Kapazitaet heute",
+                  "entity": "input_number.boiler_kapazitaet_heute"
+                },
+                {
+                  "name": "Ladezeit Monat",
+                  "entity": "input_number.boiler_ladezeit_monat"
+                },
+                {
+                  "name": "Kapazitaet Monat",
+                  "entity": "input_number.boiler_kapazitaet_monat"
+                },
+                {
+                  "name": "Ladestunden Total",
+                  "entity": "input_number.boiler_ladezeit_total"
+                },
+                {
+                  "name": "Kapazitaet Total",
+                  "entity": "input_number.boiler_kapazitaet_total"
+                },
+                {
+                  "name": "Durchschnitt Ladezeit pro Tag",
+                  "entity": "input_number.boiler_durchschnitt_ladezeit_pro_tag"
+                },
+                {
+                  "name": "Durchschnitt Kapazitaet pro Tag",
+                  "entity": "input_number.boiler_durchschnitt_kapazitaet_pro_tag"
+                }
+              ]
+            },
+            {
+              "hours_to_show": 720,
+              "title": "Historie Tageswerte 30 Tage",
+              "refresh_interval": 300,
+              "entities": [
+                "input_number.boiler_ladezeit_heute",
+                "input_number.boiler_kapazitaet_heute",
+                "input_number.boiler_ladezeit_monat",
+                "input_number.boiler_kapazitaet_monat"
+              ],
+              "type": "history-graph"
+            },
+            {
+              "hours_to_show": 720,
+              "title": "Total und Durchschnitt 30 Tage",
+              "refresh_interval": 300,
+              "entities": [
+                "input_number.boiler_ladezeit_total",
+                "input_number.boiler_kapazitaet_total",
+                "input_number.boiler_durchschnitt_ladezeit_pro_tag",
+                "input_number.boiler_durchschnitt_kapazitaet_pro_tag"
+              ],
+              "type": "history-graph"
+            }
+          ]
+        },
+        {
+          "icon": "mdi:storage-tank",
+          "max_columns": 2,
+          "path": "speicher-waerme",
+          "sections": [
+            {
+              "cards": [
+                {
+                  "heading": "Speicher 560 L – Ist-Temperaturen",
+                  "icon": "mdi:water-boiler",
+                  "type": "heading"
+                },
+                {
+                  "elements": [
+                    {
+                      "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+                      "style": {
+                        "color": "#222",
+                        "font-size": "17px",
+                        "font-weight": "bold",
+                        "left": "59%",
+                        "top": "18.5%",
+                        "white-space": "nowrap",
+                        "background": "none",
+                        "border": "none",
+                        "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
+                      },
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "type": "state-label"
+                    },
+                    {
+                      "entity": "sensor.speicher_energie_oben",
+                      "style": {
+                        "color": "#444",
+                        "font-size": "14px",
+                        "font-weight": "normal",
+                        "left": "59%",
+                        "top": "22.0%",
+                        "white-space": "nowrap",
+                        "background": "none",
+                        "border": "none",
+                        "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
+                      },
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "type": "state-label"
+                    },
+                    {
+                      "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
+                      "style": {
+                        "color": "#222",
+                        "font-size": "17px",
+                        "font-weight": "bold",
+                        "left": "59%",
+                        "top": "59%",
+                        "white-space": "nowrap",
+                        "background": "none",
+                        "border": "none",
+                        "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
+                      },
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "type": "state-label"
+                    },
+                    {
+                      "entity": "sensor.speicher_energie_mitte",
+                      "style": {
+                        "color": "#444",
+                        "font-size": "14px",
+                        "font-weight": "normal",
+                        "left": "59%",
+                        "top": "62.5%",
+                        "white-space": "nowrap",
+                        "background": "none",
+                        "border": "none",
+                        "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
+                      },
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "type": "state-label"
+                    },
+                    {
+                      "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
+                      "style": {
+                        "color": "#222",
+                        "font-size": "17px",
+                        "font-weight": "bold",
+                        "left": "59%",
+                        "top": "75%",
+                        "white-space": "nowrap",
+                        "background": "none",
+                        "border": "none",
+                        "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
+                      },
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "type": "state-label"
+                    },
+                    {
+                      "entity": "sensor.speicher_energie_unten",
+                      "style": {
+                        "color": "#444",
+                        "font-size": "14px",
+                        "font-weight": "normal",
+                        "left": "59%",
+                        "top": "78.5%",
+                        "white-space": "nowrap",
+                        "background": "none",
+                        "border": "none",
+                        "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
+                      },
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "type": "state-label"
+                    },
+                    {
+                      "entity": "switch.haus_verbauch",
+                      "style": {
+                        "--mdc-icon-size": "26px",
+                        "background-color": "rgba(255,255,255,0.85)",
+                        "border-radius": "50%",
+                        "left": "42%",
+                        "top": "37.6%"
+                      },
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "type": "state-icon"
+                    },
+                    {
+                      "entity": "sensor.speicher_energie_gesamt",
+                      "prefix": "Σ ",
+                      "style": {
+                        "background-color": "rgba(255,255,255,0.88)",
+                        "border-radius": "6px",
+                        "color": "#222",
+                        "font-size": "17px",
+                        "font-weight": "bold",
+                        "left": "16%",
+                        "padding": "1px 6px",
+                        "top": "88%",
+                        "white-space": "nowrap"
+                      },
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "type": "state-label"
+                    },
+                    {
+                      "entity": "sensor.speicher_heizzone_mitteltemperatur",
+                      "prefix": "Ø ",
+                      "style": {
+                        "color": "#222",
+                        "font-size": "17px",
+                        "font-weight": "bold",
+                        "left": "87%",
+                        "top": "61%",
+                        "white-space": "nowrap",
+                        "background": "none",
+                        "border": "none",
+                        "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
+                      },
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "type": "state-label"
+                    },
+                    {
+                      "type": "state-label",
+                      "entity": "sensor.speicher_heizzone_spreizung",
+                      "prefix": "Δ ",
+                      "tap_action": {
+                        "action": "more-info"
+                      },
+                      "style": {
+                        "color": "#222",
+                        "font-size": "14px",
+                        "font-weight": "normal",
+                        "left": "87%",
+                        "top": "64.6%",
+                        "white-space": "nowrap",
+                        "background": "none",
+                        "border": "none",
+                        "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
+                      }
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full"
+                  },
+                  "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgODAwIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InciIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTU1MzNkIiBzdG9wLW9wYWNpdHk9IjAuNTUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjQ1IiBzdG9wLWNvbG9yPSIjZjBhMDRiIiBzdG9wLW9wYWNpdHk9IjAuMzUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjc1IiBzdG9wLWNvbG9yPSIjN2ZiMmU1IiBzdG9wLW9wYWNpdHk9IjAuMzUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMmY2ZmI1IiBzdG9wLW9wYWNpdHk9IjAuNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0idGFuayI+PHJlY3QgeD0iMjAwIiB5PSI1MCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSI3MDAiIHJ4PSI3MCIgcnk9IjQ1Ii8+PC9jbGlwUGF0aD4KICA8L2RlZnM+CgogIDwhLS0gSXNvbGF0aW9uIC0tPgogIDxyZWN0IHg9IjE4NiIgeT0iMzYiIHdpZHRoPSIyMjgiIGhlaWdodD0iNzI4IiByeD0iODIiIHJ5PSI1NSIgZmlsbD0iIzlhYTNhZCIgZmlsbC1vcGFjaXR5PSIwLjE4IiBzdHJva2U9IiM5YWEzYWQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtZGFzaGFycmF5PSI1IDQiLz4KICA8IS0tIFNwZWljaGVyIC0tPgogIDxyZWN0IHg9IjIwMCIgeT0iNTAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNzAwIiByeD0iNzAiIHJ5PSI0NSIgZmlsbD0idXJsKCN3KSIgc3Ryb2tlPSIjNWI2NjcwIiBzdHJva2Utd2lkdGg9IjMiLz4KCiAgPCEtLSBab25lbmdyZW56ZW4gMTE3MCAvIDU1NSBtbSAtLT4KICA8ZyBzdHJva2U9IiM1YjY2NzAiIHN0cm9rZS13aWR0aD0iMS4yIiBzdHJva2UtZGFzaGFycmF5PSI2IDUiIG9wYWNpdHk9IjAuOCI+CiAgICA8bGluZSB4MT0iMjAwIiB5MT0iMzEwIiB4Mj0iNDAwIiB5Mj0iMzEwIi8+CiAgICA8bGluZSB4MT0iMjAwIiB5MT0iNTM2IiB4Mj0iNDAwIiB5Mj0iNTM2Ii8+CiAgPC9nPgogIDxnIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM1YjY2NzAiIGZvbnQtc3R5bGU9Iml0YWxpYyIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMiIHBhaW50LW9yZGVyPSJzdHJva2UiPgogICAgPHRleHQgeD0iMzk2IiB5PSIzMDQiIHRleHQtYW5jaG9yPSJlbmQiPlpvbmUgb2JlbiDiiYggMjEwIEw8L3RleHQ+CiAgICA8dGV4dCB4PSIzOTYiIHk9IjUzMCIgdGV4dC1hbmNob3I9ImVuZCI+Wm9uZSBtaXR0ZSDiiYggMjAwIEw8L3RleHQ+CiAgICA8dGV4dCB4PSIzOTYiIHk9Ijc0MiIgdGV4dC1hbmNob3I9ImVuZCI+Wm9uZSB1bnRlbiDiiYggMTUwIEw8L3RleHQ+CiAgPC9nPgoKICA8IS0tIFdlbGxyb2hyIFdXIDQ2IEwgKEthbHR3YXNzZXIgMjg1IG1tIC0+IFdhcm13YXNzZXIgMTUwNSBtbSkgLS0+CiAgPGcgY2xpcC1wYXRoPSJ1cmwoI3RhbmspIiBmaWxsPSJub25lIiBzdHJva2U9IiMyYThjOGMiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41NSI+CiAgICA8cGF0aCBkPSJNMjE0IDYzNSBMMzg2IDYyMSBMMjE0IDYwNyBMMzg2IDU5MyBMMjE0IDU3OSBMMzg2IDU2NSBMMjE0IDU1MSBMMzg2IDUzNyBMMjE0IDUyMyBMMzg2IDUwOSBMMjE0IDQ5NSBMMzg2IDQ4MSBMMjE0IDQ2NyBMMzg2IDQ1MyBMMjE0IDQzOSBMMzg2IDQyNSBMMjE0IDQxMSBMMzg2IDM5NyBMMjE0IDM4MyBMMzg2IDM2OSBMMjE0IDM1NSBMMzg2IDM0MSBMMjE0IDMyNyBMMzg2IDMxMyBMMjE0IDI5OSBMMzg2IDI4NSBMMjE0IDI3MSBMMzg2IDI1NyBMMjE0IDI0MyBMMzg2IDIyOSBMMjE0IDIxNSBMMzg2IDIwMSBMMjE0IDE4NyIvPgogIDwvZz4KCiAgPCEtLSBIZWl6c3RhYiBBbnNjaGx1c3MgNiAoMTEzMCBtbSkgLS0+CiAgPGc+CiAgICA8cmVjdCB4PSIyMDAiIHk9IjMyMCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI5IiByeD0iNCIgZmlsbD0iI2MwMzkyYiIgc3Ryb2tlPSIjN2IyNDFjIiBzdHJva2Utd2lkdGg9IjEiLz4KICAgIDxwYXRoIGQ9Ik0yMDggMzI0LjUgaDggbDQgLTQgbDggOCBsOCAtOCBsOCA4IGw4IC04IGw4IDggbDggLTggbDggOCBsOCAtOCBsOCA4IGw4IC04IGw4IDggbDggLTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjIiIG9wYWNpdHk9IjAuOCIvPgogICAgPHJlY3QgeD0iMTc4IiB5PSIzMTYiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNyIgcng9IjIiIGZpbGw9IiM3YjI0MWMiLz4KICA8L2c+CgogIDwhLS0gRsO8aGxlcmjDvGxzZW4gMTMgLyAxNSAvIDE2IC0tPgogIDxnIGZpbGw9IiM4ZTQ0YWQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIj4KICAgIDxjaXJjbGUgY3g9IjMwMCIgY3k9IjE0OCIgcj0iOCIvPgogICAgPGNpcmNsZSBjeD0iMzAwIiBjeT0iNDcyIiByPSI4Ii8+CiAgICA8Y2lyY2xlIGN4PSIzMDAiIGN5PSI2MDAiIHI9IjgiLz4KICA8L2c+CgogIDwhLS0gQW5zY2hsw7xzc2UgbGlua3MgLS0+CiAgPGcgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiPgogICAgPGxpbmUgeDE9IjEyMCIgeTE9IjE4NyIgeDI9IjIwMCIgeTI9IjE4NyIgc3Ryb2tlPSIjZTU1MzNkIi8+CiAgICA8bGluZSB4MT0iMTIwIiB5MT0iNDM5IiB4Mj0iMjAwIiB5Mj0iNDM5IiBzdHJva2U9IiNkNjQ1NDEiLz4KICAgIDxsaW5lIHgxPSIxMjAiIHkxPSI1NjIiIHgyPSIyMDAiIHkyPSI1NjIiIHN0cm9rZT0iIzJmNmZiNSIvPgogICAgPGxpbmUgeDE9IjEyMCIgeTE9IjYzNSIgeDI9IjIwMCIgeTI9IjYzNSIgc3Ryb2tlPSIjNWRhZGUyIi8+CiAgICA8IS0tIHJlY2h0cyBISy1JSSAtLT4KICAgIDxsaW5lIHgxPSI0MDAiIHkxPSI0MzkiIHgyPSI0ODAiIHkyPSI0MzkiIHN0cm9rZT0iI2Q2NDU0MSIvPgogICAgPGxpbmUgeDE9IjQwMCIgeTE9IjU2MiIgeDI9IjQ4MCIgeTI9IjU2MiIgc3Ryb2tlPSIjMmY2ZmI1Ii8+CiAgPC9nPgogIDwhLS0gUGZlaWxlIC0tPgogIDxnIGZpbGw9IiM1NTUiPgogICAgPHBhdGggZD0iTTEyOCAxODEgbC0xMCA2IGwxMCA2IHoiLz4gICAgIDwhLS0gV1cgcmF1cyAtLT4KICAgIDxwYXRoIGQ9Ik0xMTIgNDMzIGwxMCA2IGwtMTAgNiB6Ii8+ICAgICA8IS0tIEhLIFZMIHJhdXMgLS0+CiAgICA8cGF0aCBkPSJNMTI4IDU1NiBsLTEwIDYgbDEwIDYgeiIvPiAgICAgPCEtLSBISyBSTCByZWluIC0tPgogICAgPHBhdGggZD0iTTExMiA2MjkgbDEwIDYgbC0xMCA2IHoiLz4gICAgIDwhLS0gS1cgcmVpbiAtLT4KICAgIDxwYXRoIGQ9Ik00NjIgNDMzIGwxMCA2IGwtMTAgNiB6Ii8+ICAgICA8IS0tIFdQIFZMIHJlaW4gLS0+CiAgICA8cGF0aCBkPSJNNDcyIDU1NiBsLTEwIDYgbDEwIDYgeiIvPiAgICAgPCEtLSBXUCBSTCByYXVzIC0tPgogIDwvZz4KCiAgPCEtLSBCZXNjaHJpZnR1bmcgbGlua3MgLS0+CiAgPGcgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ0NCIgdGV4dC1hbmNob3I9ImVuZCI+CiAgICA8dGV4dCB4PSIxMTIiIHk9IjE4MyI+V2FybXdhc3NlcjwvdGV4dD4KICAgIDx0ZXh0IHg9IjExMiIgeT0iMjAxIiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij4xNTA1IG1tPC90ZXh0PgogICAgPHRleHQgeD0iMTcyIiB5PSIzMTQiPkVsZWt0cm9oZWl6c3RhYjwvdGV4dD4KICAgIDx0ZXh0IHg9IjE3MiIgeT0iMzQ4IiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij4xMTMwIG1tPC90ZXh0PgogICAgPHRleHQgeD0iMTA0IiB5PSI0MzUiPlZMIFdQPC90ZXh0PgogICAgPHRleHQgeD0iMTA0IiB5PSI0NTMiIGZvbnQtc2l6ZT0iMTMiIGZpbGw9IiM3NzciPjgyMCBtbTwvdGV4dD4KICAgIDx0ZXh0IHg9IjEwNCIgeT0iNTU4Ij5STCBXUDwvdGV4dD4KICAgIDx0ZXh0IHg9IjEwNCIgeT0iNTc2IiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij40ODUgbW08L3RleHQ+CiAgICA8dGV4dCB4PSIxMDQiIHk9IjYzMSI+S2FsdHdhc3NlcjwvdGV4dD4KICAgIDx0ZXh0IHg9IjEwNCIgeT0iNjQ5IiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij4yODUgbW08L3RleHQ+CiAgPC9nPgogIDwhLS0gQmVzY2hyaWZ0dW5nIHJlY2h0cyAtLT4KICA8ZyBmb250LXNpemU9IjE2IiBmaWxsPSIjNDQ0Ij4KICAgIDx0ZXh0IHg9IjQ4OCIgeT0iNDM1Ij5WTCBISy1JSTwvdGV4dD4KICAgIDx0ZXh0IHg9IjQ4OCIgeT0iNDUzIiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij44MjAgbW08L3RleHQ+CiAgICA8dGV4dCB4PSI0ODgiIHk9IjU1OCI+UkwgSEstSUk8L3RleHQ+CiAgICA8dGV4dCB4PSI0ODgiIHk9IjU3NiIgZm9udC1zaXplPSIxMyIgZmlsbD0iIzc3NyI+NDg1IG1tPC90ZXh0PgogIDwvZz4KCiAgPCEtLSBUaXRlbCAtLT4KICA8dGV4dCB4PSIzMDAiIHk9IjI2IiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzQ0NCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U3BlaWNoZXIgNTYwIEwgwrcgV2VsbHJvaHIgV1cgNDYgTDwvdGV4dD4KICA8dGV4dCB4PSIzMDAiIHk9Ijc5MiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzc3NyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RW5lcmdpZSBiZXpvZ2VuIGF1ZiAyMCDCsEMgwrcgMSwxNjMgV2gvKEzCt0spPC90ZXh0Pgo8L3N2Zz4K",
+                  "type": "picture-elements"
+                }
+              ],
+              "type": "grid"
+            },
+            {
+              "cards": [
+                {
+                  "heading": "Wärmeinhalt",
+                  "icon": "mdi:storage-tank",
+                  "type": "heading"
+                },
+                {
+                  "entity": "sensor.speicher_energie_gesamt",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "name": "Gesamt (ab 20 °C)",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.speicher_heizzone_mitteltemperatur",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "name": "Ø Heizzone (VL/RL)",
+                  "type": "tile"
+                },
+                {
+                  "type": "tile",
+                  "entity": "sensor.speicher_heizzone_spreizung",
+                  "name": "Spreizung VL−RL",
+                  "grid_options": {
+                    "columns": 4
+                  }
+                },
+                {
+                  "entity": "sensor.speicher_energie_oben",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "name": "Zone oben (WW, 210 L)",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.speicher_energie_mitte",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "name": "Zone mitte (200 L)",
+                  "type": "tile"
+                },
+                {
+                  "entity": "sensor.speicher_energie_unten",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "name": "Zone unten (150 L)",
+                  "type": "tile"
+                },
+                {
+                  "entities": [
+                    {
+                      "color": "#444444",
+                      "entity": "sensor.speicher_energie_gesamt",
+                      "name": "Gesamt"
+                    },
+                    {
+                      "color": "#e5533d",
+                      "entity": "sensor.speicher_energie_oben",
+                      "name": "oben"
+                    },
+                    {
+                      "color": "#f0a04b",
+                      "entity": "sensor.speicher_energie_mitte",
+                      "name": "mitte"
+                    },
+                    {
+                      "color": "#2f6fb5",
+                      "entity": "sensor.speicher_energie_unten",
+                      "name": "unten"
+                    },
+                    {
+                      "entity": "switch.haus_verbauch",
+                      "name": "Heizstab"
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full",
+                    "rows": 5
+                  },
+                  "hours_to_show": 48,
+                  "title": "Wärmeinhalt 48 h",
+                  "type": "history-graph"
+                },
+                {
+                  "entities": [
+                    {
+                      "color": "#e5533d",
+                      "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
+                      "name": "Speicher WW"
+                    },
+                    {
+                      "color": "#f0a04b",
+                      "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
+                      "name": "Speicher bei VL"
+                    },
+                    {
+                      "color": "#2f6fb5",
+                      "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
+                      "name": "Speicher bei RL"
+                    },
+                    {
+                      "color": "#444444",
+                      "entity": "sensor.speicher_heizzone_mitteltemperatur",
+                      "name": "Ø Heizzone"
+                    },
+                    {
+                      "entity": "sensor.speicher_heizzone_spreizung",
+                      "name": "Spreizung VL−RL"
+                    }
+                  ],
+                  "grid_options": {
+                    "columns": "full",
+                    "rows": 5
+                  },
+                  "hours_to_show": 48,
+                  "title": "Speichertemperaturen 48 h",
+                  "type": "history-graph"
+                }
+              ],
+              "type": "grid"
+            }
+          ],
+          "title": "Speicher-Wärmeinhalt",
+          "type": "sections"
+        }
+      ]
     }
-   ]
-  },
-  {
-   "icon": "mdi:storage-tank",
-   "max_columns": 2,
-   "path": "speicher-waerme",
-   "sections": [
-    {
-     "cards": [
-      {
-       "heading": "Speicher 560 L – Ist-Temperaturen",
-       "icon": "mdi:water-boiler",
-       "type": "heading"
-      },
-      {
-       "elements": [
-        {
-         "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
-         "style": {
-          "color": "#222",
-          "font-size": "17px",
-          "font-weight": "bold",
-          "left": "59%",
-          "top": "18.5%",
-          "white-space": "nowrap",
-          "background": "none",
-          "border": "none",
-          "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
-         },
-         "tap_action": {
-          "action": "more-info"
-         },
-         "type": "state-label"
-        },
-        {
-         "entity": "sensor.speicher_energie_oben",
-         "style": {
-          "color": "#444",
-          "font-size": "14px",
-          "font-weight": "normal",
-          "left": "59%",
-          "top": "22.0%",
-          "white-space": "nowrap",
-          "background": "none",
-          "border": "none",
-          "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
-         },
-         "tap_action": {
-          "action": "more-info"
-         },
-         "type": "state-label"
-        },
-        {
-         "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
-         "style": {
-          "color": "#222",
-          "font-size": "17px",
-          "font-weight": "bold",
-          "left": "59%",
-          "top": "59%",
-          "white-space": "nowrap",
-          "background": "none",
-          "border": "none",
-          "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
-         },
-         "tap_action": {
-          "action": "more-info"
-         },
-         "type": "state-label"
-        },
-        {
-         "entity": "sensor.speicher_energie_mitte",
-         "style": {
-          "color": "#444",
-          "font-size": "14px",
-          "font-weight": "normal",
-          "left": "59%",
-          "top": "62.5%",
-          "white-space": "nowrap",
-          "background": "none",
-          "border": "none",
-          "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
-         },
-         "tap_action": {
-          "action": "more-info"
-         },
-         "type": "state-label"
-        },
-        {
-         "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
-         "style": {
-          "color": "#222",
-          "font-size": "17px",
-          "font-weight": "bold",
-          "left": "59%",
-          "top": "75%",
-          "white-space": "nowrap",
-          "background": "none",
-          "border": "none",
-          "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
-         },
-         "tap_action": {
-          "action": "more-info"
-         },
-         "type": "state-label"
-        },
-        {
-         "entity": "sensor.speicher_energie_unten",
-         "style": {
-          "color": "#444",
-          "font-size": "14px",
-          "font-weight": "normal",
-          "left": "59%",
-          "top": "78.5%",
-          "white-space": "nowrap",
-          "background": "none",
-          "border": "none",
-          "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
-         },
-         "tap_action": {
-          "action": "more-info"
-         },
-         "type": "state-label"
-        },
-        {
-         "entity": "switch.haus_verbauch",
-         "style": {
-          "--mdc-icon-size": "26px",
-          "background-color": "rgba(255,255,255,0.85)",
-          "border-radius": "50%",
-          "left": "42%",
-          "top": "37.6%"
-         },
-         "tap_action": {
-          "action": "more-info"
-         },
-         "type": "state-icon"
-        },
-        {
-         "entity": "sensor.speicher_energie_gesamt",
-         "prefix": "Σ ",
-         "style": {
-          "background-color": "rgba(255,255,255,0.88)",
-          "border-radius": "6px",
-          "color": "#222",
-          "font-size": "17px",
-          "font-weight": "bold",
-          "left": "16%",
-          "padding": "1px 6px",
-          "top": "88%",
-          "white-space": "nowrap"
-         },
-         "tap_action": {
-          "action": "more-info"
-         },
-         "type": "state-label"
-        },
-        {
-         "entity": "sensor.speicher_heizzone_mitteltemperatur",
-         "prefix": "Ø ",
-         "style": {
-          "color": "#222",
-          "font-size": "17px",
-          "font-weight": "bold",
-          "left": "87%",
-          "top": "61%",
-          "white-space": "nowrap",
-          "background": "none",
-          "border": "none",
-          "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
-         },
-         "tap_action": {
-          "action": "more-info"
-         },
-         "type": "state-label"
-        },
-        {
-         "type": "state-label",
-         "entity": "sensor.speicher_heizzone_spreizung",
-         "prefix": "Δ ",
-         "tap_action": {
-          "action": "more-info"
-         },
-         "style": {
-          "color": "#222",
-          "font-size": "14px",
-          "font-weight": "normal",
-          "left": "87%",
-          "top": "64.6%",
-          "white-space": "nowrap",
-          "background": "none",
-          "border": "none",
-          "text-shadow": "0 0 3px #fff, 0 0 3px #fff, 0 0 2px #fff"
-         }
-        }
-       ],
-       "grid_options": {
-        "columns": "full"
-       },
-       "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2MDAgODAwIiBmb250LWZhbWlseT0iQXJpYWwsIEhlbHZldGljYSwgc2Fucy1zZXJpZiI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9InciIHgxPSIwIiB5MT0iMCIgeDI9IjAiIHkyPSIxIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjZTU1MzNkIiBzdG9wLW9wYWNpdHk9IjAuNTUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjQ1IiBzdG9wLWNvbG9yPSIjZjBhMDRiIiBzdG9wLW9wYWNpdHk9IjAuMzUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIwLjc1IiBzdG9wLWNvbG9yPSIjN2ZiMmU1IiBzdG9wLW9wYWNpdHk9IjAuMzUiLz4KICAgICAgPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMmY2ZmI1IiBzdG9wLW9wYWNpdHk9IjAuNSIvPgogICAgPC9saW5lYXJHcmFkaWVudD4KICAgIDxjbGlwUGF0aCBpZD0idGFuayI+PHJlY3QgeD0iMjAwIiB5PSI1MCIgd2lkdGg9IjIwMCIgaGVpZ2h0PSI3MDAiIHJ4PSI3MCIgcnk9IjQ1Ii8+PC9jbGlwUGF0aD4KICA8L2RlZnM+CgogIDwhLS0gSXNvbGF0aW9uIC0tPgogIDxyZWN0IHg9IjE4NiIgeT0iMzYiIHdpZHRoPSIyMjgiIGhlaWdodD0iNzI4IiByeD0iODIiIHJ5PSI1NSIgZmlsbD0iIzlhYTNhZCIgZmlsbC1vcGFjaXR5PSIwLjE4IiBzdHJva2U9IiM5YWEzYWQiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtZGFzaGFycmF5PSI1IDQiLz4KICA8IS0tIFNwZWljaGVyIC0tPgogIDxyZWN0IHg9IjIwMCIgeT0iNTAiIHdpZHRoPSIyMDAiIGhlaWdodD0iNzAwIiByeD0iNzAiIHJ5PSI0NSIgZmlsbD0idXJsKCN3KSIgc3Ryb2tlPSIjNWI2NjcwIiBzdHJva2Utd2lkdGg9IjMiLz4KCiAgPCEtLSBab25lbmdyZW56ZW4gMTE3MCAvIDU1NSBtbSAtLT4KICA8ZyBzdHJva2U9IiM1YjY2NzAiIHN0cm9rZS13aWR0aD0iMS4yIiBzdHJva2UtZGFzaGFycmF5PSI2IDUiIG9wYWNpdHk9IjAuOCI+CiAgICA8bGluZSB4MT0iMjAwIiB5MT0iMzEwIiB4Mj0iNDAwIiB5Mj0iMzEwIi8+CiAgICA8bGluZSB4MT0iMjAwIiB5MT0iNTM2IiB4Mj0iNDAwIiB5Mj0iNTM2Ii8+CiAgPC9nPgogIDxnIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM1YjY2NzAiIGZvbnQtc3R5bGU9Iml0YWxpYyIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjMiIHBhaW50LW9yZGVyPSJzdHJva2UiPgogICAgPHRleHQgeD0iMzk2IiB5PSIzMDQiIHRleHQtYW5jaG9yPSJlbmQiPlpvbmUgb2JlbiDiiYggMjEwIEw8L3RleHQ+CiAgICA8dGV4dCB4PSIzOTYiIHk9IjUzMCIgdGV4dC1hbmNob3I9ImVuZCI+Wm9uZSBtaXR0ZSDiiYggMjAwIEw8L3RleHQ+CiAgICA8dGV4dCB4PSIzOTYiIHk9Ijc0MiIgdGV4dC1hbmNob3I9ImVuZCI+Wm9uZSB1bnRlbiDiiYggMTUwIEw8L3RleHQ+CiAgPC9nPgoKICA8IS0tIFdlbGxyb2hyIFdXIDQ2IEwgKEthbHR3YXNzZXIgMjg1IG1tIC0+IFdhcm13YXNzZXIgMTUwNSBtbSkgLS0+CiAgPGcgY2xpcC1wYXRoPSJ1cmwoI3RhbmspIiBmaWxsPSJub25lIiBzdHJva2U9IiMyYThjOGMiIHN0cm9rZS13aWR0aD0iMiIgb3BhY2l0eT0iMC41NSI+CiAgICA8cGF0aCBkPSJNMjE0IDYzNSBMMzg2IDYyMSBMMjE0IDYwNyBMMzg2IDU5MyBMMjE0IDU3OSBMMzg2IDU2NSBMMjE0IDU1MSBMMzg2IDUzNyBMMjE0IDUyMyBMMzg2IDUwOSBMMjE0IDQ5NSBMMzg2IDQ4MSBMMjE0IDQ2NyBMMzg2IDQ1MyBMMjE0IDQzOSBMMzg2IDQyNSBMMjE0IDQxMSBMMzg2IDM5NyBMMjE0IDM4MyBMMzg2IDM2OSBMMjE0IDM1NSBMMzg2IDM0MSBMMjE0IDMyNyBMMzg2IDMxMyBMMjE0IDI5OSBMMzg2IDI4NSBMMjE0IDI3MSBMMzg2IDI1NyBMMjE0IDI0MyBMMzg2IDIyOSBMMjE0IDIxNSBMMzg2IDIwMSBMMjE0IDE4NyIvPgogIDwvZz4KCiAgPCEtLSBIZWl6c3RhYiBBbnNjaGx1c3MgNiAoMTEzMCBtbSkgLS0+CiAgPGc+CiAgICA8cmVjdCB4PSIyMDAiIHk9IjMyMCIgd2lkdGg9IjEyMCIgaGVpZ2h0PSI5IiByeD0iNCIgZmlsbD0iI2MwMzkyYiIgc3Ryb2tlPSIjN2IyNDFjIiBzdHJva2Utd2lkdGg9IjEiLz4KICAgIDxwYXRoIGQ9Ik0yMDggMzI0LjUgaDggbDQgLTQgbDggOCBsOCAtOCBsOCA4IGw4IC04IGw4IDggbDggLTggbDggOCBsOCAtOCBsOCA4IGw4IC04IGw4IDggbDggLTQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxLjIiIG9wYWNpdHk9IjAuOCIvPgogICAgPHJlY3QgeD0iMTc4IiB5PSIzMTYiIHdpZHRoPSIyMiIgaGVpZ2h0PSIxNyIgcng9IjIiIGZpbGw9IiM3YjI0MWMiLz4KICA8L2c+CgogIDwhLS0gRsO8aGxlcmjDvGxzZW4gMTMgLyAxNSAvIDE2IC0tPgogIDxnIGZpbGw9IiM4ZTQ0YWQiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIyIj4KICAgIDxjaXJjbGUgY3g9IjMwMCIgY3k9IjE0OCIgcj0iOCIvPgogICAgPGNpcmNsZSBjeD0iMzAwIiBjeT0iNDcyIiByPSI4Ii8+CiAgICA8Y2lyY2xlIGN4PSIzMDAiIGN5PSI2MDAiIHI9IjgiLz4KICA8L2c+CgogIDwhLS0gQW5zY2hsw7xzc2UgbGlua3MgLS0+CiAgPGcgc3Ryb2tlLXdpZHRoPSIxMCIgc3Ryb2tlLWxpbmVjYXA9ImJ1dHQiPgogICAgPGxpbmUgeDE9IjEyMCIgeTE9IjE4NyIgeDI9IjIwMCIgeTI9IjE4NyIgc3Ryb2tlPSIjZTU1MzNkIi8+CiAgICA8bGluZSB4MT0iMTIwIiB5MT0iNDM5IiB4Mj0iMjAwIiB5Mj0iNDM5IiBzdHJva2U9IiNkNjQ1NDEiLz4KICAgIDxsaW5lIHgxPSIxMjAiIHkxPSI1NjIiIHgyPSIyMDAiIHkyPSI1NjIiIHN0cm9rZT0iIzJmNmZiNSIvPgogICAgPGxpbmUgeDE9IjEyMCIgeTE9IjYzNSIgeDI9IjIwMCIgeTI9IjYzNSIgc3Ryb2tlPSIjNWRhZGUyIi8+CiAgICA8IS0tIHJlY2h0cyBISy1JSSAtLT4KICAgIDxsaW5lIHgxPSI0MDAiIHkxPSI0MzkiIHgyPSI0ODAiIHkyPSI0MzkiIHN0cm9rZT0iI2Q2NDU0MSIvPgogICAgPGxpbmUgeDE9IjQwMCIgeTE9IjU2MiIgeDI9IjQ4MCIgeTI9IjU2MiIgc3Ryb2tlPSIjMmY2ZmI1Ii8+CiAgPC9nPgogIDwhLS0gUGZlaWxlIC0tPgogIDxnIGZpbGw9IiM1NTUiPgogICAgPHBhdGggZD0iTTEyOCAxODEgbC0xMCA2IGwxMCA2IHoiLz4gICAgIDwhLS0gV1cgcmF1cyAtLT4KICAgIDxwYXRoIGQ9Ik0xMTIgNDMzIGwxMCA2IGwtMTAgNiB6Ii8+ICAgICA8IS0tIEhLIFZMIHJhdXMgLS0+CiAgICA8cGF0aCBkPSJNMTI4IDU1NiBsLTEwIDYgbDEwIDYgeiIvPiAgICAgPCEtLSBISyBSTCByZWluIC0tPgogICAgPHBhdGggZD0iTTExMiA2MjkgbDEwIDYgbC0xMCA2IHoiLz4gICAgIDwhLS0gS1cgcmVpbiAtLT4KICAgIDxwYXRoIGQ9Ik00NjIgNDMzIGwxMCA2IGwtMTAgNiB6Ii8+ICAgICA8IS0tIFdQIFZMIHJlaW4gLS0+CiAgICA8cGF0aCBkPSJNNDcyIDU1NiBsLTEwIDYgbDEwIDYgeiIvPiAgICAgPCEtLSBXUCBSTCByYXVzIC0tPgogIDwvZz4KCiAgPCEtLSBCZXNjaHJpZnR1bmcgbGlua3MgLS0+CiAgPGcgZm9udC1zaXplPSIxNiIgZmlsbD0iIzQ0NCIgdGV4dC1hbmNob3I9ImVuZCI+CiAgICA8dGV4dCB4PSIxMTIiIHk9IjE4MyI+V2FybXdhc3NlcjwvdGV4dD4KICAgIDx0ZXh0IHg9IjExMiIgeT0iMjAxIiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij4xNTA1IG1tPC90ZXh0PgogICAgPHRleHQgeD0iMTcyIiB5PSIzMTQiPkVsZWt0cm9oZWl6c3RhYjwvdGV4dD4KICAgIDx0ZXh0IHg9IjE3MiIgeT0iMzQ4IiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij4xMTMwIG1tPC90ZXh0PgogICAgPHRleHQgeD0iMTA0IiB5PSI0MzUiPlZMIFdQPC90ZXh0PgogICAgPHRleHQgeD0iMTA0IiB5PSI0NTMiIGZvbnQtc2l6ZT0iMTMiIGZpbGw9IiM3NzciPjgyMCBtbTwvdGV4dD4KICAgIDx0ZXh0IHg9IjEwNCIgeT0iNTU4Ij5STCBXUDwvdGV4dD4KICAgIDx0ZXh0IHg9IjEwNCIgeT0iNTc2IiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij40ODUgbW08L3RleHQ+CiAgICA8dGV4dCB4PSIxMDQiIHk9IjYzMSI+S2FsdHdhc3NlcjwvdGV4dD4KICAgIDx0ZXh0IHg9IjEwNCIgeT0iNjQ5IiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij4yODUgbW08L3RleHQ+CiAgPC9nPgogIDwhLS0gQmVzY2hyaWZ0dW5nIHJlY2h0cyAtLT4KICA8ZyBmb250LXNpemU9IjE2IiBmaWxsPSIjNDQ0Ij4KICAgIDx0ZXh0IHg9IjQ4OCIgeT0iNDM1Ij5WTCBISy1JSTwvdGV4dD4KICAgIDx0ZXh0IHg9IjQ4OCIgeT0iNDUzIiBmb250LXNpemU9IjEzIiBmaWxsPSIjNzc3Ij44MjAgbW08L3RleHQ+CiAgICA8dGV4dCB4PSI0ODgiIHk9IjU1OCI+UkwgSEstSUk8L3RleHQ+CiAgICA8dGV4dCB4PSI0ODgiIHk9IjU3NiIgZm9udC1zaXplPSIxMyIgZmlsbD0iIzc3NyI+NDg1IG1tPC90ZXh0PgogIDwvZz4KCiAgPCEtLSBUaXRlbCAtLT4KICA8dGV4dCB4PSIzMDAiIHk9IjI2IiBmb250LXNpemU9IjE5IiBmb250LXdlaWdodD0iYm9sZCIgZmlsbD0iIzQ0NCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+U3BlaWNoZXIgNTYwIEwgwrcgV2VsbHJvaHIgV1cgNDYgTDwvdGV4dD4KICA8dGV4dCB4PSIzMDAiIHk9Ijc5MiIgZm9udC1zaXplPSIxMiIgZmlsbD0iIzc3NyIgdGV4dC1hbmNob3I9Im1pZGRsZSI+RW5lcmdpZSBiZXpvZ2VuIGF1ZiAyMCDCsEMgwrcgMSwxNjMgV2gvKEzCt0spPC90ZXh0Pgo8L3N2Zz4K",
-       "type": "picture-elements"
-      }
-     ],
-     "type": "grid"
-    },
-    {
-     "cards": [
-      {
-       "heading": "Wärmeinhalt",
-       "icon": "mdi:storage-tank",
-       "type": "heading"
-      },
-      {
-       "entity": "sensor.speicher_energie_gesamt",
-       "grid_options": {
-        "columns": 4
-       },
-       "name": "Gesamt (ab 20 °C)",
-       "type": "tile"
-      },
-      {
-       "entity": "sensor.speicher_heizzone_mitteltemperatur",
-       "grid_options": {
-        "columns": 4
-       },
-       "name": "Ø Heizzone (VL/RL)",
-       "type": "tile"
-      },
-      {
-       "type": "tile",
-       "entity": "sensor.speicher_heizzone_spreizung",
-       "name": "Spreizung VL−RL",
-       "grid_options": {
-        "columns": 4
-       }
-      },
-      {
-       "entity": "sensor.speicher_energie_oben",
-       "grid_options": {
-        "columns": 4
-       },
-       "name": "Zone oben (WW, 210 L)",
-       "type": "tile"
-      },
-      {
-       "entity": "sensor.speicher_energie_mitte",
-       "grid_options": {
-        "columns": 4
-       },
-       "name": "Zone mitte (200 L)",
-       "type": "tile"
-      },
-      {
-       "entity": "sensor.speicher_energie_unten",
-       "grid_options": {
-        "columns": 4
-       },
-       "name": "Zone unten (150 L)",
-       "type": "tile"
-      },
-      {
-       "entities": [
-        {
-         "color": "#444444",
-         "entity": "sensor.speicher_energie_gesamt",
-         "name": "Gesamt"
-        },
-        {
-         "color": "#e5533d",
-         "entity": "sensor.speicher_energie_oben",
-         "name": "oben"
-        },
-        {
-         "color": "#f0a04b",
-         "entity": "sensor.speicher_energie_mitte",
-         "name": "mitte"
-        },
-        {
-         "color": "#2f6fb5",
-         "entity": "sensor.speicher_energie_unten",
-         "name": "unten"
-        },
-        {
-         "entity": "switch.haus_verbauch",
-         "name": "Heizstab"
-        }
-       ],
-       "grid_options": {
-        "columns": "full",
-        "rows": 5
-       },
-       "hours_to_show": 48,
-       "title": "Wärmeinhalt 48 h",
-       "type": "history-graph"
-      },
-      {
-       "entities": [
-        {
-         "color": "#e5533d",
-         "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_3",
-         "name": "Speicher WW"
-        },
-        {
-         "color": "#f0a04b",
-         "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur",
-         "name": "Speicher bei VL"
-        },
-        {
-         "color": "#2f6fb5",
-         "entity": "sensor.ww_mitte_rl_ist_ww_oben_temperatur_2",
-         "name": "Speicher bei RL"
-        },
-        {
-         "color": "#444444",
-         "entity": "sensor.speicher_heizzone_mitteltemperatur",
-         "name": "Ø Heizzone"
-        },
-        {
-         "entity": "sensor.speicher_heizzone_spreizung",
-         "name": "Spreizung VL−RL"
-        }
-       ],
-       "grid_options": {
-        "columns": "full",
-        "rows": 5
-       },
-       "hours_to_show": 48,
-       "title": "Speichertemperaturen 48 h",
-       "type": "history-graph"
-      }
-     ],
-     "type": "grid"
-    }
-   ],
-   "title": "Speicher-Wärmeinhalt",
-   "type": "sections"
   }
- ]
 }

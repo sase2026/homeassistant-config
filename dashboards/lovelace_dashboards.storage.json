@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace_dashboards",
+  "data": {
+    "items": [
+      {
+        "id": "zuhause_a",
+        "url_path": "zuhause-a",
+        "title": "Zuhause",
+        "icon": "mdi:home-variant",
+        "show_in_sidebar": true,
+        "require_admin": true,
+        "mode": "storage"
+      },
+      {
+        "id": "batterie_simulation",
+        "url_path": "batterie-simulation",
+        "title": "Batterie-Simulation",
+        "icon": "mdi:home-battery",
+        "show_in_sidebar": true,
+        "require_admin": true,
+        "mode": "storage"
+      },
+      {
+        "id": "solar_a",
+        "url_path": "solar-a",
+        "title": "Solar Manager",
+        "icon": "mdi:solar-power-variant",
+        "show_in_sidebar": true,
+        "require_admin": true,
+        "mode": "storage"
+      },
+      {
+        "id": "boiler_a",
+        "url_path": "boiler-a",
+        "title": "WW-Speicher",
+        "icon": "mdi:water-boiler-auto",
+        "show_in_sidebar": true,
+        "require_admin": true,
+        "mode": "storage"
+      },
+      {
+        "id": "fbh_a",
+        "url_path": "fbh-a",
+        "title": "FBH (HK-II)",
+        "icon": "mdi:thermometer-lines",
+        "show_in_sidebar": true,
+        "require_admin": true,
+        "mode": "storage"
+      },
+      {
+        "id": "alarme_a",
+        "url_path": "alarme-a",
+        "title": "Alarme & Warnungen",
+        "icon": "mdi:alarm-light-outline",
+        "show_in_sidebar": true,
+        "require_admin": true,
+        "mode": "storage"
+      },
+      {
+        "id": "familie_a",
+        "url_path": "familie-a",
+        "title": "Familie",
+        "icon": "mdi:account-group",
+        "require_admin": false,
+        "show_in_sidebar": true,
+        "mode": "storage"
+      }
+    ]
+  }
+}

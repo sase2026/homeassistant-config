@@ -1,0 +1,34 @@
+{
+  "version": 1,
+  "minor_version": 1,
+  "key": "lovelace.familie_a",
+  "data": {
+    "config": {
+      "views": [
+        {
+          "max_columns": 3,
+          "path": "familie",
+          "sections": [
+            {
+              "cards": [
+                {
+                  "heading": "Familie",
+                  "icon": "mdi:account-group",
+                  "type": "heading"
+                },
+                {
+                  "content": "Hier kommen bald Garagentore, «Ich bin's», Abfall und Infos.",
+                  "text_only": true,
+                  "type": "markdown"
+                }
+              ],
+              "type": "grid"
+            }
+          ],
+          "title": "Familie",
+          "type": "sections"
+        }
+      ]
+    }
+  }
+}
