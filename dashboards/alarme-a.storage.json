@@ -121,7 +121,7 @@
                   "type": "tile"
                 },
                 {
-                  "entity": "sensor.wp_starts_letzte_stunde",
+                  "entity": "sensor.wp_starts_letzte_stunde_gefiltert",
                   "grid_options": {
                     "columns": 4
                   },
@@ -520,7 +520,7 @@
                 {
                   "type": "tile",
                   "entity": "automation.tor_offen_erinnerung",
-                  "name": "⏱️ Tor 15 min offen + 22-Uhr-Check",
+                  "name": "⏱️ Tor 15 min offen",
                   "features": [
                     {
                       "type": "toggle"
@@ -534,7 +534,7 @@
                 {
                   "type": "markdown",
                   "text_only": true,
-                  "content": "<sub>**Überwacht:** dieselben drei Kontakte. **Meldet:** wenn ein Tor oder die Haustür 15 Minuten ununterbrochen offen ist, und um 22:00 die Liste aller noch offenen. Ist um 22:00 alles zu, kommt nichts.</sub>"
+                  "content": "<sub>**Überwacht:** dieselben drei Kontakte. **Meldet:** wenn ein Tor oder die Haustür 15 Minuten ununterbrochen offen ist. (Die 22:00-Info kommt neu aus der Alarm-Freigabe, inkl. Fenster.)</sub>"
                 },
                 {
                   "type": "tile",
@@ -717,7 +717,7 @@
                 {
                   "type": "markdown",
                   "text_only": true,
-                  "content": "<sub>Alle Meldungen gehen an iPhone 12 und iPhone 17. Der Schalter bei jeder Meldung schaltet nur die Meldung ein/aus.</sub>"
+                  "content": "<sub>Wer welche Meldung bekommt, steht in der Push-Zuweisung im Register **Verwaltung**. Der Schalter bei jeder Meldung schaltet die Meldung für alle ein/aus. Die Testmeldung hier geht an Saschas zwei iPhones.</sub>"
                 }
               ],
               "type": "grid"
@@ -760,6 +760,1004 @@
           ],
           "title": "Meldungen",
           "type": "sections"
+        },
+        {
+          "title": "Verwaltung",
+          "path": "verwaltung",
+          "icon": "mdi:cellphone-cog",
+          "type": "sections",
+          "max_columns": 3,
+          "sections": [
+            {
+              "type": "grid",
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Angemeldete Handys",
+                  "icon": "mdi:cellphone-link"
+                },
+                {
+                  "type": "tile",
+                  "entity": "person.rasppi5",
+                  "name": "Sascha",
+                  "grid_options": {
+                    "columns": 6
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "person.mael",
+                  "name": "Mael",
+                  "grid_options": {
+                    "columns": 6
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "device_tracker.iphone_12_sse",
+                  "name": "iPhone 12 Sascha",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "device_tracker.iphone17_sse",
+                  "name": "iPhone 17 Sascha",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "tile",
+                  "entity": "device_tracker.iphone_8_mael",
+                  "name": "iPhone 8+ Mael",
+                  "grid_options": {
+                    "columns": 12
+                  }
+                },
+                {
+                  "type": "button",
+                  "name": "Test iPhone 12 Sascha",
+                  "icon": "mdi:message-badge-outline",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "notify.mobile_app_iphone_12_sse",
+                    "data": {
+                      "title": "📲 Testmeldung",
+                      "message": "Push-Test an iPhone 12 Sascha aus dem Dashboard."
+                    },
+                    "confirmation": {
+                      "text": "Testmeldung an iPhone 12 Sascha senden?"
+                    }
+                  }
+                },
+                {
+                  "type": "button",
+                  "name": "Test iPhone 17 Sascha",
+                  "icon": "mdi:message-badge-outline",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "notify.mobile_app_iphone17_sse",
+                    "data": {
+                      "title": "📲 Testmeldung",
+                      "message": "Push-Test an iPhone 17 Sascha aus dem Dashboard."
+                    },
+                    "confirmation": {
+                      "text": "Testmeldung an iPhone 17 Sascha senden?"
+                    }
+                  }
+                },
+                {
+                  "type": "button",
+                  "name": "Test iPhone 8+ Mael",
+                  "icon": "mdi:message-badge-outline",
+                  "grid_options": {
+                    "columns": 4
+                  },
+                  "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "notify.mobile_app_iphone_8_mael",
+                    "data": {
+                      "title": "📲 Testmeldung",
+                      "message": "Push-Test an iPhone 8+ Mael aus dem Dashboard."
+                    },
+                    "confirmation": {
+                      "text": "Testmeldung an iPhone 8+ Mael senden?"
+                    }
+                  }
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>Ein Handy erscheint hier, sobald die Companion App mit einem HA-Benutzer angemeldet und unter Einstellungen → Personen zugeordnet ist. Für ein neues Handy braucht die Matrix eine neue Spalte.</sub>"
+                }
+              ]
+            },
+            {
+              "type": "grid",
+              "column_span": 2,
+              "cards": [
+                {
+                  "type": "heading",
+                  "heading": "Push-Zuweisung",
+                  "icon": "mdi:table-check"
+                },
+                {
+                  "type": "markdown",
+                  "text_only": true,
+                  "content": "<sub>Antippen schaltet die Meldung für dieses Handy ein (farbig) oder aus (grau). **Aktiv:** Alle 13 Meldungen laufen über «Push nach Matrix» und gehen nur an die angehakten Handys. Wirkt sofort, ohne Neustart.</sub>"
+                },
+                {
+                  "type": "grid",
+                  "columns": 4,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "Meldung",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "iPhone 12 Sascha",
+                      "icon": "mdi:cellphone",
+                      "icon_height": "24px",
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "iPhone 17 Sascha",
+                      "icon": "mdi:cellphone",
+                      "icon_height": "24px",
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "iPhone 8+ Mael",
+                      "icon": "mdi:cellphone",
+                      "icon_height": "24px",
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "heading",
+                  "heading": "Einbruchalarm Tore & Haustür",
+                  "icon": "mdi:shield-home",
+                  "heading_style": "subtitle"
+                },
+                {
+                  "type": "grid",
+                  "columns": 4,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "«Ich bin's», Freigabe, 22:00-/23:55-Info",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_freigabe_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_freigabe_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_freigabe_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Einbruch (scharf)",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_einbruch_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_einbruch_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_einbruch_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Wieder scharf",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_wiederscharf_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_wiederscharf_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_wiederscharf_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "heading",
+                  "heading": "Türen & Tore",
+                  "icon": "mdi:garage-variant",
+                  "heading_style": "subtitle"
+                },
+                {
+                  "type": "grid",
+                  "columns": 4,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "Geöffnet / geschlossen",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tore_auf_zu_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tore_auf_zu_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tore_auf_zu_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Tor 15 min offen",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tor_offen_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tor_offen_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tor_offen_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Bewegung nachts",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_bewegung_nachts_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_bewegung_nachts_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_bewegung_nachts_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Türe offen bei Kälte",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tuere_kaelte_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tuere_kaelte_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tuere_kaelte_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "heading",
+                  "heading": "Heizung",
+                  "icon": "mdi:heat-pump",
+                  "heading_style": "subtitle"
+                },
+                {
+                  "type": "grid",
+                  "columns": 4,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "Kritische Alarme WP / WW / Fühler",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_kritisch_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_kritisch_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_alarm_kritisch_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "heading",
+                  "heading": "Boiler & Energie",
+                  "icon": "mdi:water-boiler",
+                  "heading_style": "subtitle"
+                },
+                {
+                  "type": "grid",
+                  "columns": 4,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "Boiler gestartet",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_boiler_start_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_boiler_start_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_boiler_start_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Boiler gestoppt",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_boiler_stopp_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_boiler_stopp_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_boiler_stopp_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Tagesabschluss",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tagesabschluss_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tagesabschluss_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_tagesabschluss_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "name": "Boiler-Monatsbericht",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_boiler_monat_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_boiler_monat_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_boiler_monat_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "heading",
+                  "heading": "Haushalt",
+                  "icon": "mdi:trash-can-outline",
+                  "heading_style": "subtitle"
+                },
+                {
+                  "type": "grid",
+                  "columns": 4,
+                  "square": false,
+                  "cards": [
+                    {
+                      "type": "button",
+                      "name": "Abfall – Vorabend",
+                      "show_icon": false,
+                      "show_name": true,
+                      "tap_action": {
+                        "action": "none"
+                      },
+                      "hold_action": {
+                        "action": "none"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_abfall_iphone12",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_abfall_iphone17",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "entity": "input_boolean.push_abfall_mael",
+                      "show_name": false,
+                      "show_icon": true,
+                      "show_state": false,
+                      "state_color": true,
+                      "icon_height": "28px",
+                      "tap_action": {
+                        "action": "toggle"
+                      },
+                      "hold_action": {
+                        "action": "more-info"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
         }
       ]
     }

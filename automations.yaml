@@ -208,12 +208,13 @@
       | float(2300) + states(''input_number.boiler_reserveleistung'') | float(70))
       * -1) }}'
   actions:
-  - action: script.push_beide_handys
+  - action: script.push_matrix
     data:
       titel: ☀️ Boiler gestartet
       text: 'Boiler gestartet: genuegend PV-Ueberschuss. Saldierung: {{ states(''sensor.leistung_saldierung'')
         | float(0) | round(0) }} W, WW-Oben: {{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'')
         }} C.'
+      meldung: boiler_start
   mode: single
 - id: boiler_tagesbericht
   alias: Tagesabschluss
@@ -223,7 +224,7 @@
     at: input_datetime.tagesabschluss_push_zeit
   conditions: []
   actions:
-  - action: script.push_beide_handys
+  - action: script.push_matrix
     data:
       titel: "\U0001F4CA Tagesabschluss Energie"
       text: 'Tagesabschluss {{ now().strftime(''%d.%m.%Y'') }}
@@ -279,6 +280,7 @@
 
         Aktiv: {% for x in w %}{{ state_attr(x, ''friendly_name'') }}{{ '', '' if
         not loop.last }}{% endfor %}{% endif %}'
+      meldung: tagesabschluss
   mode: single
 - id: boiler_monatsbericht
   alias: Boiler Monatsbericht
@@ -290,12 +292,13 @@
   - condition: template
     value_template: '{{ (now() + timedelta(days=1)).month != now().month }}'
   actions:
-  - action: script.push_beide_handys
+  - action: script.push_matrix
     data:
       titel: "\U0001F4C5 Boiler Monatsbericht"
       text: 'Monat {{ now().strftime(''%m.%Y'') }}: {{ states(''input_number.boiler_kapazitaet_monat'')
         | float(0) | round(2) }} kWh mit PV-Ueberschuss geladen. Ladezeit: {{ states(''input_number.boiler_ladezeit_monat'')
         | float(0) | round(2) }} h.'
+      meldung: boiler_monat
   mode: single
 - id: boiler_monatswerte_reset
   alias: Boiler Monatswerte reset
@@ -590,22 +593,29 @@
   mode: queued
 - id: '1795023607622'
   alias: WP Kennzahlen – Takte zählen
-  description: Zählt jeden Verdichterstart (binary_sensor.wp_verdichter_lauft aus
-    → ein) und jeden Kurztakt (Laufzeit kürzer als input_number.wp_kurztakt_grenze).
+  description: Zählt Verdichterstarts und Kurztakte anhand des gefilterten Sensors
+    binary_sensor.wp_verdichter_lauf_gefiltert (Ein erst nach 2 min Lauf, Aus erst
+    nach 8 min Stillstand). Kurze Leistungseinbrüche (vermutlich Abtauung) und Pulse
+    < 2 min zählen damit nicht als Start/Kurztakt – sie zählt «WP Kennzahlen – Abtau-Unterbrüche
+    zählen». Kurztakt-Dauer = gefilterte Dauer − 6 min (Verzögerung 8 min Aus − 2
+    min Ein). Umgestellt am 22.11.2026; vorher Rohsensor binary_sensor.wp_verdichter_lauft.
     Quelle für die Kennzahlen im Solar Manager, Register WP.
   triggers:
-  - entity_id: binary_sensor.wp_verdichter_lauft
+  - entity_id: binary_sensor.wp_verdichter_lauf_gefiltert
     from: 'off'
     id: start
     to: 'on'
     trigger: state
-  - entity_id: binary_sensor.wp_verdichter_lauft
+  - entity_id: binary_sensor.wp_verdichter_lauf_gefiltert
     from: 'on'
     id: stopp
     to: 'off'
     trigger: state
   conditions: []
   actions:
+  - variables:
+      dauer_min: '{{ ((now() - trigger.from_state.last_changed).total_seconds() /
+        60 - 6) | round(1) }}'
   - choose:
     - conditions:
       - condition: trigger
@@ -618,17 +628,16 @@
       - condition: trigger
         id: stopp
       - condition: template
-        value_template: '{{ (now() - trigger.from_state.last_changed).total_seconds()
-          < states(''input_number.wp_kurztakt_grenze'') | float(20) * 60 }}'
+        value_template: '{{ dauer_min | float(99) < states(''input_number.wp_kurztakt_grenze'')
+          | float(20) }}'
       sequence:
       - action: counter.increment
         target:
           entity_id: counter.wp_kurztakte
       - action: logbook.log
         data:
-          entity_id: binary_sensor.wp_verdichter_lauft
-          message: 'Kurztakt: {{ ((now() - trigger.from_state.last_changed).total_seconds()
-            / 60) | round(1) }} min'
+          entity_id: binary_sensor.wp_verdichter_lauf_gefiltert
+          message: 'Kurztakt: {{ dauer_min }} min'
           name: WP Kennzahlen
   mode: queued
 - id: '1795023621272'
@@ -805,7 +814,7 @@
       - condition: trigger
         id: ein
       sequence:
-      - action: script.push_beide_handys
+      - action: script.push_matrix
         data:
           titel: "\U0001F6A8 {{ trigger.to_state.name }}"
           text: '{{ details }}'
@@ -814,23 +823,25 @@
               interruption-level: time-sensitive
             tag: '{{ trigger.entity_id }}'
             url: /alarme-a/alarme
+          meldung: alarm_kritisch
     - conditions:
       - condition: trigger
         id: aus
       sequence:
-      - action: script.push_beide_handys
+      - action: script.push_matrix
         data:
           titel: '✅ Entwarnung: {{ trigger.to_state.name }}'
           text: Alarm seit {{ ((now() - trigger.from_state.last_changed).total_seconds()
             / 60) | round(0) | int }} min aktiv, jetzt wieder normal.
           daten:
             tag: '{{ trigger.entity_id }}'
+          meldung: alarm_kritisch
   mode: queued
 - id: '1795165701717'
   alias: Tore & Haustür – Push bei Öffnen/Schliessen
-  description: Sendet an beide iPhones (12 und 17) eine Push-Meldung mit Text, wenn
-    Garagentor Auto, Garagentor Werkraum oder die Eingangstüre geöffnet oder geschlossen
-    wird.
+  description: Sendet eine Push-Meldung mit Text an die Handys gemäss Push-Zuweisung
+    (Alarme & Warnungen → Verwaltung), wenn Garagentor Auto, Garagentor Werkraum oder
+    die Eingangstüre geöffnet oder geschlossen wird.
   triggers:
   - id: offen
     target:
@@ -863,10 +874,11 @@
         Werkraum'', ''binary_sensor.homematic_ip_eingangsture_tur'': ''Haustür''}
         %}{{ n.get(trigger.entity_id, ''Tür'') }}'
       zeit: '{{ now().strftime(''%H:%M'') }}'
-  - action: script.push_beide_handys
+  - action: script.push_matrix
     data:
       titel: '{{ icon }} {{ name }} {{ aktion }}'
       text: '{{ name }} wurde um {{ zeit }} Uhr {{ aktion }}.'
+      meldung: tore_auf_zu
   mode: parallel
 - id: '1795166098939'
   alias: Tor offen – Erinnerung
@@ -902,11 +914,12 @@
       sequence:
       - variables:
           name: '{{ namen.get(trigger.entity_id, ''Tor'') }}'
-      - action: script.push_beide_handys
+      - action: script.push_matrix
         data:
           text: '{{ name }} ist seit 15 Minuten offen.'
           titel: "{{ '\U0001F697' if 'garagentor' in trigger.entity_id else '\U0001F6AA'
             }} {{ name }} noch offen"
+          meldung: tor_offen
   mode: parallel
 - id: '1795166113146'
   alias: Bewegung nachts – Garage/Haustür
@@ -925,10 +938,11 @@
   actions:
   - variables:
       ort: '{{ ''Garage'' if ''garage'' in trigger.entity_id else ''Haustür'' }}'
-  - action: script.push_beide_handys
+  - action: script.push_matrix
     data:
       text: Bewegung bei {{ ort }} um {{ now().strftime('%H:%M') }} Uhr erkannt.
       titel: "\U0001F463 Bewegung {{ ort }}"
+      meldung: bewegung_nachts
   - delay: 00:10:00
   max_exceeded: silent
   mode: single
@@ -958,11 +972,12 @@
       name: '{{ (state_attr(trigger.entity_id, ''friendly_name'') or trigger.entity_id)
         | replace(''Homematic IP '','''') | replace(''Türkontakt '','''') | replace(''Fensterkontakt
         '','''') | replace('' Tür'','''') }}'
-  - action: script.push_beide_handys
+  - action: script.push_matrix
     data:
       text: '{{ name }} ist seit 20 Minuten offen, aussen {{ states(''sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur'')
         }} °C.'
       titel: "\U0001F976 {{ name }} offen"
+      meldung: tuere_kaelte
   mode: parallel
 - id: '1795166949079'
   alias: Boiler gestoppt – Meldung
@@ -986,10 +1001,11 @@
       saldo: '{{ states(''sensor.leistung_saldierung'') | float(0) | round(0) | int
         }}'
       ww: '{{ states(''sensor.ww_mitte_rl_ist_ww_oben_temperatur_3'') }}'
-  - action: script.push_beide_handys
+  - action: script.push_matrix
     data:
       text: 'Grund: {{ grund }}. Saldierung: {{ saldo }} W, WW-Oben: {{ ww }} °C.'
       titel: "\U0001F6E2️ Boiler gestoppt"
+      meldung: boiler_stopp
   mode: queued
 - id: '1795185734859'
   alias: Alarm Tore/Haustür – Freigabe & Bedienung
@@ -1073,13 +1089,14 @@
             quelle: '{% if trigger.id == ''oeffner'' %}Öffner {{ trigger.to_state.name
               | replace(''Homematic IP '', '''') }}{% elif trigger.id == ''push_freigabe''
               %}Push-Taste «Ich bin''s»{% else %}HA-Knopf{% endif %}'
-        - action: script.push_beide_handys
+        - action: script.push_matrix
           data:
             daten:
               tag: alarm_tore
             text: Freigabe um {{ zeit }} Uhr durch {{ quelle }}. Garagentore und Haustür
               lösen jetzt keinen Alarm aus; 1 min nach dem Schliessen wieder überwacht.
             titel: "\U0001F513 Freigabe Tore/Haustür"
+            meldung: alarm_freigabe
     - conditions:
       - condition: trigger
         id: alles_zu
@@ -1097,13 +1114,14 @@
           - armed_home
           - armed_away
         then:
-        - action: script.push_beide_handys
+        - action: script.push_matrix
           data:
             daten:
               tag: alarm_tore
             text: Alles seit 1 min geschlossen ({{ zeit }} Uhr). Überwachung wieder
               aktiv.
             titel: "\U0001F512 Tore & Haustür wieder überwacht"
+            meldung: alarm_freigabe
     - conditions:
       - condition: trigger
         id: abgelaufen
@@ -1127,19 +1145,21 @@
         - action: alarm_control_panel.alarm_arm_home
           target:
             entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
-        - action: script.push_beide_handys
+        - action: script.push_matrix
           data:
             text: Hüllschutz um {{ zeit }} Uhr per Push-Taste scharf geschaltet.
             titel: "\U0001F512 Alarm scharf"
+            meldung: alarm_freigabe
         if:
         - condition: state
           entity_id: binary_sensor.alarmzone_fenster_und_turen
           state: 'on'
         then:
-        - action: script.push_beide_handys
+        - action: script.push_matrix
           data:
             text: 'Noch offen: {{ offen_fenster }}. Bitte schliessen und erneut versuchen.'
             titel: ⚠️ Nicht scharf geschaltet
+            meldung: alarm_freigabe
     - conditions:
       - condition: trigger
         id: info_2230
@@ -1154,17 +1174,19 @@
             entity_id: binary_sensor.alarmzone_fenster_und_turen
             state: 'on'
         then:
-        - action: script.push_beide_handys
+        - action: script.push_matrix
           data:
             titel: "\U0001F319 Alarm-Info 22:00 – noch offen"
             text: 'Noch offen: {{ [offen_tore, offen_fenster] | reject(''eq'', '''')
               | join('', '') }}. Der Alarm (Hüllschutz) wird um 23:59 scharf.'
+            meldung: alarm_freigabe
         else:
-        - action: script.push_beide_handys
+        - action: script.push_matrix
           data:
             titel: "\U0001F319 Alarm-Info 22:00"
             text: Alle Fenster, Türen, Garagentore und die Haustür sind zu. Der Alarm
               (Hüllschutz) wird um 23:59 scharf.
+            meldung: alarm_freigabe
     - conditions:
       - condition: trigger
         id: check_2355
@@ -1177,13 +1199,14 @@
           entity_id: binary_sensor.alarmzone_fenster_und_turen
           state: 'on'
       sequence:
-      - action: script.push_beide_handys
+      - action: script.push_matrix
         data:
           titel: ⚠️ In 4 min scharf – noch offen
           text: 'Noch offen: {{ [offen_tore, offen_fenster] | reject(''eq'', '''')
             | join('', '') }}. Bitte schliessen.'
           daten:
             interruption-level: time-sensitive
+          meldung: alarm_freigabe
   max: 10
   mode: queued
 - id: '1795185753657'
@@ -1235,13 +1258,14 @@
         entity_id: input_boolean.alarm_tore_testmodus
         state: 'on'
       then:
-      - action: script.push_beide_handys
+      - action: script.push_matrix
         data:
           text: '{{ name }} um {{ zeit }} Uhr mit gültiger Freigabe geöffnet – kein
             Alarm.'
           titel: "\U0001F9EA Test OK: {{ name }}"
+          meldung: alarm_einbruch
     - stop: Freigabe aktiv – berechtigte Öffnung
-  - action: script.push_beide_handys
+  - action: script.push_matrix
     data:
       daten:
         actions:
@@ -1254,6 +1278,7 @@
         Tippe «Ich bin's» oder schalte den Alarm in der HmIP-App aus, sonst wird in
         2 min Einbruchalarm ausgelöst.
       titel: '{{ test }}⚠️ {{ name }} geöffnet – Alarm in 2 min'
+      meldung: alarm_einbruch
     note: Sofort nach dem Öffnen (2 s Entprellung)
   - continue_on_timeout: true
     note: Karenzzeit 2 min
@@ -1268,25 +1293,27 @@
   - if:
     - '{{ wait.trigger is not none }}'
     then:
-    - action: script.push_beide_handys
+    - action: script.push_matrix
       data:
         daten:
           tag: alarm_tore
         text: Kein Alarm ausgelöst.
         titel: '{{ test }}✅ {{ name }}: Freigabe erkannt'
+        meldung: alarm_einbruch
     - stop: Freigabe oder Alarm ausgeschaltet innert Karenzzeit
   - if:
     - condition: state
       entity_id: input_boolean.alarm_tore_testmodus
       state: 'on'
     then:
-    - action: script.push_beide_handys
+    - action: script.push_matrix
       data:
         daten:
           tag: alarm_tore
         text: '{{ name }} um {{ zeit }} Uhr geöffnet, 2 min keine Freigabe. Im Scharfbetrieb
           käme jetzt der Einbruchalarm.'
         titel: "\U0001F9EA Test: hier wäre EINBRUCHALARM"
+        meldung: alarm_einbruch
     - stop: Testmodus
   - action: persistent_notification.create
     data:
@@ -1297,7 +1324,7 @@
     repeat:
       count: 3
       sequence:
-      - action: script.push_beide_handys
+      - action: script.push_matrix
         data:
           daten:
             push:
@@ -1309,6 +1336,7 @@
           text: '{{ name }} wurde um {{ zeit }} Uhr bei scharfem Alarm geöffnet –
             keine Freigabe innert 2 min! ({{ repeat.index }}/3)'
           titel: "\U0001F6A8 EINBRUCHALARM – {{ name }}"
+          meldung: alarm_einbruch
       - continue_on_timeout: true
         timeout: 00:01:00
         wait_for_trigger:
@@ -1321,12 +1349,13 @@
       - if:
         - '{{ wait.trigger is not none }}'
         then:
-        - action: script.push_beide_handys
+        - action: script.push_matrix
           data:
             daten:
               tag: alarm_tore
             text: Einbruchalarm {{ name }} wurde quittiert.
             titel: ✅ Alarm quittiert
+            meldung: alarm_einbruch
         - stop: Alarm quittiert
   max_exceeded: silent
   mode: single
@@ -1352,7 +1381,7 @@
   actions:
   - variables:
       zeit: '{{ now().strftime(''%H:%M'') }}'
-  - action: script.push_beide_handys
+  - action: script.push_matrix
     data:
       daten:
         actions:
@@ -1363,6 +1392,7 @@
       text: Alarm um {{ zeit }} Uhr ausgeschaltet. Er wird 1 min nach dem Schliessen
         von Garagentor/Haustür automatisch wieder scharf.
       titel: "\U0001F513 Alarm nachts ausgeschaltet"
+      meldung: alarm_wiederscharf
   - continue_on_timeout: true
     timeout: 00:30:00
     wait_for_trigger:
@@ -1372,7 +1402,7 @@
   - if:
     - '{{ wait.trigger is none }}'
     then:
-    - action: script.push_beide_handys
+    - action: script.push_matrix
       data:
         daten:
           actions:
@@ -1383,6 +1413,7 @@
         text: Der Alarm ist seit 30 min ausgeschaltet und wird nicht automatisch scharf
           (kein Tor/keine Haustür bedient).
         titel: ⏰ Alarm ist noch aus
+        meldung: alarm_wiederscharf
     - stop: Keine Tor-/Türöffnung – nur erinnert
   - continue_on_timeout: true
     timeout: 02:00:00
@@ -1394,10 +1425,11 @@
   - if:
     - '{{ wait.trigger is none }}'
     then:
-    - action: script.push_beide_handys
+    - action: script.push_matrix
       data:
         text: Alarm bleibt ausgeschaltet.
         titel: ⚠️ Tor/Haustür seit 2 h offen
+        meldung: alarm_wiederscharf
     - stop: Tor/Haustür blieb offen
   - condition: state
     entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
@@ -1411,7 +1443,7 @@
       entity_id: binary_sensor.alarmzone_fenster_und_turen
       state: 'on'
     then:
-    - action: script.push_beide_handys
+    - action: script.push_matrix
       data:
         daten:
           actions:
@@ -1423,30 +1455,33 @@
           | selectattr(''state'', ''eq'', ''on'') | map(attribute=''name'') | join('',
           '') }}.'
         titel: ⚠️ Alarm NICHT wieder scharf
+        meldung: alarm_wiederscharf
     - stop: Fenster/Tür der Alarmzone offen
   - else:
     - action: alarm_control_panel.alarm_arm_home
       target:
         entity_id: alarm_control_panel.homematic_ip_hmip_alarm_control_panel
-    - action: script.push_beide_handys
+    - action: script.push_matrix
       data:
         daten:
           tag: alarm_wieder_scharf
         text: Hüllschutz um {{ now().strftime('%H:%M') }} Uhr automatisch wieder scharf
           geschaltet.
         titel: "\U0001F512 Alarm wieder scharf"
+        meldung: alarm_wiederscharf
     if:
     - condition: state
       entity_id: input_boolean.alarm_tore_testmodus
       state: 'on'
     then:
-    - action: script.push_beide_handys
+    - action: script.push_matrix
       data:
         daten:
           tag: alarm_wieder_scharf
         text: Alles seit 1 min zu – im Scharfbetrieb würde der Alarm jetzt ({{ now().strftime('%H:%M')
           }} Uhr) wieder scharf geschaltet.
         titel: "\U0001F9EA Test: Alarm wäre wieder scharf"
+        meldung: alarm_wiederscharf
   mode: restart
 - id: '1795292506820'
   alias: Sofalampe – Shelly-Button
@@ -1658,8 +1693,8 @@
   description: 'Liest um 16:00 den Kalender «Abfall Lupsingen» für morgen. Gibt es
     eine Abfuhr (Hauskehricht, Karton/Altpapier, Grünabfall): Erinnerung offen, Küchenlampe
     (Color Bulb) gelb 60 %; ihr vorheriger Zustand wird gemerkt und beim Ende wiederhergestellt,
-    um 18:00 Push an beide Handys mit Knopf «Erledigt». Ende um 22:00 oder beim Quittieren
-    (Knopf im Dashboard Alarme oder in der Push-Meldung).'
+    um 18:00 Push gemäss Push-Zuweisung mit Knopf «Erledigt». Ende um 22:00 oder beim
+    Quittieren (Knopf im Dashboard Alarme oder in der Push-Meldung).'
   triggers:
   - at: '16:00:00'
     id: start
@@ -1728,7 +1763,7 @@
         entity_id: input_boolean.abfall_erinnerung_offen
         state: 'on'
       sequence:
-      - action: script.push_beide_handys
+      - action: script.push_matrix
         data:
           daten:
             actions:
@@ -1738,6 +1773,7 @@
           text: 'Morgen: {{ states(''input_text.abfall_morgen'') }}. Bitte heute Abend
             bereitstellen.'
           titel: "\U0001F5D1️ Morgen Abfuhr"
+          meldung: abfall
     - conditions:
       - condition: or
         conditions:
@@ -1874,3 +1910,32 @@
       target:
         entity_id: light.kuche_color_bulb
   mode: restart
+- id: '1795381927246'
+  alias: WP Kennzahlen – Abtau-Unterbrüche zählen
+  description: Zählt kurze Unterbrüche während eines Verdichterlaufs (Leistung kurz
+    < 1000 W und wieder hoch, während der gefilterte Lauf-Sensor noch EIN ist) – vermutlich
+    Abtauungen, teils auch Nachlauf-Pulse am Laufende. Mehrere Einbrüche innert 10
+    min zählen als ein Unterbruch. Quelle für die Zeile «Abtauungen» im Solar Manager,
+    Register WP.
+  triggers:
+  - entity_id: binary_sensor.wp_verdichter_lauft
+    from: 'off'
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.wp_verdichter_lauf_gefiltert
+    state: 'on'
+  actions:
+  - action: counter.increment
+    target:
+      entity_id: counter.wp_abtau_unterbrueche
+  - action: logbook.log
+    data:
+      entity_id: binary_sensor.wp_verdichter_lauf_gefiltert
+      message: Unterbruch im Lauf (vermutl. Abtauung), {{ ((now() - trigger.from_state.last_changed).total_seconds())
+        | round(0) | int }} s unter 1000 W
+      name: WP Kennzahlen
+  - delay: 00:10:00
+  max_exceeded: silent
+  mode: single

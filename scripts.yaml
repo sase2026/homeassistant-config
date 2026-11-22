@@ -38,3 +38,77 @@ push_beide_handys:
         data: '{{ zusatz }}'
         message: '{{ text }}'
         title: '{{ titel }}'
+push_matrix:
+  alias: Push nach Matrix
+  description: 'Schickt eine Push-Meldung an die Handys, die in der Push-Zuweisung
+    (Alarme & Warnungen → Verwaltung) für diese Meldung angehakt sind. «meldung» ist
+    der Schlüssel der Zeile (z. B. alarm_einbruch); die Schalter heissen input_boolean.push_<meldung>_<handy>.
+    Sicherheitsnetz: fehlt der Schlüssel oder gibt es den Schalter nicht, gehen Saschas
+    zwei iPhones trotzdem; Mael nur mit Haken. Fällt ein Handy aus, bekommen die anderen
+    die Meldung trotzdem.'
+  fields:
+    daten:
+      name: Zusatzdaten
+      required: false
+      selector:
+        object: {}
+    meldung:
+      description: z. B. alarm_freigabe, alarm_einbruch, alarm_wiederscharf, tore_auf_zu,
+        tor_offen, bewegung_nachts, tuere_kaelte, alarm_kritisch, boiler_start, boiler_stopp,
+        tagesabschluss, boiler_monat, abfall
+      name: Meldung (Schlüssel)
+      required: true
+      selector:
+        text: {}
+    text:
+      name: Text
+      required: true
+      selector:
+        text:
+          multiline: true
+    titel:
+      name: Titel
+      required: true
+      selector:
+        text: {}
+  icon: mdi:table-check
+  max: 20
+  mode: parallel
+  sequence:
+  - variables:
+      m: '{{ meldung | default('''', true) | string | trim }}'
+      zusatz: '{{ daten | default({}, true) }}'
+  - parallel:
+    - if:
+      - condition: template
+        value_template: '{{ m == '''' or states(''input_boolean.push_'' ~ m ~ ''_iphone12'')
+          in [''on'', ''unknown''] }}'
+      then:
+      - action: notify.mobile_app_iphone_12_sse
+        continue_on_error: true
+        data:
+          data: '{{ zusatz }}'
+          message: '{{ text }}'
+          title: '{{ titel }}'
+    - if:
+      - condition: template
+        value_template: '{{ m == '''' or states(''input_boolean.push_'' ~ m ~ ''_iphone17'')
+          in [''on'', ''unknown''] }}'
+      then:
+      - action: notify.mobile_app_iphone17_sse
+        continue_on_error: true
+        data:
+          data: '{{ zusatz }}'
+          message: '{{ text }}'
+          title: '{{ titel }}'
+    - if:
+      - condition: template
+        value_template: '{{ m != '''' and is_state(''input_boolean.push_'' ~ m ~ ''_mael'',
+          ''on'') }}'
+      then:
+      - action: notify.mobile_app_iphone_8_mael
+        continue_on_error: true
+        data:
+          data: '{{ zusatz }}'
+          message: '{{ text }}'
+          title: '{{ titel }}'
