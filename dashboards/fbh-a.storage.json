@@ -868,6 +868,204 @@
                   "hovertemplate": "%{y}: %{x:+.2f} K<extra>Vornacht</extra>"
                 }
               ]
+            },
+            {
+              "type": "custom:plotly-graph",
+              "hours_to_show": 1,
+              "refresh_interval": 300,
+              "layout": {
+                "height": 680,
+                "margin": {
+                  "t": 80,
+                  "b": 70,
+                  "l": 115,
+                  "r": 20
+                },
+                "paper_bgcolor": "rgba(0,0,0,0)",
+                "plot_bgcolor": "rgba(0,0,0,0)",
+                "font": {
+                  "color": "#9e9e9e",
+                  "size": 11
+                },
+                "xaxis": {
+                  "type": "linear",
+                  "range": [
+                    -25,
+                    25
+                  ],
+                  "ticksuffix": " %",
+                  "dtick": 5,
+                  "showgrid": true,
+                  "gridcolor": "#2a2a2a",
+                  "zeroline": true,
+                  "zerolinecolor": "#888888",
+                  "color": "#9e9e9e"
+                },
+                "yaxis": {
+                  "type": "category",
+                  "autorange": "reversed",
+                  "color": "#cccccc"
+                },
+                "showlegend": true,
+                "barmode": "group",
+                "bargap": 0.25,
+                "bargroupgap": 0.05,
+                "legend": {
+                  "orientation": "h",
+                  "x": 0,
+                  "y": -0.04,
+                  "yanchor": "top",
+                  "font": {
+                    "size": 11
+                  }
+                },
+                "shapes": [
+                  {
+                    "type": "rect",
+                    "xref": "x",
+                    "yref": "paper",
+                    "x0": -5,
+                    "x1": 5,
+                    "y0": 0,
+                    "y1": 1,
+                    "fillcolor": "rgba(34,197,94,0.07)",
+                    "line": {
+                      "width": 0
+                    }
+                  }
+                ],
+                "annotations": [
+                  {
+                    "text": "Strang-Abgleich relativ (% der Spanne Strang-Ø − Raum)",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.1,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 18,
+                      "color": "#9e9e9e"
+                    }
+                  },
+                  {
+                    "text": "$fn ({hass}) => { const s = hass.states['sensor.fbh_strang_abweichung_relativ']; const b = (s || {}).attributes || {}; const f = d => { if (!d) return '–'; const p = d.split('-'); const t = new Date(+p[0], +p[1]-1, +p[2]+1); return +p[2] + './' + t.getDate() + '.' + (t.getMonth()+1) + '.'; }; return b.letzte_nacht ? ('Nacht ' + f(b.letzte_nacht) + ' · Spanne Strang-Ø − Raum ' + b.l_spanne + ' K (Vornacht ' + b.v_spanne + ' K, Ø ' + b.spanne + ' K) · Vergleich Ø ' + (b.zeitraum || '') + ' (' + s.state + ' Nächte) · Klammer = Δ zum Ø') : 'keine Daten'; }\n",
+                    "xref": "paper",
+                    "yref": "paper",
+                    "x": 0,
+                    "y": 1.02,
+                    "xanchor": "left",
+                    "yanchor": "bottom",
+                    "showarrow": false,
+                    "font": {
+                      "size": 11,
+                      "color": "#22c55e"
+                    }
+                  }
+                ]
+              },
+              "entities": [
+                {
+                  "entity": "",
+                  "name": "Letzte Nacht",
+                  "type": "bar",
+                  "orientation": "h",
+                  "yaxis": "y",
+                  "y": [
+                    "Küche",
+                    "Wohnen 1",
+                    "Wohnen 2",
+                    "Wohnen 3",
+                    "Essen",
+                    "Spielen",
+                    "Gäste WC",
+                    "Entrée",
+                    "Galerie",
+                    "Eltern",
+                    "Dusche",
+                    "Hobby (Radiator)",
+                    "Yanik",
+                    "Bad",
+                    "Mael",
+                    "RL HK-II gesamt"
+                  ],
+                  "x": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_relativ'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : null; })\n",
+                  "text": "$ex (() => { const l = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_relativ'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : null; }), m = ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_relativ'] || {}).attributes || {}); return typeof b[k] === 'number' ? b[k] : null; }); return l.map((v, i) => v === null ? '–' : (v > 0 ? '+' : '') + v.toFixed(1) + ' %' + (m[i] === null ? '' : ' (' + (v - m[i] >= 0 ? '+' : '−') + Math.abs(v - m[i]).toFixed(1) + ')')); })()\n",
+                  "customdata": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_relativ'] || {}).attributes || {}); return typeof b[k] === 'number' ? b[k] : null; })\n",
+                  "textposition": "outside",
+                  "cliponaxis": false,
+                  "marker": {
+                    "color": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_relativ'] || {}).attributes || {}); return typeof b['l_' + k] === 'number' ? b['l_' + k] : null; }).map((v, i) => i === 15 ? '#ffffff' : v === null ? '#555555' : v >= 5 ? '#f97316' : v <= -5 ? '#3b82f6' : '#22c55e')\n"
+                  },
+                  "hovertemplate": "%{y}: %{x:+.1f} % · Ø 7 Nächte %{customdata:+.1f} %<extra>Letzte Nacht</extra>"
+                },
+                {
+                  "entity": "",
+                  "name": "Ø 7 Nächte davor",
+                  "type": "bar",
+                  "orientation": "h",
+                  "yaxis": "y",
+                  "y": [
+                    "Küche",
+                    "Wohnen 1",
+                    "Wohnen 2",
+                    "Wohnen 3",
+                    "Essen",
+                    "Spielen",
+                    "Gäste WC",
+                    "Entrée",
+                    "Galerie",
+                    "Eltern",
+                    "Dusche",
+                    "Hobby (Radiator)",
+                    "Yanik",
+                    "Bad",
+                    "Mael",
+                    "RL HK-II gesamt"
+                  ],
+                  "x": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_relativ'] || {}).attributes || {}); return typeof b['' + k] === 'number' ? b['' + k] : null; })\n",
+                  "marker": {
+                    "color": "rgba(158,158,158,0.45)"
+                  },
+                  "hovertemplate": "%{y}: %{x:+.1f} %<extra>Ø 7 Nächte davor</extra>"
+                },
+                {
+                  "entity": "",
+                  "name": "Vornacht",
+                  "type": "scatter",
+                  "mode": "markers",
+                  "yaxis": "y",
+                  "y": [
+                    "Küche",
+                    "Wohnen 1",
+                    "Wohnen 2",
+                    "Wohnen 3",
+                    "Essen",
+                    "Spielen",
+                    "Gäste WC",
+                    "Entrée",
+                    "Galerie",
+                    "Eltern",
+                    "Dusche",
+                    "Hobby (Radiator)",
+                    "Yanik",
+                    "Bad",
+                    "Mael",
+                    "RL HK-II gesamt"
+                  ],
+                  "x": "$ex ['kueche','wohnen1','wohnen2','wohnen3','essen','spielen','gaestewc','entree','galerie','eltern','dusche','hobby','yanik','bad','mael','rl_hk2'].map(k => { const b = ((hass.states['sensor.fbh_strang_abweichung_relativ'] || {}).attributes || {}); return typeof b['v_' + k] === 'number' ? b['v_' + k] : null; })\n",
+                  "marker": {
+                    "symbol": "diamond-open",
+                    "size": 9,
+                    "color": "#e5e7eb",
+                    "line": {
+                      "width": 1.5
+                    }
+                  },
+                  "hovertemplate": "%{y}: %{x:+.1f} %<extra>Vornacht</extra>"
+                }
+              ]
             }
           ]
         },
@@ -1209,7 +1407,7 @@
           "cards": [
             {
               "type": "markdown",
-              "content": "{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set p = states('sensor.wohnraum_prognose') | float(0) -%}\n{%- set mn = states('input_number.fbh_raum_minimum') | float(22.3) -%}\n{%- set nt = is_state('schedule.niedertarif', 'on') -%}\n{%- if now().hour >= 12 -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_morgen') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_max_morgen') | float(99) -%}{%- else -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_heute') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}{%- endif -%}\n{%- set vorladen = nt and pvm < states('input_number.fbh_vorladen_pv_morgen_unter') | float(0) and tm < states('input_number.fbh_vorladen_tmax_morgen_unter') | float(-99) -%}\n{%- set ein = states('input_number.fbh_prognose_ein_unter') | float(22.4) + (0.2 if vorladen else 0) -%}\n{%- set aus = states('input_number.fbh_prognose_aus_ueber') | float(22.7) + (0.2 if vorladen else 0) -%}\n{%- set pumpe = states.switch.homematic_ip_fbh_pumpe_hk_ii -%}\n{%- set on = pumpe is not none and pumpe.state == 'on' -%}\n{%- set dur = ((now() - pumpe.last_changed).total_seconds() / 60) if pumpe is not none else 999 -%}\n{%- set mlz = states('input_number.fbh_mindestlaufzeit') | float(0) -%}\n{%- set mp = states('input_number.fbh_mindestpause') | float(0) -%}\n{%- set pvrest = states('sensor.fbh_pv_rest_heute') | float(0) -%}\n{%- set sschw = states('input_number.fbh_sonnensperre_ab_kwh') | float(99) -%}\n{%- set sonne = is_state('sun.sun', 'above_horizon') -%}\n{%- set sperre = sonne and now().hour < 13 and pvrest >= sschw -%}\n{%- set aktiv = is_state('input_boolean.fbh_smart_aktiv', 'on') -%}\n{%- set hand = not is_state('timer.fbh_hand_pause', 'idle') -%}\n{%- set lueften = is_state('binary_sensor.fbh_lueften_aktiv', 'on') -%}\n{%- set offen = ['binary_sensor.homematic_ip_turkontakt_hibiscus_tur','binary_sensor.homematic_ip_turkontakt_krauter_tur','binary_sensor.homematic_ip_fensterkontakt_kuche_tur'] | select('is_state','on') | list | count -%}\n{%- set nlm = states('input_number.fbh_lueften_nachlauf') | float(45) -%}\n{%- set lts = state_attr('input_datetime.fbh_lueften_zuletzt_geschlossen','timestamp') -%}\n{%- set m_lueft = 0 if not lueften else (nlm if offen > 0 else [nlm - (now().timestamp() - (lts or 0)) / 60, 0] | max) -%}\n{%- set ok = '✅' -%}{%- set no = '❌' -%}{%- set wait = '⏳' -%}\n{%- macro z(b) -%}{{ ok if b else no }}{%- endmacro -%}\n{%- macro hm(m) -%}{%- set m = [m, 0] | max | int -%}{{ '%d:%02d' | format(m // 60, m % 60) }} h{%- endmacro -%}\n## {{ '🟢 FBH-Pumpe läuft' if on else '⚪ FBH-Pumpe steht' }} seit {{ hm(dur) }}\n**Entscheid:** {{ states('sensor.fbh_smart_entscheid') }}  \n**Modus:** {{ '🟢 LIVE – Smart schaltet die Pumpe' if aktiv else '👁️ Beobachtung – HmIP R1–R8 schalten, Smart rechnet nur mit' }}{{ '  \\n⏸️ **Hand-Pause läuft** bis ' ~ (as_datetime(state_attr('timer.fbh_hand_pause','finishes_at')) | as_local).strftime('%H:%M') if hand and state_attr('timer.fbh_hand_pause','finishes_at') else '' }}\n\n{% if not on -%}\n### Einschalten – Voraussetzungen\n| | Bedingung | Ist | Soll |\n|:-:|---|---|---|\n| {{ z(aktiv) }} | Smart-Steuerung live | {{ 'EIN' if aktiv else 'Beobachtung' }} | EIN |\n| {{ z(not hand) }} | Keine Hand-Pause | {{ 'läuft' if hand else 'keine' }} | keine |\n| {{ z(not lueften) }} | Kein Lüften (Hibiscus, Kräuter, Küche + Nachlauf) | {{ ('offen' if offen > 0 else 'zu, Nachlauf noch ' ~ hm(m_lueft)) if lueften else 'zu' }} | zu + {{ nlm | int }} min |\n| {{ z(t < mn - 0.1) }} | **Weg A – Sicherheit:** Raum zu kalt | {{ t }} °C | < {{ (mn - 0.1) | round(1) }} °C |\n| {{ z(dur >= mp) if dur >= mp else wait }} | **Weg B – Prognose:** Mindestpause vorbei | {{ hm(dur) }} | ≥ {{ hm(mp) }} |\n| {{ z(not (sperre and t >= mn)) }} | Keine Sonnensperre | {{ 'Sperre aktiv (PV Rest ' ~ pvrest ~ ' kWh)' if sperre and t >= mn else ('PV Rest ' ~ pvrest ~ ' kWh' if sonne and now().hour < 13 else 'nicht relevant') }} | PV Rest < {{ sschw }} kWh oder ab 13:00 |\n| {{ z(p < ein) }} | Prognose in {{ states('input_number.fbh_vorhalt_stunden') | float(3) | round(1) }} h unter Prognose-EIN | {{ p }} °C | < {{ ein | round(2) }} °C{{ ' (Vorladen NT +0.2)' if vorladen else '' }} |\n{%- else -%}\n### Ausschalten – Voraussetzungen\n| | Bedingung | Ist | Soll |\n|:-:|---|---|---|\n| {{ z(aktiv) }} | Smart-Steuerung live | {{ 'EIN' if aktiv else 'Beobachtung' }} | EIN |\n| {{ z(not hand) }} | Keine Hand-Pause | {{ 'läuft' if hand else 'keine' }} | keine |\n| {{ z(not lueften) }} | Kein Lüften (Hibiscus, Kräuter, Küche + Nachlauf) | {{ ('offen' if offen > 0 else 'zu, Nachlauf noch ' ~ hm(m_lueft)) if lueften else 'zu' }} | zu + {{ nlm | int }} min |\n| {{ z(t >= mn - 0.1) }} | Raum nicht zu kalt (sonst Sicherheit EIN) | {{ t }} °C | ≥ {{ (mn - 0.1) | round(1) }} °C |\n| {{ ok if dur >= mlz else wait }} | Mindestlaufzeit vorbei | {{ hm(dur) }} | ≥ {{ hm(mlz) }} |\n| {{ z(sperre and t >= mn) }} | **Weg A – Sonnensperre** (vor 13:00, PV Rest) | {{ pvrest }} kWh | ≥ {{ sschw }} kWh |\n| {{ z(p > aus and t >= mn + 0.1) }} | **Weg B – Prognose** über Prognose-AUS und Raum ≥ {{ (mn + 0.1) | round(1) }} °C | {{ p }} °C / {{ t }} °C | > {{ aus | round(2) }} °C |\n{%- endif %}\n\n{#- Countdown -#}\n{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n{%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}\n{%- set nwf = states('input_number.fbh_nachwaerme_faktor') | float(0) -%}\n{%- set rate = k * (t - ta) + (nwf * fa if l6 > 0 else 0) -%}\n{%- set rate = [rate, 0.02] | max -%}\n{%- if not on %}\n\n### ⏱️ Countdown bis Einschalten\n{%- if t < mn - 0.1 %}\n**Jetzt** – Sicherheitsregel greift.\n{%- else -%}\n{%- set m_pause = [mp - dur, 0] | max -%}\n{%- set m_prog = ([p - ein, 0] | max) / rate * 60 if p >= ein else 0 -%}\n{%- if sperre and t >= mn -%}{%- set m_sperre = (today_at('13:00') - now()).total_seconds() / 60 -%}{%- else -%}{%- set m_sperre = 0 -%}{%- endif -%}\n{%- set m = [m_pause, m_prog, m_sperre, m_lueft] | max -%}\n{%- set grund = ('Lüften + Nachlauf' ~ (' (Fenster/Tür offen, frühestens)' if offen > 0 else '')) if m == m_lueft and m > 0 else 'Mindestpause' if m == m_pause and m > 0 else ('Sonnensperre bis 13:00' if m == m_sperre and m > 0 else 'Prognose sinkt unter ' ~ ein | round(2) ~ ' °C') -%}\n{%- if m <= 0 %}\n**Jetzt** – alle Bedingungen für EIN erfüllt{{ '' if aktiv else ' (im Beobachtungsmodus schaltet Smart nicht)' }}.\n{%- elif m > 720 %}\n**> 12 h** – Raum bleibt laut Prognose warm genug.\n{%- else %}\n## ≈ {{ hm(m) }} → ca. {{ (now() + timedelta(minutes=m)).strftime('%H:%M') }} Uhr\n<sub>Massgebend: {{ grund }} · geschätzt mit Abkühlung ≈ {{ rate | round(2) }} K/h (Aussen {{ ta | round(1) }} °C){{ ' · Niedertarif' if is_state('schedule.niedertarif','on') else '' }}</sub>\n{%- endif -%}\n{%- endif -%}\n{%- else %}\n\n### ⏱️ Restlaufzeit\n{%- set m_mlz = [mlz - dur, 0] | max %}\n{{ 'Mindestlaufzeit noch **' ~ hm(m_mlz) ~ '** (bis ca. ' ~ (now() + timedelta(minutes=m_mlz)).strftime('%H:%M') ~ ' Uhr), danach entscheidet die Prognose.' if m_mlz > 0 else 'Mindestlaufzeit erfüllt – AUS, sobald Prognose > ' ~ aus | round(2) ~ ' °C oder Sonnensperre greift.' }}\n{%- endif %}\n"
+              "content": "{%- set t = states('sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur') | float(0) -%}\n{%- set p = states('sensor.wohnraum_prognose') | float(0) -%}\n{%- set mn = states('input_number.fbh_raum_minimum') | float(22.3) -%}\n{%- set nt = is_state('schedule.niedertarif', 'on') -%}\n{%- if now().hour >= 12 -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_morgen') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_max_morgen') | float(99) -%}{%- else -%}{%- set pvm = states('sensor.solcast_pv_forecast_prognose_heute') | float(99) -%}{%- set tm = states('input_number.aussen_prognose_mittel_6h') | float(99) -%}{%- endif -%}\n{%- set nvw = (now().hour >= 21 and now().isoweekday() in [7,1,2,3,4]) or (now().hour < 6 and now().isoweekday() in [1,2,3,4,5]) -%}\n{%- set vorladen = nt and nvw and pvm < states('input_number.fbh_vorladen_pv_morgen_unter') | float(0) and tm < states('input_number.fbh_vorladen_tmax_morgen_unter') | float(-99) -%}\n{%- set ein = states('input_number.fbh_prognose_ein_unter') | float(22.4) + (0.2 if vorladen else 0) -%}\n{%- set aus = states('input_number.fbh_prognose_aus_ueber') | float(22.7) + (0.2 if vorladen else 0) -%}\n{%- set pumpe = states.switch.homematic_ip_fbh_pumpe_hk_ii -%}\n{%- set on = pumpe is not none and pumpe.state == 'on' -%}\n{%- set dur = ((now() - pumpe.last_changed).total_seconds() / 60) if pumpe is not none else 999 -%}\n{%- set mlz = states('input_number.fbh_mindestlaufzeit') | float(0) -%}\n{%- set mp = states('input_number.fbh_mindestpause') | float(0) -%}\n{%- set pvrest = states('sensor.fbh_pv_rest_heute') | float(0) -%}\n{%- set sschw = states('input_number.fbh_sonnensperre_ab_kwh') | float(99) -%}\n{%- set sonne = is_state('sun.sun', 'above_horizon') -%}\n{%- set sperre = sonne and now().hour < 13 and pvrest >= sschw -%}\n{%- set aktiv = is_state('input_boolean.fbh_smart_aktiv', 'on') -%}\n{%- set hand = not is_state('timer.fbh_hand_pause', 'idle') -%}\n{%- set lueften = is_state('binary_sensor.fbh_lueften_aktiv', 'on') -%}\n{%- set offen = ['binary_sensor.homematic_ip_turkontakt_hibiscus_tur','binary_sensor.homematic_ip_turkontakt_krauter_tur','binary_sensor.homematic_ip_fensterkontakt_kuche_tur'] | select('is_state','on') | list | count -%}\n{%- set nlm = states('input_number.fbh_lueften_nachlauf') | float(45) -%}\n{%- set lts = state_attr('input_datetime.fbh_lueften_zuletzt_geschlossen','timestamp') -%}\n{%- set m_lueft = 0 if not lueften else (nlm if offen > 0 else [nlm - (now().timestamp() - (lts or 0)) / 60, 0] | max) -%}\n{%- set ok = '✅' -%}{%- set no = '❌' -%}{%- set wait = '⏳' -%}\n{%- macro z(b) -%}{{ ok if b else no }}{%- endmacro -%}\n{%- macro hm(m) -%}{%- set m = [m, 0] | max | int -%}{{ '%d:%02d' | format(m // 60, m % 60) }} h{%- endmacro -%}\n## {{ '🟢 FBH-Pumpe läuft' if on else '⚪ FBH-Pumpe steht' }} seit {{ hm(dur) }}\n**Entscheid:** {{ states('sensor.fbh_smart_entscheid') }}  \n**Modus:** {{ '🟢 LIVE – Smart schaltet die Pumpe' if aktiv else '👁️ Beobachtung – HmIP R1–R8 schalten, Smart rechnet nur mit' }}{{ '  \\n⏸️ **Hand-Pause läuft** bis ' ~ (as_datetime(state_attr('timer.fbh_hand_pause','finishes_at')) | as_local).strftime('%H:%M') if hand and state_attr('timer.fbh_hand_pause','finishes_at') else '' }}\n\n{%- set mf = is_state('input_boolean.fbh_mittagsfenster_aktiv', 'on') -%}\n{%- set hmn = now().hour * 60 + now().minute -%}\n{%- set ms = (state_attr('input_datetime.fbh_mittagsfenster_start', 'timestamp') | int(43200)) // 60 -%}\n{%- set me = (state_attr('input_datetime.fbh_mittagsfenster_ende', 'timestamp') | int(57600)) // 60 -%}\n{%- set we = now().isoweekday() in [6, 7] -%}\n{%- set p21 = states('sensor.wohnraum_prognose_21_uhr') | float(0) -%}\n{%- set mfpv = states('input_number.fbh_mittagsfenster_pv_rest_unter') | float(3) -%}\n{%- set mfmax = states('input_number.fbh_mittagsfenster_raum_max') | float(22.8) -%}\n{%- set sich = (mn - 0.1) | round(1) -%}\n{%- if we -%}{%- set w = 4 if hmn >= ms and hmn < me else 1 -%}\n{%- elif hmn < 360 or hmn >= 1260 -%}{%- set w = 1 -%}\n{%- elif hmn < 420 -%}{%- set w = 2 -%}\n{%- elif hmn < ms -%}{%- set w = 3 -%}\n{%- elif hmn < me -%}{%- set w = 4 -%}\n{%- elif hmn < 1140 -%}{%- set w = 5 -%}\n{%- else -%}{%- set w = 6 -%}{%- endif -%}\n{%- set lv_s = ok if aktiv else no -%}\n{%- set lv_m = ok if aktiv and mf else no -%}\n{%- macro hh(m) -%}{{ '%02d:%02d' | format(m // 60, m % 60) }}{%- endmacro -%}\n{%- macro mk(i) -%}{{ '▶️' if w == i else '' }}{%- endmacro -%}\n{%- if t < 21.8 -%}{%- set zone = '🔴 unter Notregel HmIP (< 21.8 °C)' -%}\n{%- elif t < mn - 0.1 -%}{%- set zone = '🟠 Sicherheitsbereich (< ' ~ sich ~ ' °C) → EIN' -%}\n{%- elif t < mn -%}{%- set zone = '🟡 knapp unter Minimum (' ~ mn ~ ' °C)' -%}\n{%- elif t <= aus -%}{%- set zone = '🟢 im Zielbereich' -%}\n{%- else -%}{%- set zone = '🔵 über Prognose-AUS (' ~ aus | round(1) ~ ' °C)' -%}{%- endif %}\n\n### 🌡️ Raum {{ t }} °C – {{ zone }}\n<sub>Bereiche: < 21.8 Notregel HmIP · < {{ sich }} Sicherheit EIN · {{ mn }} Minimum · Prognose-Zielband {{ ein | round(2) }}–{{ aus | round(2) }}{{ ' (Vorladen NT +0.2)' if vorladen else '' }} · ≥ {{ mfmax }} Abbruch Mittagsfenster · Prognose in 3 h: {{ p }} °C</sub>\n\n### 🗓️ Tagesablauf {{ 'Wochenende (ganztags Niedertarif)' if we else 'Werktag' }}\n| | Zeit | Regel | Temperaturbereich | Live | Bedingung jetzt |\n|:-:|---|---|---|:-:|---|\n| {{ mk(1) }} | {{ '00:00–24:00' if we else '21:00–06:00' }} | Niedertarif: Prognose-Steuerung{{ ' + Vorladen' if vorladen else '' }} | EIN Prognose < {{ ein | round(2) }} · AUS > {{ aus | round(2) }} | {{ lv_s }} | {{ (z(p < ein) ~ ' EIN (Prognose ' ~ p ~ ' °C) · ' ~ z(p > aus and t >= mn + 0.1) ~ ' AUS') if w == 1 else '' }} |\n{%- if not we %}\n| {{ mk(2) }} | 06:00–07:00 | Morgen halten: kein neuer Start, laufende Pumpe hält bis 07:00 | nur Sicherheit < {{ sich }} | {{ lv_m }} | {{ ((ok ~ ' Pumpe läuft → halten') if on else (no ~ ' Pumpe steht → kein Start')) if w == 2 else '' }} |\n| {{ mk(3) }} | 07:00–{{ hh(ms) }} | HT-Sperre morgens (Sonne/Nachwärme tragen) | nur Sicherheit < {{ sich }} | {{ lv_m }} | {{ (z(t < mn - 0.1) ~ ' Sicherheit (Raum ' ~ t ~ ' °C)') if w == 3 else '' }} |\n{%- endif %}\n| {{ mk(4) }} | {{ hh(ms) }}–{{ hh(me) }} | Mittagsfenster: Estrich am Stück laden | Prognose 21 Uhr < {{ mn }} · PV-Rest < {{ mfpv }} kWh · Abbruch ≥ {{ mfmax }} | {{ lv_m }} | {{ (z(p21 < mn) ~ ' 21 Uhr ' ~ p21 ~ ' °C · ' ~ z(pvrest < mfpv) ~ ' PV ' ~ pvrest ~ ' kWh · ' ~ z(t < mfmax) ~ ' Raum ' ~ t ~ ' °C') if w == 4 else '' }} |\n{%- if not we %}\n| {{ mk(5) }} | {{ hh(me) }}–19:00 | HT-Sperre abends | nur Sicherheit < {{ sich }} | {{ lv_m }} | {{ (z(t < mn - 0.1) ~ ' Sicherheit (Raum ' ~ t ~ ' °C)') if w == 5 else '' }} |\n| {{ mk(6) }} | 19:00–21:00 | Prognose-Steuerung (2 h vor Niedertarif) | EIN Prognose < {{ ein | round(2) }} · AUS > {{ aus | round(2) }} | {{ lv_s }} | {{ (z(p < ein) ~ ' EIN (Prognose ' ~ p ~ ' °C) · ' ~ z(p > aus and t >= mn + 0.1) ~ ' AUS') if w == 6 else '' }} |\n{%- endif %}\n\n{% if not mf -%}<sub>❌ Live = Regel noch nicht aktiv (Schalter «FBH Mittagsfenster aktiv» AUS). Bis dahin gilt in diesen Zeiten die Prognose-Steuerung (Smart-Komfort).</sub>\n{%- endif %}\n\n### 🛡️ Gilt immer (Vorrang)\n| | Regel | Temperaturbereich | Live | Bedingung jetzt |\n|:-:|---|---|:-:|---|\n| 🆘 | HmIP-Notregel | Raum < 21.8 | ✅ | {{ z(t < 21.8) }} Raum {{ t }} °C |\n| 🛡️ | Sicherheit EIN | Raum < {{ sich }} | {{ lv_s }} | {{ z(t < mn - 0.1) }} Raum {{ t }} °C |\n| 🪟 | Lüften: Zustand halten (Hibiscus, Kräuter, Küche + {{ nlm | int }} min) | bis Raum < {{ (mn - 0.5) | round(1) }} | {{ lv_s }} | {{ z(lueften) }} {{ ('offen' if offen > 0 else 'Nachlauf ' ~ hm(m_lueft)) if lueften else 'zu' }} |\n| ⏱️ | {{ 'Mindestlaufzeit ' ~ hm(mlz) if on else 'Mindestpause ' ~ hm(mp) }} | – | {{ lv_s }} | {{ z(dur >= (mlz if on else mp)) }} {{ 'läuft' if on else 'steht' }} seit {{ hm(dur) }} |\n| ☀️ | Sonnensperre bis 13:00 | PV-Rest ≥ {{ sschw }} kWh und Raum ≥ {{ mn }} | {{ lv_s }} | {{ z(sperre and t >= mn) }} PV-Rest {{ pvrest }} kWh |\n| ✋ | Hand-Pause 3 h nach Eingriff | – | {{ lv_s }} | {{ z(hand) }} {{ 'läuft' if hand else 'keine' }} |\n\n{#- Countdown -#}\n{%- set ta = states('input_number.aussen_prognose_mittel_6h') | float(t - 10) -%}\n{%- set k = states('input_number.fbh_auskuehlfaktor_k') | float(0.01) -%}\n{%- set tref = states('input_number.fbh_nachwaerme_referenz_aussen') | float(12) -%}\n{%- set fa = [[(ta + 8) / (tref + 8), 0.3] | max, 1] | min -%}\n{%- set l6 = states('sensor.heizung_homematic_ip_fbh_pumpe_hk_ii_fbh_laufzeit_6h') | float(0) -%}\n{%- set nwf = states('input_number.fbh_nachwaerme_faktor') | float(0) -%}\n{%- set rate = k * (t - ta) + (nwf * fa if l6 > 0 else 0) -%}\n{%- set rate = [rate, 0.02] | max -%}\n{%- if not on %}\n\n### ⏱️ Countdown bis Einschalten\n{%- if t < mn - 0.1 %}\n**Jetzt** – Sicherheitsregel greift.\n{%- else -%}\n{%- set m_pause = [mp - dur, 0] | max -%}\n{%- set m_prog = ([p - ein, 0] | max) / rate * 60 if p >= ein else 0 -%}\n{%- if sperre and t >= mn -%}{%- set m_sperre = (today_at('13:00') - now()).total_seconds() / 60 -%}{%- else -%}{%- set m_sperre = 0 -%}{%- endif -%}\n{%- set m = [m_pause, m_prog, m_sperre, m_lueft] | max -%}\n{%- set grund = ('Lüften + Nachlauf' ~ (' (Fenster/Tür offen, frühestens)' if offen > 0 else '')) if m == m_lueft and m > 0 else 'Mindestpause' if m == m_pause and m > 0 else ('Sonnensperre bis 13:00' if m == m_sperre and m > 0 else 'Prognose sinkt unter ' ~ ein | round(2) ~ ' °C') -%}\n{%- if m <= 0 %}\n**Jetzt** – alle Bedingungen für EIN erfüllt{{ '' if aktiv else ' (im Beobachtungsmodus schaltet Smart nicht)' }}.\n{%- elif m > 720 %}\n**> 12 h** – Raum bleibt laut Prognose warm genug.\n{%- else %}\n## ≈ {{ hm(m) }} → ca. {{ (now() + timedelta(minutes=m)).strftime('%H:%M') }} Uhr\n<sub>Massgebend: {{ grund }} · geschätzt mit Abkühlung ≈ {{ rate | round(2) }} K/h (Aussen {{ ta | round(1) }} °C){{ ' · Niedertarif' if is_state('schedule.niedertarif','on') else '' }}</sub>\n{%- endif -%}\n{%- endif -%}\n{%- else %}\n\n### ⏱️ Restlaufzeit\n{%- set m_mlz = [mlz - dur, 0] | max %}\n{{ 'Mindestlaufzeit noch **' ~ hm(m_mlz) ~ '** (bis ca. ' ~ (now() + timedelta(minutes=m_mlz)).strftime('%H:%M') ~ ' Uhr), danach entscheidet die Prognose.' if m_mlz > 0 else 'Mindestlaufzeit erfüllt – AUS, sobald Prognose > ' ~ aus | round(2) ~ ' °C oder Sonnensperre greift.' }}\n{%- endif %}\n"
             },
             {
               "type": "custom:plotly-graph",
@@ -1505,7 +1703,7 @@
             },
             {
               "type": "markdown",
-              "content": "### 🌙 Messprotokoll Nächte\n| Nacht | Aussen met.no / HmIP | Auskühlung ohne FBH | Nachwärme nach AUS | Totzeit | Prognosefehler 3 h | WP kWh (NT-Anteil) | Raum min. |\n|---|---|---|---|---|---|---|---|\n| 18./19.11. | – / 9.5–11.9 °C | – | +0.2 K nach 6.5 h Laufzeit | > 3 h | Smart zu tief (hätte ab 04:00 unnötig EIN) | 13.0 (91 %) | 22.1 °C |\n| 20./21.11. | 6.0 / 8.2 °C | 0.1–0.12 K/h | +0.1 K (Peak nach 1.7 h), netto +0.3 K nach 3.5 h | ~4 h | −0.15 … −0.25 K (k 0.01) | 18.7 (83 %) | 22.1 °C |\n\n<sub>Änderungen: 21.11. 18:31 k 0.01 → 0.008. Nächste Ausbauschritte nach der Lernphase: Parameter je Bereich automatisch, Weitblick 6 h für EIN, lernende Korrektur.</sub>"
+              "content": "### 🌙 Messprotokoll Nächte\n| Nacht | Aussen met.no / HmIP | Auskühlung ohne FBH | Nachwärme nach AUS | Totzeit | Prognosefehler 3 h | WP kWh (NT-Anteil) | Wärmeindex 18–08 (Laufzeit × Ø Spreizung) | Raum min. |\n|---|---|---|---|---|---|---|---|---|\n| 18./19.11. | – / 9.5–11.9 °C | – | +0.2 K nach 6.5 h Laufzeit | > 3 h | Smart zu tief (hätte ab 04:00 unnötig EIN) | 13.0 (91 %) | 46.9 K·h (8.7 h × 5.4 K) | 22.1 °C |\n| 20./21.11. | 6.0 / 8.2 °C | 0.1–0.12 K/h | +0.1 K (Peak nach 1.7 h), netto +0.3 K nach 3.5 h | ~4 h | −0.15 … −0.25 K (k 0.01) | 18.7 (83 %) | 50.0 K·h (8.3 h × 6.1 K) | 22.1 °C |\n| 21./22.11. (Sa/So) | 3.4–4.5 / 4.6–6.5 °C | ~0.1–0.14 K/h (17–21 Uhr) | +0.1 K nach 8.8 h Laufzeit (dann Sonne) | ~7 h (EIN 21:25 → Anstieg 04:28) | – (Beobachtung, HmIP schaltet) | 18.4 21–07 Uhr (100 %, Wochenende) | 56.7 K·h (9.2 h × 6.2 K) | 22.1 °C |\n| 22./23.11. | 3.1–3.9 / 5.0 °C | ~0.06 K/h (noch mit Nachwärme) | 22.5–22.6 bis 3.5 h, 7 h ≥ 22.3 nach 5 h Laufzeit | ~4 h | −0.08 … −0.26 K (zu pessimistisch) | 22.7 17–11 Uhr (58 %) | 54.1 K·h (8.0 h × 6.8 K) | 22.1 °C |\n| 23./24.11. LIVE | 1.5–2.3 / 2.7 °C | – (FBH lief) | +0.1 K (Peak 03:09), 4 h ≥ 22.5 nach 7.6 h Laufzeit | ~5 h (inkl. Lüften) | ±0 … −0.36 K | 26.9 18–08:30 Uhr (55 %) | 71.4 K·h (10.4 h × 6.9 K) | 21.9 °C |\n| 24./25.11. LIVE | ~3.6 / 2.2–2.9 °C | nicht messbar (Istwert 22.6 bis 23:55 eingefroren) | +0.1 K, ~6 h ≥ 22.5 nach 2 h Laufzeit | ~5 h (EIN 23:55 → Anstieg 05:05) | −0.10 … −0.14 K (zu optimistisch) | 21.9 18–08 Uhr (73 %) | 52.0 K·h (7.3 h × 7.2 K) | 22.1 °C |\n\n**Wärmeindex letzte Nacht (live): {{ states('sensor.fbh_warmeindex_nacht') }} K·h** · {{ state_attr('sensor.fbh_warmeindex_nacht','h1') }} h × Ø {{ state_attr('sensor.fbh_warmeindex_nacht','s1') }} K · aussen HmIP Ø {{ state_attr('sensor.fbh_warmeindex_nacht','a1') }} °C <sub>(Index = Summe Spreizung VL−RL HK-II × Zeit bei FBH aktiv; relativ, ∝ eingebrachter Wärme bei konstantem Durchfluss)</sub>\n\n<sub>Änderungen: 21.11. 18:31 k 0.01 → 0.008 · 22.11. k 0.006, Heizkurve HK1 0.62 / HK2 0.51 · 23.11. 16:15 Smart-Komfort LIVE · 24.11. 19:00 Mittagsfenster LIVE · 25.11. ~17:05 Weitblick 5 h (bei < 5 °C), Nachtladen ab 21:30 vor Werktag, Abkühltrend bei eingefrorenem Istwert, Morgen-AUS 05:30 · 25.11. 21:56 Taco Essen/Mael zu, Spielen auf · 25.11. 22:15 Wärmeindex-Sensor. Nächste Ausbauschritte nach der Lernphase: Parameter je Bereich automatisch, lernende Korrektur.</sub>"
             },
             {
               "type": "custom:plotly-graph",

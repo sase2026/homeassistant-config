@@ -3,7 +3,8 @@
 # Quelle: HA-Kurzzeitstatistik (5-min-Mittel, ca. 10 Tage) aus der Recorder-DB.
 # Nacht = 18:00–11:00 (205 Werte; seit 16.11.2026, vorher 18–08). «Letzte Nacht» = zuletzt um 11:00 abgeschlossene Nacht.
 # Zusatz: strom_bis08_kwh (Vergleich mit Nächten vor 16.11.), strom_ht_kwh (Mo–Fr 06–21 Uhr), letzter_lauf (Ende letzter WP-Lauf).
-# Zustand je 5 min: Aus < 200 W; WW = WP läuft und RL Ist ≥ 38 °C; sonst Heizen.
+# Zustand je 5 min: Aus < 200 W; WW = ganzer WP-Lauf, in dem «Speicher WW» (…_temperatur_3) mind. einmal >= 10 K/h steigt
+# (seit 22.11.2026; vorher RL Ist >= 38 °C – seit HK1 25 °C falsch, Heizläufe erreichen 38–42 °C); sonst Heizen.
 # FBH aktiv = VL HK-II − RL HK-II > 2.5 K. Zustand = strom_kwh, alle weiteren Kennzahlen als Attribute.
 # Erstellt 14.11.2026 (Claude); Test gegen Excel: Nacht 13./14.11. 16.5 kWh / 0 WW / 6 Takte – identisch.
 # ════════════════════════════════════════════════════════════════════════
@@ -32,13 +33,20 @@ sql:
         FROM statistics_short_term s JOIN statistics_meta m ON s.metadata_id = m.id, p
         WHERE m.statistic_id IN ('sensor.energy_manager_wp_aktuell_w','sensor.ww_mitte_rl_ist_ww_oben_temperatur_2','sensor.ww_mitte_rl_ist_ww_oben_temperatur','sensor.ww_mitte_rl_ist_ww_oben_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_fbh_pumpe_hk_ii_leistung') AND s.start_ts BETWEEN p.e - 61500 AND p.e + 300
         GROUP BY s.start_ts
+      ), z0 AS (
+        SELECT r.*, CASE WHEN w >= 200 THEN 1 ELSE 0 END AS o,
+          LAG(CASE WHEN w >= 200 THEN 1 ELSE 0 END) OVER (ORDER BY t) AS po,
+          CASE WHEN w >= 200 AND (b - LAG(b) OVER (ORDER BY t)) * 12 >= 10 THEN 1 ELSE 0 END AS wwr
+        FROM r
+      ), z1 AS (
+        SELECT z0.*, SUM(CASE WHEN o = 1 AND (po IS NULL OR po = 0) THEN 1 ELSE 0 END) OVER (ORDER BY t) AS grp FROM z0
       ), z AS (
-        SELECT r.*,
-          CASE WHEN w IS NULL THEN NULL WHEN w < 200 THEN 'Aus' WHEN rl >= 38 THEN 'WW' ELSE 'Heizen' END AS st,
+        SELECT z1.*,
+          CASE WHEN w IS NULL THEN NULL WHEN w < 200 THEN 'Aus' WHEN MAX(wwr) OVER (PARTITION BY grp, o) = 1 THEN 'WW' ELSE 'Heizen' END AS st,
           CASE WHEN vl - rlh > 2.5 THEN 1 ELSE 0 END AS fbh,
           (LEAD(c) OVER (ORDER BY t) - c) * 12 AS dc,
           (LEAD(b) OVER (ORDER BY t) - b) * 12 AS db
-        FROM r
+        FROM z1
       ), y AS (
         SELECT z.*, LAG(st) OVER (ORDER BY t) AS pst FROM z
       ), n AS (
@@ -100,13 +108,20 @@ sql:
         FROM statistics_short_term s JOIN statistics_meta m ON s.metadata_id = m.id, p
         WHERE m.statistic_id IN ('sensor.energy_manager_wp_aktuell_w','sensor.ww_mitte_rl_ist_ww_oben_temperatur_2','sensor.ww_mitte_rl_ist_ww_oben_temperatur','sensor.ww_mitte_rl_ist_ww_oben_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_3','sensor.16_waku_rl_hk_ii_vl_hk_ii_temperatur_2','sensor.homematic_ip_aussen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_innen_temperatur_luftfeuchtigkeitssensor_temperatur','sensor.homematic_ip_fbh_pumpe_hk_ii_leistung') AND s.start_ts BETWEEN p.e - 61500 AND p.e + 300
         GROUP BY s.start_ts
+      ), z0 AS (
+        SELECT r.*, CASE WHEN w >= 200 THEN 1 ELSE 0 END AS o,
+          LAG(CASE WHEN w >= 200 THEN 1 ELSE 0 END) OVER (ORDER BY t) AS po,
+          CASE WHEN w >= 200 AND (b - LAG(b) OVER (ORDER BY t)) * 12 >= 10 THEN 1 ELSE 0 END AS wwr
+        FROM r
+      ), z1 AS (
+        SELECT z0.*, SUM(CASE WHEN o = 1 AND (po IS NULL OR po = 0) THEN 1 ELSE 0 END) OVER (ORDER BY t) AS grp FROM z0
       ), z AS (
-        SELECT r.*,
-          CASE WHEN w IS NULL THEN NULL WHEN w < 200 THEN 'Aus' WHEN rl >= 38 THEN 'WW' ELSE 'Heizen' END AS st,
+        SELECT z1.*,
+          CASE WHEN w IS NULL THEN NULL WHEN w < 200 THEN 'Aus' WHEN MAX(wwr) OVER (PARTITION BY grp, o) = 1 THEN 'WW' ELSE 'Heizen' END AS st,
           CASE WHEN vl - rlh > 2.5 THEN 1 ELSE 0 END AS fbh,
           (LEAD(c) OVER (ORDER BY t) - c) * 12 AS dc,
           (LEAD(b) OVER (ORDER BY t) - b) * 12 AS db
-        FROM r
+        FROM z1
       ), y AS (
         SELECT z.*, LAG(st) OVER (ORDER BY t) AS pst FROM z
       ), n AS (

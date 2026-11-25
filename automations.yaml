@@ -453,7 +453,9 @@
   alias: FBH Smart – Steuerung
   description: Schaltet die FBH-Pumpe nach sensor.fbh_smart_entscheid. Nur aktiv,
     wenn input_boolean.fbh_smart_aktiv EIN ist und keine Hand-Pause läuft (Beobachtungsmodus
-    = Schalter AUS).
+    = Schalter AUS). AUS nur bei Entscheid «AUS – …»; bei unavailable/unknown wird
+    nicht geschaltet (Pumpe bleibt, wie sie ist; Watchdog schaltet nach 30 min EIN).
+    Ergänzt 24.11.2026.
   triggers:
   - entity_id: sensor.fbh_smart_entscheid
     trigger: state
@@ -481,6 +483,7 @@
   - variables:
       ist_ein: '{{ is_state(''switch.homematic_ip_fbh_pumpe_hk_ii'', ''on'') }}'
       soll_ein: '{{ states(''sensor.fbh_smart_entscheid'').startswith(''EIN'') }}'
+      soll_aus: '{{ states(''sensor.fbh_smart_entscheid'').startswith(''AUS'') }}'
   - choose:
     - conditions:
       - condition: template
@@ -496,7 +499,7 @@
           name: FBH Smart
     - conditions:
       - condition: template
-        value_template: '{{ not soll_ein and ist_ein }}'
+        value_template: '{{ soll_aus and ist_ein }}'
       sequence:
       - action: switch.turn_off
         target:
